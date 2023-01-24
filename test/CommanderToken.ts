@@ -75,22 +75,26 @@ describe('CommanderToken', function () {
     });
 
     it('Is able to make NFTs transferable and check for transferability', async function () {
+	let n = Math.floor(Math.random()*this.initialMint.length) + 1;
+	
 	// Make one of the NFTs transferable
-	await this.CommanderToken.connect(this.owner).setTransferable(1, true);
+	await this.CommanderToken.connect(this.owner).setTransferable(n, true);
 
 	// Check for transferability
 	for (let i = 1; i <= this.initialMint.length; i++) {
-	    expect(await this.CommanderToken.isTransferable(i)).to.equal(i == 1 ? true : false);
+	    expect(await this.CommanderToken.isTransferable(i)).to.equal(i == n ? true : false);
 	}
     });
     
     it('Is able to make NFTs burnable and check for burnability', async function () {
+	let n = Math.floor(Math.random()*this.initialMint.length) + 1;
+	
     	// Make one of the NFTs burnable
-	await this.CommanderToken.connect(this.owner).setBurnable(2, true);
+	await this.CommanderToken.connect(this.owner).setBurnable(n, true);
 
 	// Check for burnability
 	for (let i = 1; i <= this.initialMint.length; i++) {
-	    expect(await this.CommanderToken.isBurnable(i)).to.equal(i == 2 ? true : false);
+	    expect(await this.CommanderToken.isBurnable(i)).to.equal(i == n ? true : false);
 	}
     });
 
