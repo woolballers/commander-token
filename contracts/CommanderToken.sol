@@ -289,10 +289,10 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         uint256 tokenId,
         bool transferable
     ) public virtual override {
-        require(
-            _isApprovedOrOwner(_msgSender(), tokenId),
-            "ERC721: caller is not token owner or approved"
-        );
+	require(
+		_isApprovedOrOwner(_msgSender(), tokenId),
+		"ERC721: caller is not token owner or approved"
+	);
         _tokens[tokenId].transferable = transferable;
         if (!_tokens[tokenId].exists) {
             _tokens[tokenId].exists = true;
@@ -317,11 +317,15 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
 
     function isTransferable(
         uint256 _tokenId
-    ) public view virtual override returns (bool) {}
+    ) public view virtual override returns (bool) {
+	return _tokens[_tokenId].transferable;
+    }
 
     function isBurnable(
         uint256 _tokenId
-    ) public view virtual override returns (bool) {}
+    ) public view virtual override returns (bool) {
+    return _tokens[_tokenId].burnable;
+    }
 
     function burn(uint256 tokenId) public virtual override {}
 

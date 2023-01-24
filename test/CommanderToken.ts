@@ -7,11 +7,12 @@ import { expect } from "chai";
 const TokenName = "CommanderTokenTest";
 const TokenSymbol = "CTT";
 
-const TestNftOwner = {
+/*
+  const TestNftOwner = {
     nftContract: "0x0000000000000000000000000000000000000000",
     ownerTokenId: 0
 }
-
+*/
 
 // etherjs overloading bug - https://github.com/NomicFoundation/hardhat/issues/2203
 
@@ -27,10 +28,12 @@ describe('CommanderToken', function () {
         this.CommanderToken = await this.CommanderTokenMintTestFactory.deploy(TokenName, TokenSymbol);
         await this.CommanderToken.deployed();
 
-        // Get the contractOwner and collector address
+        // Get the contractOwner and collector addresses as well as owner account
         const signers = await ethers.getSigners();
         this.contractOwner = signers[0].address;
         this.collector = signers[1].address;
+	this.owner = signers[0];
+
 
         // Get the collector contract for signing transaction with collector key
         this.collectorContract = this.CommanderToken.connect(signers[1]);
@@ -69,6 +72,26 @@ describe('CommanderToken', function () {
         let tokenId = (this.initialMint.length + 1).toString();
         await this.CommanderToken["mint(address,uint256)"](this.collector, tokenId);
         expect(await this.CommanderToken.ownerOf(tokenId)).to.equal(this.collector);
+    });
+
+    it('Is able to make NFTs transferable and check for transferability', async function () {
+	// Make one of the NFTs transferable
+	await this.CommanderToken.connect(this.owner).setTransferable(1, true);
+
+	// Check for transferability
+	for (let i = 1; i <= this.initialMint.length; i++) {
+	    expect(await this.CommanderToken.isTransferable(i)).to.equal(i == 1 ? true : false);
+	}
+    });
+    
+    it('Is able to make NFTs burnable and check for burnability', async function () {
+    	// Make one of the NFTs burnable
+	await this.CommanderToken.connect(this.owner).setBurnable(2, true);
+
+	// Check for burnability
+	for (let i = 1; i <= this.initialMint.length; i++) {
+	    expect(await this.CommanderToken.isBurnable(i)).to.equal(i == 2 ? true : false);
+	}
     });
 
     // it('Emits a transfer event for newly minted NFTs', async function () {
