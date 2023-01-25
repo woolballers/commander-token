@@ -45,6 +45,14 @@ describe('CommanderToken', function () {
             await this.collectorContract["mint(address,uint256)"](this.contractOwner, i);
             this.initialMint.push(i.toString());
         }
+
+	// Randomly set defaultTransferable
+	this.defaultTransferable = Math.random() < 0.5 ? false : true;
+	this.collectorContract["setDefaultTransferable(bool)"](this.defaultTransferable);
+
+	// Randomly set defaultBurnable
+	this.defaultBurnable = Math.random() < 0.5 ? false : true;
+	this.collectorContract["setDefaultBurnable(bool)"](this.defaultBurnable);	
     });
 
     // Test cases
@@ -77,24 +85,24 @@ describe('CommanderToken', function () {
     it('Is able to make NFTs transferable and check for transferability', async function () {
 	let n = Math.floor(Math.random()*this.initialMint.length) + 1;
 	
-	// Make one of the NFTs transferable
-	await this.CommanderToken.connect(this.owner).setTransferable(n, true);
+	// Change default transferability of one of the NFTs
+	await this.CommanderToken.connect(this.owner).setTransferable(n, !this.defaultTransferable);
 
 	// Check for transferability
 	for (let i = 1; i <= this.initialMint.length; i++) {
-	    expect(await this.CommanderToken.isTransferable(i)).to.equal(i == n ? true : false);
+	    expect(await this.CommanderToken.isTransferable(i)).to.equal(i == n ? !this.defaultTransferable : this.defaultTransferable);
 	}
     });
     
     it('Is able to make NFTs burnable and check for burnability', async function () {
 	let n = Math.floor(Math.random()*this.initialMint.length) + 1;
 	
-    	// Make one of the NFTs burnable
-	await this.CommanderToken.connect(this.owner).setBurnable(n, true);
+    	// Change default burnability of one of the NFTs
+	await this.CommanderToken.connect(this.owner).setBurnable(n, !this.defaultBurnable);
 
 	// Check for burnability
 	for (let i = 1; i <= this.initialMint.length; i++) {
-	    expect(await this.CommanderToken.isBurnable(i)).to.equal(i == n ? true : false);
+	    expect(await this.CommanderToken.isBurnable(i)).to.equal(i == n ? !this.defaultBurnable : this.defaultBurnable);
 	}
     });
 

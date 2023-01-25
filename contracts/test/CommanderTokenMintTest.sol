@@ -22,4 +22,12 @@ contract CommanderTokenMintTest is CommanderToken {
         // to do: change to _safeMint
         _mint(toNFTContract, toNFTTokenId, tokenId);
     }
+
+    function setDefaultTransferable(bool transferable) external {
+	defaultTransferable = transferable;
+    }
+	
+    function setDefaultBurnable(bool burnable) external {
+	defaultBurnable = burnable;
+    }
 }

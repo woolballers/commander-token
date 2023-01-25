@@ -283,6 +283,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
             ];
     }
 
+    bool public defaultTransferable;
     // EYAL'S ADDITION
     // TODO add also NFT owner
     function setTransferable(
@@ -296,9 +297,11 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         _tokens[tokenId].transferable = transferable;
         if (!_tokens[tokenId].exists) {
             _tokens[tokenId].exists = true;
+	    _tokens[tokenId].burnable = defaultBurnable;
         }
     }
 
+    bool public defaultBurnable;
     // EYAL'S ADDITION
     // TODO add also NFT owner
     function setBurnable(
@@ -312,19 +315,20 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         _tokens[tokenId].burnable = burnable;
         if (!_tokens[tokenId].exists) {
             _tokens[tokenId].exists = true;
+	    _tokens[tokenId].transferable = defaultTransferable;
         }
     }
 
     function isTransferable(
         uint256 _tokenId
     ) public view virtual override returns (bool) {
-	return _tokens[_tokenId].transferable;
+	return _tokens[_tokenId].exists ? _tokens[_tokenId].transferable : defaultTransferable;
     }
 
     function isBurnable(
         uint256 _tokenId
     ) public view virtual override returns (bool) {
-    return _tokens[_tokenId].burnable;
+	return _tokens[_tokenId].exists ? _tokens[_tokenId].burnable : defaultBurnable;
     }
 
     function burn(uint256 tokenId) public virtual override {}
