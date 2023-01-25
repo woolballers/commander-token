@@ -23,11 +23,4 @@ contract CommanderTokenMintTest is CommanderToken {
         _mint(toNFTContract, toNFTTokenId, tokenId);
     }
 
-    function setDefaultTransferable(bool transferable) external {
-	defaultTransferable = transferable;
-    }
-	
-    function setDefaultBurnable(bool burnable) external {
-	defaultBurnable = burnable;
-    }
 }

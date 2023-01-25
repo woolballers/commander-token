@@ -12,6 +12,9 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         None
     }
 
+    bool public defaultTransferable;
+    bool public defaultBurnable;
+
     // EYAL'S ADDITION
     // TODO: by address we mean a contract of type CommanderToken
     struct NftOwner {
@@ -283,7 +286,11 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
             ];
     }
 
-    bool public defaultTransferable;
+    // Set default value of `transferable` field of token
+    function setDefaultTransferable(bool transferable) external {
+	defaultTransferable = transferable;
+    }
+   
     // EYAL'S ADDITION
     // TODO add also NFT owner
     function setTransferable(
@@ -301,7 +308,12 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         }
     }
 
-    bool public defaultBurnable;
+
+    // Set default value of `burnable` field of token
+    function setDefaultBurnable(bool burnable) external {
+	defaultBurnable = burnable;
+    }
+    
     // EYAL'S ADDITION
     // TODO add also NFT owner
     function setBurnable(
