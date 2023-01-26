@@ -22,4 +22,5 @@ contract CommanderTokenMintTest is CommanderToken {
         // to do: change to _safeMint
         _mint(toNFTContract, toNFTTokenId, tokenId);
     }
+
 }

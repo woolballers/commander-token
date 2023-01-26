@@ -7,11 +7,12 @@ import { expect } from "chai";
 const TokenName = "CommanderTokenTest";
 const TokenSymbol = "CTT";
 
-const TestNftOwner = {
+/*
+  const TestNftOwner = {
     nftContract: "0x0000000000000000000000000000000000000000",
     ownerTokenId: 0
 }
-
+*/
 
 // etherjs overloading bug - https://github.com/NomicFoundation/hardhat/issues/2203
 
@@ -27,10 +28,12 @@ describe('CommanderToken', function () {
         this.CommanderToken = await this.CommanderTokenMintTestFactory.deploy(TokenName, TokenSymbol);
         await this.CommanderToken.deployed();
 
-        // Get the contractOwner and collector address
+        // Get the contractOwner and collector addresses as well as owner account
         const signers = await ethers.getSigners();
         this.contractOwner = signers[0].address;
         this.collector = signers[1].address;
+	this.owner = signers[0];
+
 
         // Get the collector contract for signing transaction with collector key
         this.collectorContract = this.CommanderToken.connect(signers[1]);
@@ -42,6 +45,14 @@ describe('CommanderToken', function () {
             await this.collectorContract["mint(address,uint256)"](this.contractOwner, i);
             this.initialMint.push(i.toString());
         }
+
+	// Randomly set defaultTransferable
+	this.defaultTransferable = Math.random() < 0.5 ? false : true;
+	this.collectorContract["setDefaultTransferable(bool)"](this.defaultTransferable);
+
+	// Randomly set defaultBurnable
+	this.defaultBurnable = Math.random() < 0.5 ? false : true;
+	this.collectorContract["setDefaultBurnable(bool)"](this.defaultBurnable);	
     });
 
     // Test cases
@@ -69,6 +80,30 @@ describe('CommanderToken', function () {
         let tokenId = (this.initialMint.length + 1).toString();
         await this.CommanderToken["mint(address,uint256)"](this.collector, tokenId);
         expect(await this.CommanderToken.ownerOf(tokenId)).to.equal(this.collector);
+    });
+
+    it('Is able to make NFTs transferable and check for transferability', async function () {
+	let n = Math.floor(Math.random()*this.initialMint.length) + 1;
+	
+	// Change default transferability of one of the NFTs
+	await this.CommanderToken.connect(this.owner).setTransferable(n, !this.defaultTransferable);
+
+	// Check for transferability
+	for (let i = 1; i <= this.initialMint.length; i++) {
+	    expect(await this.CommanderToken.isTransferable(i)).to.equal(i == n ? !this.defaultTransferable : this.defaultTransferable);
+	}
+    });
+    
+    it('Is able to make NFTs burnable and check for burnability', async function () {
+	let n = Math.floor(Math.random()*this.initialMint.length) + 1;
+	
+    	// Change default burnability of one of the NFTs
+	await this.CommanderToken.connect(this.owner).setBurnable(n, !this.defaultBurnable);
+
+	// Check for burnability
+	for (let i = 1; i <= this.initialMint.length; i++) {
+	    expect(await this.CommanderToken.isBurnable(i)).to.equal(i == n ? !this.defaultBurnable : this.defaultBurnable);
+	}
     });
 
     // it('Emits a transfer event for newly minted NFTs', async function () {
