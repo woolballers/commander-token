@@ -288,32 +288,31 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
 
     // Set default value of `transferable` field of token
     function setDefaultTransferable(bool transferable) external {
-	defaultTransferable = transferable;
+        defaultTransferable = transferable;
     }
-   
+
     // EYAL'S ADDITION
     // TODO add also NFT owner
     function setTransferable(
         uint256 tokenId,
         bool transferable
     ) public virtual override {
-	require(
-		_isApprovedOrOwner(_msgSender(), tokenId),
-		"ERC721: caller is not token owner or approved"
-	);
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: caller is not token owner or approved"
+        );
         _tokens[tokenId].transferable = transferable;
         if (!_tokens[tokenId].exists) {
             _tokens[tokenId].exists = true;
-	    _tokens[tokenId].burnable = defaultBurnable;
+            _tokens[tokenId].burnable = defaultBurnable;
         }
     }
 
-
     // Set default value of `burnable` field of token
     function setDefaultBurnable(bool burnable) external {
-	defaultBurnable = burnable;
+        defaultBurnable = burnable;
     }
-    
+
     // EYAL'S ADDITION
     // TODO add also NFT owner
     function setBurnable(
@@ -327,20 +326,26 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         _tokens[tokenId].burnable = burnable;
         if (!_tokens[tokenId].exists) {
             _tokens[tokenId].exists = true;
-	    _tokens[tokenId].transferable = defaultTransferable;
+            _tokens[tokenId].transferable = defaultTransferable;
         }
     }
 
     function isTransferable(
         uint256 _tokenId
     ) public view virtual override returns (bool) {
-	return _tokens[_tokenId].exists ? _tokens[_tokenId].transferable : defaultTransferable;
+        return
+            _tokens[_tokenId].exists
+                ? _tokens[_tokenId].transferable
+                : defaultTransferable;
     }
 
     function isBurnable(
         uint256 _tokenId
     ) public view virtual override returns (bool) {
-	return _tokens[_tokenId].exists ? _tokens[_tokenId].burnable : defaultBurnable;
+        return
+            _tokens[_tokenId].exists
+                ? _tokens[_tokenId].burnable
+                : defaultBurnable;
     }
 
     function burn(uint256 tokenId) public virtual override {}

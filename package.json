@@ -1,16 +1,16 @@
 {
   "name": "@woolball/commander-token-contracts",
   "description": "Commander token contracts",
-  "version": "4.8.0",
+  "version": "0.0.1",
   "files": [
     "**/*.sol",
     "/build/contracts/*.json",
     "!/test/**/*"
   ],
   "scripts": {
-    "publish": "bash external_scripts/prepare-contracts-package.sh",
+    "publish-linux": "bash external_scripts/prepare-contracts-package.sh",
     "prepare-publish": "external_scripts/prepare.sh",
-    "prepack": "external_scripts/prepack.sh",
+    "prepack-publish": "external_scripts/prepack.sh",
     "compile": "hardhat compile",
     "test": "hardhat test",
     "deploy": "hardhat deploy",
