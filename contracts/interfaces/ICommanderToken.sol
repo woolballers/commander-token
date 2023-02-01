@@ -35,16 +35,16 @@ interface ICommanderToken is IERC721 {
      * Requirements:
      *
      * - `fromAddress` cannot be the zero address.
-     * - `_toNFTContractAddress` MUST be an address of an ITokenOwnableTokens contract.
-     * - `_toTokenId` MUST be an ID of a minted token in toNFTContractAddress (i.e., owner is not 0x0).
-     * - `_tokenId` token must exists in this contract.
+     * - `toNFTContractAddress` MUST be an address of an ITokenOwnableTokens contract.
+     * - `toTokenId` MUST be an ID of a minted token in toNFTContractAddress (i.e., owner is not 0x0).
+     * - `tokenId` token must exists in this contract.
      *
      */
     function safeTransferFrom(
-        address _fromAddress,
-        address _toNFTContractAddress,
-        uint256 _toTokenId,
-        uint256 _tokenId
+        address fromAddress,
+        address toNFTContractAddress,
+        uint256 toTokenId,
+        uint256 tokenId
     ) external;
 
     /**
