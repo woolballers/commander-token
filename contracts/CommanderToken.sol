@@ -12,8 +12,9 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         None
     }
 
-    bool public defaultTransferable;
-    bool public defaultBurnable;
+    //this is done to prevent gas incase there is no change to dependencies or transferable/burnable
+    bool public defaultTransferable = true;
+    bool public defaultBurnable = true;
 
     // EYAL'S ADDITION
     // TODO: by address we mean a contract of type CommanderToken
@@ -176,6 +177,38 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         uint256 _tokenId
     ) public virtual override {}
 
+    //   function _transfer(
+    //     address from,
+    //     address to,
+    //     uint256 tokenId
+    // ) internal virtual override {
+    //     require(ERC721.ownerOf(tokenId) == from, "ERC721: transfer from incorrect owner");
+    //     require(to != address(0), "ERC721: transfer to the zero address");
+
+    //     _beforeTokenTransfer(from, to, tokenId, 1);
+
+    //     // Check that tokenId was not transferred by `_beforeTokenTransfer` hook
+    //     require(ERC721.ownerOf(tokenId) == from, "ERC721: transfer from incorrect owner");
+
+    //     // Clear approvals from the previous owner
+    //     delete _tokenApprovals[tokenId];
+
+    //     unchecked {
+    //         // `_balances[from]` cannot overflow for the same reason as described in `_burn`:
+    //         // `from`'s balance is the number of token held, which is at least one before the current
+    //         // transfer.
+    //         // `_balances[to]` could overflow in the conditions described in `_mint`. That would require
+    //         // all 2**256 token ids to be minted, which in practice is impossible.
+    //         _balances[from] -= 1;
+    //         _balances[to] += 1;
+    //     }
+    //     _owners[tokenId] = to;
+
+    //     emit Transfer(from, to, tokenId);
+
+    //     _afterTokenTransfer(from, to, tokenId, 1);
+    // }
+
     /**
      * @dev Gives permission to an owner of an NFT token to transfer, set dependence or burn `tokenId` token to another account.
      * The approval is cleared when the token is transferred.
@@ -301,11 +334,8 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
             _isApprovedOrOwner(_msgSender(), tokenId),
             "ERC721: caller is not token owner or approved"
         );
+        _checkTokenDefaults(tokenId);
         _tokens[tokenId].transferable = transferable;
-        if (!_tokens[tokenId].exists) {
-            _tokens[tokenId].exists = true;
-            _tokens[tokenId].burnable = defaultBurnable;
-        }
     }
 
     // Set default value of `burnable` field of token
@@ -323,11 +353,9 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
             _isApprovedOrOwner(_msgSender(), tokenId),
             "ERC721: caller is not token owner or approved"
         );
+        _checkTokenDefaults(tokenId);
+
         _tokens[tokenId].burnable = burnable;
-        if (!_tokens[tokenId].exists) {
-            _tokens[tokenId].exists = true;
-            _tokens[tokenId].transferable = defaultTransferable;
-        }
     }
 
     function isTransferable(
@@ -373,6 +401,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
                 isApprovedForAll(_NFTContractAddress, _tokenId, spender) ||
                 getApproved(tokenId) == spender);
         }
+        return false;
     }
 
     /**
@@ -409,8 +438,10 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
      * Tokens start existing when they are minted (`_mint`),
      * and stop existing when they are burned (`_burn`).
      */
-    function _existsAll(uint256 tokenId) internal view virtual returns (bool) {
-        if (_exists(tokenId) != false) {
+    function _exists(
+        uint256 tokenId
+    ) internal view virtual override returns (bool) {
+        if (_ownerOf(tokenId) != address(0)) {
             return true;
         } else {
             return _existsNft(tokenId);
@@ -473,5 +504,13 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         // to do:  fixemit Transfer(address(0), to, tokenId);
 
         // to do: fix _afterTokenTransfer(address(0), to, tokenId, 1);
+    }
+
+    function _checkTokenDefaults(uint256 tokenId) internal virtual {
+        if (!_tokens[tokenId].exists) {
+            _tokens[tokenId].exists = true;
+            _tokens[tokenId].burnable = defaultBurnable;
+            _tokens[tokenId].transferable = defaultTransferable;
+        }
     }
 }

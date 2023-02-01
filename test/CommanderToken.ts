@@ -2,10 +2,14 @@ import { ethers } from "hardhat";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { loadFixture, time } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
+import { TOKEN_NAME, TOKEN_SYMBOL, INITIAL_MINT_COUNT } from "../constants/test";
+
+import {
+    CommanderToken
+} from "../typechain-types";
 
 
-const TokenName = "CommanderTokenTest";
-const TokenSymbol = "CTT";
+
 
 /*
   const TestNftOwner = {
@@ -17,6 +21,34 @@ const TokenSymbol = "CTT";
 // etherjs overloading bug - https://github.com/NomicFoundation/hardhat/issues/2203
 
 
+const mintTokensFixture = async function (testObj: Mocha.Context) {
+    testObj.initialMintCount = INITIAL_MINT_COUNT;
+    testObj.initialMint = [];
+    for (let i = 1; i <= testObj.initialMintCount; i++) { // tokenId to start at 1
+        // is called like that because of etherjs overloading bug - https://github.com/NomicFoundation/hardhat/issues/2203
+        await testObj.collectorContract["mint(address,uint256)"](testObj.contractOwner, i);
+        testObj.initialMint.push(i.toString());
+    }
+}
+
+const comanderTokenSetBurnableDefaultFixture = async function (testObj: Mocha.Context) {
+    // Randomly set defaultBurnable
+    testObj.defaultBurnable = Math.random() < 0.5 ? false : true;
+    testObj.collectorContract["setDefaultBurnable(bool)"](testObj.defaultBurnable);
+}
+
+const comanderTokenSetTransferableDefaultFixture = async function (testObj: Mocha.Context) {
+    // Randomly set defaultTransferable
+    testObj.defaultTransferable = Math.random() < 0.5 ? false : true;
+    testObj.collectorContract["setDefaultTransferable(bool)"](testObj.defaultTransferable);
+}
+
+const getRandomMintedTokenId = function (initiallyMinted: string[]): number {
+    let n = Math.floor(Math.random() * initiallyMinted.length) + 1;
+    return n;
+}
+
+
 // Start test block
 describe('CommanderToken', function () {
     before(async function () {
@@ -25,7 +57,7 @@ describe('CommanderToken', function () {
 
     beforeEach(async function () {
         // deploy the contract
-        this.CommanderToken = await this.CommanderTokenMintTestFactory.deploy(TokenName, TokenSymbol);
+        this.CommanderToken = await this.CommanderTokenMintTestFactory.deploy(TOKEN_NAME, TOKEN_SYMBOL);
         await this.CommanderToken.deployed();
 
         // Get the contractOwner and collector addresses as well as owner account
@@ -38,32 +70,24 @@ describe('CommanderToken', function () {
         // Get the collector contract for signing transaction with collector key
         this.collectorContract = this.CommanderToken.connect(signers[1]);
 
-        // Mint an initial set of NFTs from this collection
-        this.initialMintCount = 3;
-        this.initialMint = [];
-        for (let i = 1; i <= this.initialMintCount; i++) { // tokenId to start at 1
-            await this.collectorContract["mint(address,uint256)"](this.contractOwner, i);
-            this.initialMint.push(i.toString());
-        }
+        await mintTokensFixture(this);
 
-        // Randomly set defaultTransferable
-        this.defaultTransferable = Math.random() < 0.5 ? false : true;
-        this.collectorContract["setDefaultTransferable(bool)"](this.defaultTransferable);
+        comanderTokenSetBurnableDefaultFixture(this);
+        comanderTokenSetTransferableDefaultFixture(this);
 
-        // Randomly set defaultBurnable
-        this.defaultBurnable = Math.random() < 0.5 ? false : true;
-        this.collectorContract["setDefaultBurnable(bool)"](this.defaultBurnable);
+
+
     });
 
     // Test cases
     it('Creates a Commander Token with a name', async function () {
         expect(await this.CommanderToken.name()).to.exist;
-        expect(await this.CommanderToken.name()).to.equal(TokenName);
+        expect(await this.CommanderToken.name()).to.equal(TOKEN_NAME);
     });
 
     it('Creates a Commander Token with a symbol', async function () {
         expect(await this.CommanderToken.symbol()).to.exist;
-        expect(await this.CommanderToken.symbol()).to.equal(TokenSymbol);
+        expect(await this.CommanderToken.symbol()).to.equal(TOKEN_SYMBOL);
     });
 
     it('Mints initial set of NFTs from collection to contractOwner', async function () {
@@ -82,28 +106,62 @@ describe('CommanderToken', function () {
         expect(await this.CommanderToken.ownerOf(tokenId)).to.equal(this.collector);
     });
 
-    it('Is able to make NFTs transferable and check for transferability', async function () {
-        let n = Math.floor(Math.random() * this.initialMint.length) + 1;
+    describe('Transferable & Burnable', function () {
 
-        // Change default transferability of one of the NFTs
-        await this.CommanderToken.connect(this.owner).setTransferable(n, !this.defaultTransferable);
+        it('Is able to make NFTs transferable and check for transferability', async function () {
+            const tokenIdToChange = getRandomMintedTokenId(this.initialMint);
 
-        // Check for transferability
-        for (let i = 1; i <= this.initialMint.length; i++) {
-            expect(await this.CommanderToken.isTransferable(i)).to.equal(i == n ? !this.defaultTransferable : this.defaultTransferable);
-        }
-    });
+            // Change default transferability of one of the NFTs
+            await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToChange, !this.defaultTransferable);
 
-    it('Is able to make NFTs burnable and check for burnability', async function () {
-        let n = Math.floor(Math.random() * this.initialMint.length) + 1;
+            // Check for transferability
+            for (let i = 1; i <= this.initialMint.length; i++) {
+                expect(await this.CommanderToken.isTransferable(i)).to.equal(i == tokenIdToChange ? !this.defaultTransferable : this.defaultTransferable);
+            }
+        });
 
-        // Change default burnability of one of the NFTs
-        await this.CommanderToken.connect(this.owner).setBurnable(n, !this.defaultBurnable);
+        it('Set transferable doesnt effect burnable', async function () {
+            const tokenIdToChange = getRandomMintedTokenId(this.initialMint);
+            const newTransferableValue = !this.defaultTransferable;
 
-        // Check for burnability
-        for (let i = 1; i <= this.initialMint.length; i++) {
-            expect(await this.CommanderToken.isBurnable(i)).to.equal(i == n ? !this.defaultBurnable : this.defaultBurnable);
-        }
+            // Change default transferability of one of the NFTs
+            await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToChange, newTransferableValue);
+
+            // Check for transferability
+            expect(await this.CommanderToken.isTransferable(tokenIdToChange)).to.equal(newTransferableValue);
+
+            // Check for burnability
+            expect(await this.CommanderToken.isBurnable(tokenIdToChange)).to.equal(this.defaultBurnable);
+
+        });
+
+        it('Is able to make NFTs burnable and check for burnability', async function () {
+
+            const tokenIdToChange = getRandomMintedTokenId(this.initialMint);
+
+            // Change default burnability of one of the NFTs
+            await this.CommanderToken.connect(this.owner).setBurnable(tokenIdToChange, !this.defaultBurnable);
+
+            // Check for burnability
+            for (let i = 1; i <= this.initialMint.length; i++) {
+                expect(await this.CommanderToken.isBurnable(i)).to.equal(i == tokenIdToChange ? !this.defaultBurnable : this.defaultBurnable);
+            }
+        });
+
+        it('Set burnable doesnt effect transferable', async function () {
+            const tokenIdToChange = getRandomMintedTokenId(this.initialMint);
+            const newBurnableValue = !this.defaultBurnable;
+
+            // Change default burnability of one of the NFTs
+            await this.CommanderToken.connect(this.owner).setBurnable(tokenIdToChange, newBurnableValue);
+
+            // Check for burnability
+            expect(await this.CommanderToken.isBurnable(tokenIdToChange)).to.equal(newBurnableValue);
+
+            expect(await this.CommanderToken.isTransferable(tokenIdToChange)).to.equal(this.defaultTransferable);
+
+        });
+
     });
 
     // it('Emits a transfer event for newly minted NFTs', async function () {
