@@ -120,7 +120,7 @@ describe('CommanderToken', function () {
             }
         });
 
-        it('Set transferable doesnt effect burnable', async function () {
+        it('Setting transferability doesn\'t affect burnability', async function () {
             const tokenIdToChange = getRandomMintedTokenId(this.initialMint);
             const newTransferableValue = !this.defaultTransferable;
 
@@ -148,7 +148,7 @@ describe('CommanderToken', function () {
             }
         });
 
-        it('Set burnable doesnt effect transferable', async function () {
+        it('Setting burnability doesn\'t affect transferability', async function () {
             const tokenIdToChange = getRandomMintedTokenId(this.initialMint);
             const newBurnableValue = !this.defaultBurnable;
 
