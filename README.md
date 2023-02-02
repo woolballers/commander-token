@@ -1,8 +1,12 @@
-# Commander Token
+<p align="center">
+    <img alt="CommanderToken" title="CommanderToken" src="https://raw.githubusercontent.com/woolballers/commander-token-contracts/main/docs/images/commandertoken.png" width="500">
+</p>
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+# CommanderToken
 
-Try running some of the following tasks:
+## What is CommanderToken?
+
+**CommanderToken** is a new standard for NFT which supplement ERC721 by allowing Tokens to be owned by NFT tokens as well, and not only ownership by eth address.
 
 ```shell
 npx hardhat help
