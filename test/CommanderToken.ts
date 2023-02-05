@@ -171,6 +171,11 @@ describe('CommanderToken', function () {
 
     });
 
+
+    describe('NFT Owned tokens', function () {
+
+    });
+
     // it('Emits a transfer event for newly minted NFTs', async function () {
     //     let tokenId = (this.initialMint.length + 1).toString();
     //     await expect(this.CommanderToken.mintCollectionNFT(this.contractOwner, tokenId))
