@@ -9,8 +9,6 @@ import {
 } from "../typechain-types";
 
 
-
-
 /*
   const TestNftOwner = {
     nftContract: "0x0000000000000000000000000000000000000000",
@@ -52,7 +50,16 @@ const getRandomMintedTokenId = function (initiallyMinted: string[]): number {
 // Start test block
 describe('CommanderToken', function () {
     before(async function () {
-        this.CommanderTokenMintTestFactory = await ethers.getContractFactory('CommanderTokenMintTest');
+
+        const addressesLibrary = await ethers.getContractFactory('AddressesOrNFTs')
+        const addressesLibraryDeployed = await addressesLibrary.deploy()
+        await addressesLibraryDeployed.deployed();
+
+        this.CommanderTokenMintTestFactory = await ethers.getContractFactory('CommanderTokenMintTest', {
+            libraries: {
+                AddressesOrNFTs: addressesLibraryDeployed.address,
+            },
+        });
     });
 
     beforeEach(async function () {
