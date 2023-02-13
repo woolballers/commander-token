@@ -107,9 +107,9 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
     {
         // check that token exists
         bool tokenExists = _existsNft(_tokenId);
-        require(tokenExists == false, "CommanderToken: invalid token ID");
-
+        require(tokenExists == true, "CommanderToken: invalid token ID");
         AddressesOrNFTs.AddressOrNFT memory tokenOwner = _ownerOfNft(_tokenId);
+
         return (tokenOwner.addressOrNftContract, tokenOwner.tokenId);
     }
 
@@ -120,7 +120,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         address to,
         uint256 tokenId
     ) public virtual override(ERC721, IERC721) {
-        address owner = ERC721.ownerOf(tokenId);
+        address owner = CommanderToken.ownerOf(tokenId);
         require(to != owner, "ERC721: approval to current owner");
 
         require(
@@ -277,7 +277,9 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         address _toNFTContractAddress,
         uint256 _toId,
         uint256 _tokenId
-    ) public virtual override {}
+    ) public virtual override {
+        _transfer(_fromAddress, _toNFTContractAddress, _toId, _tokenId);
+    }
 
     /**
      * From NFT to address
@@ -287,7 +289,9 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         uint256 _fromId,
         address _toAddress,
         uint256 _tokenId
-    ) public virtual override {}
+    ) public virtual override {
+        _transfer(_fromNFTContractAddress, _fromId, _toAddress, _tokenId);
+    }
 
     /**
      * From NFT to NFT
@@ -298,7 +302,15 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         address _toNFTContractAddress,
         uint256 _toId,
         uint256 _tokenId
-    ) public virtual override {}
+    ) public virtual override {
+        _transfer(
+            _fromNFTContractAddress,
+            _fromId,
+            _toNFTContractAddress,
+            _toId,
+            _tokenId
+        );
+    }
 
     function safeTransferFrom(
         address _fromAddress,
@@ -414,15 +426,27 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
     }
 
     /**
+     * @dev See {IERC721-ownerOf}.
+     */
+    function ownerOf(
+        uint256 tokenId
+    ) public view virtual override(ERC721, IERC721) returns (address) {
+        address owner = _ownerOf(tokenId);
+        require(owner != address(0), "ERC721: invalid token ID");
+        return owner;
+    }
+
+    /**
      * @dev Returns the owner of the `tokenId`. Does NOT revert if token doesn't exist
      */
     function _ownerOfNft(
         uint256 tokenId
     ) internal view virtual returns (AddressesOrNFTs.AddressOrNFT memory) {
-        if (!_owners[tokenId].isNFT()) {
+        if (_owners[tokenId].isNFT()) {
             return _owners[tokenId];
         } else {
-            return AddressesOrNFTs.AddressOrNFT(address(0), 0);
+            AddressesOrNFTs.AddressOrNFT memory addressOrNFT;
+            return addressOrNFT;
         }
     }
 
@@ -467,7 +491,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         address spender,
         uint256 tokenId
     ) internal view virtual override returns (bool) {
-        address owner = ERC721.ownerOf(tokenId);
+        address owner = CommanderToken.ownerOf(tokenId);
         return (spender == owner ||
             isApprovedForAll(owner, spender) ||
             getApproved(tokenId) == spender);
@@ -591,12 +615,12 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
      * Emits a {Transfer} event.
      */
     function _burn(uint256 tokenId) internal virtual override {
-        address owner = ERC721.ownerOf(tokenId);
+        address owner = CommanderToken.ownerOf(tokenId);
 
         _beforeTokenTransfer(owner, address(0), tokenId, 1);
 
         // Update ownership in case tokenId was transferred by `_beforeTokenTransfer` hook
-        owner = ERC721.ownerOf(tokenId);
+        owner = CommanderToken.ownerOf(tokenId);
 
         // Clear approvals
         delete _tokenApprovals[tokenId];
@@ -630,7 +654,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         uint256 tokenId
     ) internal virtual override {
         require(
-            ERC721.ownerOf(tokenId) == from,
+            CommanderToken.ownerOf(tokenId) == from,
             "ERC721: transfer from incorrect owner"
         );
         require(to != address(0), "ERC721: transfer to the zero address");
@@ -639,7 +663,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
 
         // Check that tokenId was not transferred by `_beforeTokenTransfer` hook
         require(
-            ERC721.ownerOf(tokenId) == from,
+            CommanderToken.ownerOf(tokenId) == from,
             "ERC721: transfer from incorrect owner"
         );
 
@@ -663,6 +687,171 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
     }
 
     /**
+     * @dev Transfers `tokenId` from `from` to `to`.
+     *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
+     *
+     * Requirements:
+     *
+     * - `to` cannot be the zero address.
+     * - `tokenId` token must be owned by `from`.
+     *
+     * Emits a {Transfer} event.
+     */
+    function _transfer(
+        address from,
+        address toNftContract,
+        uint256 toNftTokenId,
+        uint256 tokenId
+    ) internal virtual {
+        require(
+            CommanderToken.ownerOf(tokenId) == from,
+            "ERC721: transfer from incorrect owner"
+        );
+
+        // _beforeTokenTransfer(from, to, tokenId, 1);
+
+        // Check that tokenId was not transferred by `_beforeTokenTransfer` hook
+        // require(
+        //     ERC721.ownerOf(tokenId) == from,
+        //     "ERC721: transfer from incorrect owner"
+        // );
+
+        // Clear approvals from the previous owner
+        delete _tokenApprovals[tokenId];
+
+        unchecked {
+            // `_balances[from]` cannot overflow for the same reason as described in `_burn`:
+            // `from`'s balance is the number of token held, which is at least one before the current
+            // transfer.
+            // `_balances[to]` could overflow in the conditions described in `_mint`. That would require
+            // all 2**256 token ids to be minted, which in practice is impossible.
+            _balances[from][ADDRESS_NOT_NFT] -= 1;
+            _balances[toNftContract][toNftTokenId] += 1;
+        }
+        _owners[tokenId] = AddressesOrNFTs.AddressOrNFT(
+            toNftContract,
+            toNftTokenId
+        );
+
+        //emit Transfer(from, to, tokenId);
+
+        //_afterTokenTransfer(from, to, tokenId, 1);
+    }
+
+    /**
+     * @dev Transfers `tokenId` from `from` to `to`.
+     *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
+     *
+     * Requirements:
+     *
+     * - `to` cannot be the zero address.
+     * - `tokenId` token must be owned by `from`.
+     *
+     * Emits a {Transfer} event.
+     */
+    function _transfer(
+        address fromNftContract,
+        uint256 fromNftTokenId,
+        address to,
+        uint256 tokenId
+    ) internal virtual {
+        (address nftContract, uint256 nftTokenId) = CommanderToken.ownerOfNft(
+            tokenId
+        );
+        require(
+            (nftContract == fromNftContract) && (nftTokenId == fromNftTokenId),
+            "CommanderToken: transfer from incorrect owner"
+        );
+        require(
+            to != address(0),
+            "CommanderToken: transfer to the zero address"
+        );
+
+        //_beforeTokenTransfer(from, to, tokenId, 1);
+
+        // Check that tokenId was not transferred by `_beforeTokenTransfer` hook
+        // require(
+        //     ERC721.ownerOf(tokenId) == from,
+        //     "ERC721: transfer from incorrect owner"
+        // );
+
+        // Clear approvals from the previous owner
+        delete _tokenApprovals[tokenId];
+
+        unchecked {
+            // `_balances[from]` cannot overflow for the same reason as described in `_burn`:
+            // `from`'s balance is the number of token held, which is at least one before the current
+            // transfer.
+            // `_balances[to]` could overflow in the conditions described in `_mint`. That would require
+            // all 2**256 token ids to be minted, which in practice is impossible.
+            _balances[fromNftContract][fromNftTokenId] -= 1;
+            _balances[to][ADDRESS_NOT_NFT] += 1;
+        }
+        _owners[tokenId] = AddressesOrNFTs.AddressOrNFT(to, ADDRESS_NOT_NFT);
+
+        //emit Transfer(from, to, tokenId);
+
+        //_afterTokenTransfer(from, to, tokenId, 1);
+    }
+
+    /**
+     * @dev Transfers `tokenId` from `from` to `to`.
+     *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
+     *
+     * Requirements:
+     *
+     * - `to` cannot be the zero address.
+     * - `tokenId` token must be owned by `from`.
+     *
+     * Emits a {Transfer} event.
+     */
+    function _transfer(
+        address fromNftContract,
+        uint256 fromNftTokenId,
+        address toNftContract,
+        uint256 toNftTokenId,
+        uint256 tokenId
+    ) internal virtual {
+        (address nftContract, uint256 nftTokenId) = CommanderToken.ownerOfNft(
+            tokenId
+        );
+        require(
+            (nftContract == fromNftContract) && (nftTokenId == fromNftTokenId),
+            "CommanderToken: transfer from incorrect owner"
+        );
+        //require(to != address(0), "ERC721: transfer to the zero address");
+
+        //_beforeTokenTransfer(from, to, tokenId, 1);
+
+        // Check that tokenId was not transferred by `_beforeTokenTransfer` hook
+        // require(
+        //     ERC721.ownerOf(tokenId) == from,
+        //     "ERC721: transfer from incorrect owner"
+        // );
+
+        // Clear approvals from the previous owner
+        delete _tokenApprovals[tokenId];
+
+        unchecked {
+            // `_balances[from]` cannot overflow for the same reason as described in `_burn`:
+            // `from`'s balance is the number of token held, which is at least one before the current
+            // transfer.
+            // `_balances[to]` could overflow in the conditions described in `_mint`. That would require
+            // all 2**256 token ids to be minted, which in practice is impossible.
+            _balances[fromNftContract][fromNftTokenId] -= 1;
+            _balances[toNftContract][toNftTokenId] += 1;
+        }
+        _owners[tokenId] = AddressesOrNFTs.AddressOrNFT(
+            toNftContract,
+            toNftTokenId
+        );
+
+        //emit Transfer(from, to, tokenId);
+
+        //_afterTokenTransfer(from, to, tokenId, 1);
+    }
+
+    /**
      * @dev Approve `to` to operate on `tokenId`
      *
      * Emits an {Approval} event.
@@ -672,7 +861,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
             to,
             ADDRESS_NOT_NFT
         );
-        emit Approval(ERC721.ownerOf(tokenId), to, tokenId);
+        emit Approval(CommanderToken.ownerOf(tokenId), to, tokenId);
     }
 
     /**
@@ -739,14 +928,18 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
      */
     function setDependence(
         uint256 tokenId,
-        ICommanderToken dependableContractAddress,
+        address dependableContractAddress,
         uint256 dependentTokenId,
         bool dependent
-    ) public virtual override {
+    ) public virtual {
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: caller is not token owner or approved"
+        );
         _checkTokenDefaults(tokenId);
-        _tokens[tokenId].dependencies[address(dependableContractAddress)][
-                dependentTokenId
-            ] = dependent;
+        _tokens[tokenId].dependencies[dependableContractAddress][
+            dependentTokenId
+        ] = dependent;
     }
 
     // EYAL'S ADDITION
@@ -812,13 +1005,6 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
     function isBurnable(
         uint256 _tokenId
     ) public view virtual override returns (bool) {
-        return
-            _tokens[_tokenId].exists
-                ? _tokens[_tokenId].burnable
-                : defaultBurnable;
-    }
-
-    function isBurnable2(uint256 _tokenId) public view virtual returns (bool) {
         return
             _tokens[_tokenId].exists
                 ? _tokens[_tokenId].burnable

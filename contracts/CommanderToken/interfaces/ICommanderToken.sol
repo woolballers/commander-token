@@ -186,7 +186,7 @@ interface ICommanderToken is IERC721 {
      */
     function setDependence(
         uint256 _tokenId,
-        ICommanderToken _dependableContractAddress,
+        address _dependableContractAddress,
         uint256 _dependentTokenId,
         bool _dependent
     ) external;

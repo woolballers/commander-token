@@ -14,7 +14,7 @@ contract CommanderTokenMintTest is CommanderToken {
         _mint(to, tokenId);
     }
 
-    function mint(
+    function mintNft(
         address toNFTContract,
         uint256 toNFTTokenId,
         uint256 tokenId
