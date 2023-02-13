@@ -6,6 +6,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import "@typechain/hardhat";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
+import "solidity-docgen";
 
 module.exports = {
   defaultNetwork: "hardhat",
@@ -41,4 +42,5 @@ module.exports = {
     outDir: "typechain-types",
     target: "ethers-v5",
   },
+  docgen: require('./docs/config'),
 };

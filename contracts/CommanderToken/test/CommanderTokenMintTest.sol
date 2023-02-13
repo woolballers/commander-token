@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "../CommanderTokenV2.sol";
+import "../CommanderToken.sol";
 
-contract CommanderTokenMintTest is CommanderTokenV2 {
+contract CommanderTokenMintTest is CommanderToken {
     constructor(
         string memory name_,
         string memory symbol_
-    ) CommanderTokenV2(name_, symbol_) {}
+    ) CommanderToken(name_, symbol_) {}
 
     function mint(address to, uint256 tokenId) external {
         // to do: change to _safeMint

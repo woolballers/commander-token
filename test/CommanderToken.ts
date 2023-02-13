@@ -171,6 +171,43 @@ describe('CommanderToken', function () {
 
     });
 
+    describe('Dependence', function () {
+
+
+        it('Default dependence', async function () {
+            const tokenIdToChange = 0;
+
+            const defaultDependence = false;
+            const dependableContractAddress = this.CommanderToken.address;
+            const dependentTokenId = 2;
+
+            expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
+
+
+
+
+        });
+
+        it('Setting dependence', async function () {
+            const tokenIdToChange = 0;
+            const defaultDependence = false;
+            const isDependent = true;
+            const dependableContractAddress = this.CommanderToken.address;
+            const dependentTokenId = 2;
+
+            expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
+
+            // Change default burnability of one of the NFTs
+            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId, isDependent);
+
+
+            expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(isDependent);
+
+
+        });
+
+    });
+
 
     describe('NFT Owned tokens', function () {
 

@@ -15,7 +15,7 @@ import "./interfaces/ICommanderToken.sol";
 /**
  * @dev Implementation of CommanderToken Standard
  */
-contract CommanderTokenV2 is ICommanderToken, ERC721, Ownable {
+contract CommanderToken is ICommanderToken, ERC721, Ownable {
     using Address for address;
     using Strings for uint256;
     using AddressesOrNFTs for AddressesOrNFTs.AddressOrNFT;
@@ -270,6 +270,7 @@ contract CommanderTokenV2 is ICommanderToken, ERC721, Ownable {
 
     /**
      * From address to NFT
+     *
      */
     function transferFrom(
         address _fromAddress,
@@ -733,25 +734,30 @@ contract CommanderTokenV2 is ICommanderToken, ERC721, Ownable {
      * Let transfer and burn be dependent on another token.
      * In this caes you cannot transfer or burn your token unless all the tokens you depend on
      * are transferable or burnable.
-     * dependency only works if '_dependentTokenId' from '_dependableContractAddress' is owned by uint256 '_tokenId'.
+     * dependency only works if 'dependentTokenId' from 'dependableContractAddress' is owned by uint256 '_tokenId'.
      * Caller must be the owner, opertaor or approved to use _tokenId.
      */
     function setDependence(
-        uint256 _tokenId,
-        ICommanderToken _dependableContractAddress,
-        uint256 _dependentTokenId,
-        bool _dependent
-    ) public virtual override {}
+        uint256 tokenId,
+        ICommanderToken dependableContractAddress,
+        uint256 dependentTokenId,
+        bool dependent
+    ) public virtual override {
+        _checkTokenDefaults(tokenId);
+        _tokens[tokenId].dependencies[address(dependableContractAddress)][
+                dependentTokenId
+            ] = dependent;
+    }
 
     // EYAL'S ADDITION
     function isDependent(
-        uint256 _tokenId,
-        address _dependableContractAddress,
-        uint256 _dependentTokenId
+        uint256 tokenId,
+        address dependableContractAddress,
+        uint256 dependentTokenId
     ) public view virtual override returns (bool) {
         return
-            _tokens[_tokenId].dependencies[_dependableContractAddress][
-                _dependentTokenId
+            _tokens[tokenId].dependencies[dependableContractAddress][
+                dependentTokenId
             ];
     }
 
@@ -806,6 +812,13 @@ contract CommanderTokenV2 is ICommanderToken, ERC721, Ownable {
     function isBurnable(
         uint256 _tokenId
     ) public view virtual override returns (bool) {
+        return
+            _tokens[_tokenId].exists
+                ? _tokens[_tokenId].burnable
+                : defaultBurnable;
+    }
+
+    function isBurnable2(uint256 _tokenId) public view virtual returns (bool) {
         return
             _tokens[_tokenId].exists
                 ? _tokens[_tokenId].burnable

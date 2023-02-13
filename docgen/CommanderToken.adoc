@@ -1,0 +1,1142 @@
+:github-icon: pass:[<svg class="icon"><use href="#github-icon"/></svg>]
+:ICommanderToken: pass:normal[xref:CommanderToken.adoc#ICommanderToken[`ICommanderToken`]]
+:AddressesOrNFTs: pass:normal[xref:CommanderToken.adoc#AddressesOrNFTs[`AddressesOrNFTs`]]
+:CommanderTokenV2: pass:normal[xref:CommanderToken.adoc#CommanderTokenV2[`CommanderTokenV2`]]
+:CommanderToken: pass:normal[xref:CommanderToken.adoc#CommanderToken[`CommanderToken`]]
+:xref-ICommanderToken-balanceOf-address-uint256-: xref:CommanderToken.adoc#ICommanderToken-balanceOf-address-uint256-
+:xref-ICommanderToken-ownerOfNft-uint256-: xref:CommanderToken.adoc#ICommanderToken-ownerOfNft-uint256-
+:xref-ICommanderToken-safeTransferFrom-address-address-uint256-uint256-: xref:CommanderToken.adoc#ICommanderToken-safeTransferFrom-address-address-uint256-uint256-
+:xref-ICommanderToken-safeTransferFrom-address-uint256-address-uint256-: xref:CommanderToken.adoc#ICommanderToken-safeTransferFrom-address-uint256-address-uint256-
+:xref-ICommanderToken-safeTransferFrom-address-uint256-address-uint256-uint256-: xref:CommanderToken.adoc#ICommanderToken-safeTransferFrom-address-uint256-address-uint256-uint256-
+:xref-ICommanderToken-transferFrom-address-address-uint256-uint256-: xref:CommanderToken.adoc#ICommanderToken-transferFrom-address-address-uint256-uint256-
+:xref-ICommanderToken-transferFrom-address-uint256-address-uint256-: xref:CommanderToken.adoc#ICommanderToken-transferFrom-address-uint256-address-uint256-
+:xref-ICommanderToken-transferFrom-address-uint256-address-uint256-uint256-: xref:CommanderToken.adoc#ICommanderToken-transferFrom-address-uint256-address-uint256-uint256-
+:xref-ICommanderToken-approve-address-uint256-uint256-: xref:CommanderToken.adoc#ICommanderToken-approve-address-uint256-uint256-
+:xref-ICommanderToken-getApprovedNft-uint256-: xref:CommanderToken.adoc#ICommanderToken-getApprovedNft-uint256-
+:xref-ICommanderToken-setApprovalForAll-address-uint256-bool-: xref:CommanderToken.adoc#ICommanderToken-setApprovalForAll-address-uint256-bool-
+:xref-ICommanderToken-isApprovedForAll-address-address-uint256-: xref:CommanderToken.adoc#ICommanderToken-isApprovedForAll-address-address-uint256-
+:xref-ICommanderToken-isApprovedForAll-address-uint256-address-: xref:CommanderToken.adoc#ICommanderToken-isApprovedForAll-address-uint256-address-
+:xref-ICommanderToken-setDependence-uint256-contract-ICommanderToken-uint256-bool-: xref:CommanderToken.adoc#ICommanderToken-setDependence-uint256-contract-ICommanderToken-uint256-bool-
+:xref-ICommanderToken-isDependent-uint256-address-uint256-: xref:CommanderToken.adoc#ICommanderToken-isDependent-uint256-address-uint256-
+:xref-ICommanderToken-setBurnable-uint256-bool-: xref:CommanderToken.adoc#ICommanderToken-setBurnable-uint256-bool-
+:xref-ICommanderToken-setTransferable-uint256-bool-: xref:CommanderToken.adoc#ICommanderToken-setTransferable-uint256-bool-
+:xref-ICommanderToken-isTransferable-uint256-: xref:CommanderToken.adoc#ICommanderToken-isTransferable-uint256-
+:xref-ICommanderToken-isBurnable-uint256-: xref:CommanderToken.adoc#ICommanderToken-isBurnable-uint256-
+:xref-ICommanderToken-burn-uint256-: xref:CommanderToken.adoc#ICommanderToken-burn-uint256-
+:xref-CommanderTokenV2-constructor-string-string-: xref:CommanderToken.adoc#CommanderTokenV2-constructor-string-string-
+:xref-CommanderTokenV2-supportsInterface-bytes4-: xref:CommanderToken.adoc#CommanderTokenV2-supportsInterface-bytes4-
+:xref-CommanderTokenV2-balanceOf-address-: xref:CommanderToken.adoc#CommanderTokenV2-balanceOf-address-
+:xref-CommanderTokenV2-balanceOf-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-balanceOf-address-uint256-
+:xref-CommanderTokenV2-burn-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-burn-uint256-
+:xref-CommanderTokenV2-ownerOfNft-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-ownerOfNft-uint256-
+:xref-CommanderTokenV2-approve-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-approve-address-uint256-
+:xref-CommanderTokenV2-getApproved-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-getApproved-uint256-
+:xref-CommanderTokenV2-setApprovalForAll-address-bool-: xref:CommanderToken.adoc#CommanderTokenV2-setApprovalForAll-address-bool-
+:xref-CommanderTokenV2-isApprovedForAll-address-address-: xref:CommanderToken.adoc#CommanderTokenV2-isApprovedForAll-address-address-
+:xref-CommanderTokenV2-approve-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-approve-address-uint256-uint256-
+:xref-CommanderTokenV2-getApprovedNft-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-getApprovedNft-uint256-
+:xref-CommanderTokenV2-setApprovalForAll-address-uint256-bool-: xref:CommanderToken.adoc#CommanderTokenV2-setApprovalForAll-address-uint256-bool-
+:xref-CommanderTokenV2-isApprovedForAll-address-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-isApprovedForAll-address-address-uint256-
+:xref-CommanderTokenV2-isApprovedForAll-address-uint256-address-: xref:CommanderToken.adoc#CommanderTokenV2-isApprovedForAll-address-uint256-address-
+:xref-CommanderTokenV2-transferFrom-address-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-transferFrom-address-address-uint256-
+:xref-CommanderTokenV2-transferFrom-address-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-transferFrom-address-address-uint256-uint256-
+:xref-CommanderTokenV2-transferFrom-address-uint256-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-transferFrom-address-uint256-address-uint256-
+:xref-CommanderTokenV2-transferFrom-address-uint256-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-transferFrom-address-uint256-address-uint256-uint256-
+:xref-CommanderTokenV2-safeTransferFrom-address-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-safeTransferFrom-address-address-uint256-uint256-
+:xref-CommanderTokenV2-safeTransferFrom-address-uint256-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-safeTransferFrom-address-uint256-address-uint256-
+:xref-CommanderTokenV2-safeTransferFrom-address-uint256-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-safeTransferFrom-address-uint256-address-uint256-uint256-
+:xref-CommanderTokenV2-safeTransferFrom-address-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-safeTransferFrom-address-address-uint256-
+:xref-CommanderTokenV2-safeTransferFrom-address-address-uint256-bytes-: xref:CommanderToken.adoc#CommanderTokenV2-safeTransferFrom-address-address-uint256-bytes-
+:xref-CommanderTokenV2-_safeTransfer-address-address-uint256-bytes-: xref:CommanderToken.adoc#CommanderTokenV2-_safeTransfer-address-address-uint256-bytes-
+:xref-CommanderTokenV2-_ownerOf-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_ownerOf-uint256-
+:xref-CommanderTokenV2-_ownerOfNft-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_ownerOfNft-uint256-
+:xref-CommanderTokenV2-_exists-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_exists-uint256-
+:xref-CommanderTokenV2-_existsNft-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_existsNft-uint256-
+:xref-CommanderTokenV2-_isApprovedOrOwner-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_isApprovedOrOwner-address-uint256-
+:xref-CommanderTokenV2-_safeMint-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_safeMint-address-uint256-
+:xref-CommanderTokenV2-_safeMint-address-uint256-bytes-: xref:CommanderToken.adoc#CommanderTokenV2-_safeMint-address-uint256-bytes-
+:xref-CommanderTokenV2-_mint-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_mint-address-uint256-
+:xref-CommanderTokenV2-_mint-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_mint-address-uint256-uint256-
+:xref-CommanderTokenV2-_burn-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_burn-uint256-
+:xref-CommanderTokenV2-_transfer-address-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_transfer-address-address-uint256-
+:xref-CommanderTokenV2-_approve-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_approve-address-uint256-
+:xref-CommanderTokenV2-_setApprovalForAll-address-address-bool-: xref:CommanderToken.adoc#CommanderTokenV2-_setApprovalForAll-address-address-bool-
+:xref-CommanderTokenV2-_beforeTokenTransfer-address-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_beforeTokenTransfer-address-address-uint256-uint256-
+:xref-CommanderTokenV2-_checkTokenDefaults-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-_checkTokenDefaults-uint256-
+:xref-CommanderTokenV2-setDependence-uint256-contract-ICommanderToken-uint256-bool-: xref:CommanderToken.adoc#CommanderTokenV2-setDependence-uint256-contract-ICommanderToken-uint256-bool-
+:xref-CommanderTokenV2-isDependent-uint256-address-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-isDependent-uint256-address-uint256-
+:xref-CommanderTokenV2-setDefaultTransferable-bool-: xref:CommanderToken.adoc#CommanderTokenV2-setDefaultTransferable-bool-
+:xref-CommanderTokenV2-setTransferable-uint256-bool-: xref:CommanderToken.adoc#CommanderTokenV2-setTransferable-uint256-bool-
+:xref-CommanderTokenV2-setDefaultBurnable-bool-: xref:CommanderToken.adoc#CommanderTokenV2-setDefaultBurnable-bool-
+:xref-CommanderTokenV2-setBurnable-uint256-bool-: xref:CommanderToken.adoc#CommanderTokenV2-setBurnable-uint256-bool-
+:xref-CommanderTokenV2-isTransferable-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-isTransferable-uint256-
+:xref-CommanderTokenV2-isBurnable-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-isBurnable-uint256-
+:xref-CommanderTokenV2-isBurnable2-uint256-: xref:CommanderToken.adoc#CommanderTokenV2-isBurnable2-uint256-
+:xref-CommanderToken-constructor-string-string-: xref:CommanderToken.adoc#CommanderToken-constructor-string-string-
+:xref-CommanderToken-balanceOf-address-uint256-: xref:CommanderToken.adoc#CommanderToken-balanceOf-address-uint256-
+:xref-CommanderToken-ownerOfNft-uint256-: xref:CommanderToken.adoc#CommanderToken-ownerOfNft-uint256-
+:xref-CommanderToken-safeTransferFrom-address-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderToken-safeTransferFrom-address-address-uint256-uint256-
+:xref-CommanderToken-safeTransferFrom-address-uint256-address-uint256-: xref:CommanderToken.adoc#CommanderToken-safeTransferFrom-address-uint256-address-uint256-
+:xref-CommanderToken-safeTransferFrom-address-uint256-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderToken-safeTransferFrom-address-uint256-address-uint256-uint256-
+:xref-CommanderToken-transferFrom-address-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderToken-transferFrom-address-address-uint256-uint256-
+:xref-CommanderToken-transferFrom-address-uint256-address-uint256-: xref:CommanderToken.adoc#CommanderToken-transferFrom-address-uint256-address-uint256-
+:xref-CommanderToken-transferFrom-address-uint256-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderToken-transferFrom-address-uint256-address-uint256-uint256-
+:xref-CommanderToken-approve-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderToken-approve-address-uint256-uint256-
+:xref-CommanderToken-getApprovedNft-uint256-: xref:CommanderToken.adoc#CommanderToken-getApprovedNft-uint256-
+:xref-CommanderToken-setApprovalForAll-address-uint256-bool-: xref:CommanderToken.adoc#CommanderToken-setApprovalForAll-address-uint256-bool-
+:xref-CommanderToken-isApprovedForAll-address-address-uint256-: xref:CommanderToken.adoc#CommanderToken-isApprovedForAll-address-address-uint256-
+:xref-CommanderToken-isApprovedForAll-address-uint256-address-: xref:CommanderToken.adoc#CommanderToken-isApprovedForAll-address-uint256-address-
+:xref-CommanderToken-setDependence-uint256-contract-ICommanderToken-uint256-bool-: xref:CommanderToken.adoc#CommanderToken-setDependence-uint256-contract-ICommanderToken-uint256-bool-
+:xref-CommanderToken-isDependent-uint256-address-uint256-: xref:CommanderToken.adoc#CommanderToken-isDependent-uint256-address-uint256-
+:xref-CommanderToken-setDefaultTransferable-bool-: xref:CommanderToken.adoc#CommanderToken-setDefaultTransferable-bool-
+:xref-CommanderToken-setTransferable-uint256-bool-: xref:CommanderToken.adoc#CommanderToken-setTransferable-uint256-bool-
+:xref-CommanderToken-setDefaultBurnable-bool-: xref:CommanderToken.adoc#CommanderToken-setDefaultBurnable-bool-
+:xref-CommanderToken-setBurnable-uint256-bool-: xref:CommanderToken.adoc#CommanderToken-setBurnable-uint256-bool-
+:xref-CommanderToken-isTransferable-uint256-: xref:CommanderToken.adoc#CommanderToken-isTransferable-uint256-
+:xref-CommanderToken-isBurnable-uint256-: xref:CommanderToken.adoc#CommanderToken-isBurnable-uint256-
+:xref-CommanderToken-burn-uint256-: xref:CommanderToken.adoc#CommanderToken-burn-uint256-
+:xref-CommanderToken-_isApprovedOrOwner-address-uint256-: xref:CommanderToken.adoc#CommanderToken-_isApprovedOrOwner-address-uint256-
+:xref-CommanderToken-_ownerOfNft-uint256-: xref:CommanderToken.adoc#CommanderToken-_ownerOfNft-uint256-
+:xref-CommanderToken-_exists-uint256-: xref:CommanderToken.adoc#CommanderToken-_exists-uint256-
+:xref-CommanderToken-_existsNft-uint256-: xref:CommanderToken.adoc#CommanderToken-_existsNft-uint256-
+:xref-CommanderToken-_typeOf-uint256-: xref:CommanderToken.adoc#CommanderToken-_typeOf-uint256-
+:xref-CommanderToken-_mint-address-uint256-uint256-: xref:CommanderToken.adoc#CommanderToken-_mint-address-uint256-uint256-
+:xref-CommanderToken-_checkTokenDefaults-uint256-: xref:CommanderToken.adoc#CommanderToken-_checkTokenDefaults-uint256-
+:ICommanderToken: pass:normal[xref:CommanderToken.adoc#ICommanderToken[`ICommanderToken`]]
+:xref-AddressesOrNFTs-isNFT-struct-AddressesOrNFTs-AddressOrNFT-: xref:CommanderToken.adoc#AddressesOrNFTs-isNFT-struct-AddressesOrNFTs-AddressOrNFT-
+:xref-AddressesOrNFTs-getAddress-struct-AddressesOrNFTs-AddressOrNFT-: xref:CommanderToken.adoc#AddressesOrNFTs-getAddress-struct-AddressesOrNFTs-AddressOrNFT-
+:xref-AddressesOrNFTs-toString-struct-AddressesOrNFTs-AddressOrNFT-: xref:CommanderToken.adoc#AddressesOrNFTs-toString-struct-AddressesOrNFTs-AddressOrNFT-
+= CommanderToken
+
+[.readme-notice]
+
+The EIP specifies four interfaces:
+
+* {ICommanderToken}: Core functionality required in all compliant implementation.
+
+
+OpenZeppelin Contracts provides implementations of all four interfaces:
+
+* {AddressesOrNFTs}: The core and metadata extensions, with a base URI mechanism.
+* {CommanderTokenV2}: The enumerable extension.
+* {CommanderToken}: A bare bones implementation of the receiver interface.
+
+
+== Core
+
+    :balanceOf: pass:normal[xref:#ICommanderToken-balanceOf-address-uint256-[`++balanceOf++`]]
+    :ownerOfNft: pass:normal[xref:#ICommanderToken-ownerOfNft-uint256-[`++ownerOfNft++`]]
+    :safeTransferFrom: pass:normal[xref:#ICommanderToken-safeTransferFrom-address-address-uint256-uint256-[`++safeTransferFrom++`]]
+    :safeTransferFrom: pass:normal[xref:#ICommanderToken-safeTransferFrom-address-uint256-address-uint256-[`++safeTransferFrom++`]]
+    :safeTransferFrom: pass:normal[xref:#ICommanderToken-safeTransferFrom-address-uint256-address-uint256-uint256-[`++safeTransferFrom++`]]
+    :transferFrom: pass:normal[xref:#ICommanderToken-transferFrom-address-address-uint256-uint256-[`++transferFrom++`]]
+    :transferFrom: pass:normal[xref:#ICommanderToken-transferFrom-address-uint256-address-uint256-[`++transferFrom++`]]
+    :transferFrom: pass:normal[xref:#ICommanderToken-transferFrom-address-uint256-address-uint256-uint256-[`++transferFrom++`]]
+    :approve: pass:normal[xref:#ICommanderToken-approve-address-uint256-uint256-[`++approve++`]]
+    :getApprovedNft: pass:normal[xref:#ICommanderToken-getApprovedNft-uint256-[`++getApprovedNft++`]]
+    :setApprovalForAll: pass:normal[xref:#ICommanderToken-setApprovalForAll-address-uint256-bool-[`++setApprovalForAll++`]]
+    :isApprovedForAll: pass:normal[xref:#ICommanderToken-isApprovedForAll-address-address-uint256-[`++isApprovedForAll++`]]
+    :isApprovedForAll: pass:normal[xref:#ICommanderToken-isApprovedForAll-address-uint256-address-[`++isApprovedForAll++`]]
+    :setDependence: pass:normal[xref:#ICommanderToken-setDependence-uint256-contract-ICommanderToken-uint256-bool-[`++setDependence++`]]
+    :isDependent: pass:normal[xref:#ICommanderToken-isDependent-uint256-address-uint256-[`++isDependent++`]]
+    :setBurnable: pass:normal[xref:#ICommanderToken-setBurnable-uint256-bool-[`++setBurnable++`]]
+    :setTransferable: pass:normal[xref:#ICommanderToken-setTransferable-uint256-bool-[`++setTransferable++`]]
+    :isTransferable: pass:normal[xref:#ICommanderToken-isTransferable-uint256-[`++isTransferable++`]]
+    :isBurnable: pass:normal[xref:#ICommanderToken-isBurnable-uint256-[`++isBurnable++`]]
+    :burn: pass:normal[xref:#ICommanderToken-burn-uint256-[`++burn++`]]
+
+[.contract] [[ICommanderToken]] === `++ICommanderToken++`
+link:https://github.com/OpenZeppelin/commander-token-contracts/blob/v0.0.1/contracts/CommanderToken/interfaces/ICommanderToken.sol[{github-icon},role=heading-link]
+[.hljs-theme-light.nopadding] ```solidity import "@woolballers/contracts/CommanderToken/interfaces/ICommanderToken.sol";
+```
+
+An interface extending ERC721 to allow owner to be another NFT, from any collection
+
+    [.contract-index] .Functions --
+            * {xref-ICommanderToken-balanceOf-address-uint256-}[`++balanceOf(_NFTContract, _ownerId)++`]
+            * {xref-ICommanderToken-ownerOfNft-uint256-}[`++ownerOfNft(_tokenId)++`]
+            * {xref-ICommanderToken-safeTransferFrom-address-address-uint256-uint256-}[`++safeTransferFrom(fromAddress, toNFTContractAddress, toTokenId, tokenId)++`]
+            * {xref-ICommanderToken-safeTransferFrom-address-uint256-address-uint256-}[`++safeTransferFrom(_fromNFTContractAddress, _fromTokenId, _toAddress, _tokenId)++`]
+            * {xref-ICommanderToken-safeTransferFrom-address-uint256-address-uint256-uint256-}[`++safeTransferFrom(_fromNFTContractAddress, _fromTokenId, _toNFTContractAddress, _toTokenId, _tokenId)++`]
+            * {xref-ICommanderToken-transferFrom-address-address-uint256-uint256-}[`++transferFrom(_fromAddress, _toNFTContractAddress, _toId, _tokenId)++`]
+            * {xref-ICommanderToken-transferFrom-address-uint256-address-uint256-}[`++transferFrom(_fromNFTContractAddress, _fromId, _toAddress, _tokenId)++`]
+            * {xref-ICommanderToken-transferFrom-address-uint256-address-uint256-uint256-}[`++transferFrom(_fromNFTContractAddress, _fromId, _toNFTContractAddress, _toId, _tokenId)++`]
+            * {xref-ICommanderToken-approve-address-uint256-uint256-}[`++approve(_toNFTContractAddress, _approvedId, _tokenId)++`]
+            * {xref-ICommanderToken-getApprovedNft-uint256-}[`++getApprovedNft(tokenId)++`]
+            * {xref-ICommanderToken-setApprovalForAll-address-uint256-bool-}[`++setApprovalForAll(_operatorNFTContractAddress, _operatorId, _approved)++`]
+            * {xref-ICommanderToken-isApprovedForAll-address-address-uint256-}[`++isApprovedForAll(owner, _operatorNFTContractAddress, _operatorId)++`]
+            * {xref-ICommanderToken-isApprovedForAll-address-uint256-address-}[`++isApprovedForAll(ownerNftContractAddress, ownerNftTokenId, operator)++`]
+            * {xref-ICommanderToken-setDependence-uint256-contract-ICommanderToken-uint256-bool-}[`++setDependence(_tokenId, _dependableContractAddress, _dependentTokenId, _dependent)++`]
+            * {xref-ICommanderToken-isDependent-uint256-address-uint256-}[`++isDependent(_tokenId, _dependableContractAddress, _dependentTokenId)++`]
+            * {xref-ICommanderToken-setBurnable-uint256-bool-}[`++setBurnable(_tokenId, _burnable)++`]
+            * {xref-ICommanderToken-setTransferable-uint256-bool-}[`++setTransferable(_tokenId, _transferable)++`]
+            * {xref-ICommanderToken-isTransferable-uint256-}[`++isTransferable(_tokenId)++`]
+            * {xref-ICommanderToken-isBurnable-uint256-}[`++isBurnable(_tokenId)++`]
+            * {xref-ICommanderToken-burn-uint256-}[`++burn(tokenId)++`]
+
+            [.contract-subindex-inherited] .IERC721
+            * {xref-IERC721-balanceOf-address-}[`++balanceOf(owner)++`]
+            * {xref-IERC721-ownerOf-uint256-}[`++ownerOf(tokenId)++`]
+            * {xref-IERC721-safeTransferFrom-address-address-uint256-bytes-}[`++safeTransferFrom(from, to, tokenId, data)++`]
+            * {xref-IERC721-safeTransferFrom-address-address-uint256-}[`++safeTransferFrom(from, to, tokenId)++`]
+            * {xref-IERC721-transferFrom-address-address-uint256-}[`++transferFrom(from, to, tokenId)++`]
+            * {xref-IERC721-approve-address-uint256-}[`++approve(to, tokenId)++`]
+            * {xref-IERC721-setApprovalForAll-address-bool-}[`++setApprovalForAll(operator, _approved)++`]
+            * {xref-IERC721-getApproved-uint256-}[`++getApproved(tokenId)++`]
+            * {xref-IERC721-isApprovedForAll-address-address-}[`++isApprovedForAll(owner, operator)++`]
+
+            [.contract-subindex-inherited] .IERC165
+            * {xref-IERC165-supportsInterface-bytes4-}[`++supportsInterface(interfaceId)++`]
+
+    --
+
+    [.contract-index] .Events --
+
+            [.contract-subindex-inherited] .IERC721
+            * {xref-IERC721-Transfer-address-address-uint256-}[`++Transfer(from, to, tokenId)++`]
+            * {xref-IERC721-Approval-address-address-uint256-}[`++Approval(owner, approved, tokenId)++`]
+            * {xref-IERC721-ApprovalForAll-address-address-bool-}[`++ApprovalForAll(owner, operator, approved)++`]
+
+            [.contract-subindex-inherited] .IERC165
+
+    --
+
+    [.contract-item] [[ICommanderToken-balanceOf-address-uint256-]] ==== `[.contract-item-name]#++balanceOf++#++(address _NFTContract, uint256 _ownerId) → uint256 balance++` [.item-kind]#external#
+
+    Returns the number of tokens in ``owner``'s account.
+
+    [.contract-item] [[ICommanderToken-ownerOfNft-uint256-]] ==== `[.contract-item-name]#++ownerOfNft++#++(uint256 _tokenId) → address NFTContractAddress, uint256 owner++` [.item-kind]#external#
+
+    Returns the NFT owner of the `tokenId` token.
+If the token is not owned by another  NFT, it returns (0x, 0).
+
+Requirements:
+
+- `tokenId` must exist.
+
+    [.contract-item] [[ICommanderToken-safeTransferFrom-address-address-uint256-uint256-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address fromAddress, address toNFTContractAddress, uint256 toTokenId, uint256 tokenId)++` [.item-kind]#external#
+
+    Safely transfers `tokenId` to the posession of an NFT token
+
+Requirements:
+
+- `fromAddress` cannot be the zero address.
+- `toNFTContractAddress` MUST be an address of an ITokenOwnableTokens contract.
+- `toTokenId` MUST be an ID of a minted token in toNFTContractAddress (i.e., owner is not 0x0).
+- `tokenId` token must exists in this contract.
+
+    [.contract-item] [[ICommanderToken-safeTransferFrom-address-uint256-address-uint256-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address _fromNFTContractAddress, uint256 _fromTokenId, address _toAddress, uint256 _tokenId)++` [.item-kind]#external#
+
+    Safely transfers `tokenId` to the posession of an NFT token
+
+Requirements:
+
+    [.contract-item] [[ICommanderToken-safeTransferFrom-address-uint256-address-uint256-uint256-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address _fromNFTContractAddress, uint256 _fromTokenId, address _toNFTContractAddress, uint256 _toTokenId, uint256 _tokenId)++` [.item-kind]#external#
+
+    Safely transfers `tokenId` to the posession of an NFT token
+
+Requirements:
+
+    [.contract-item] [[ICommanderToken-transferFrom-address-address-uint256-uint256-]] ==== `[.contract-item-name]#++transferFrom++#++(address _fromAddress, address _toNFTContractAddress, uint256 _toId, uint256 _tokenId)++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[ICommanderToken-transferFrom-address-uint256-address-uint256-]] ==== `[.contract-item-name]#++transferFrom++#++(address _fromNFTContractAddress, uint256 _fromId, address _toAddress, uint256 _tokenId)++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[ICommanderToken-transferFrom-address-uint256-address-uint256-uint256-]] ==== `[.contract-item-name]#++transferFrom++#++(address _fromNFTContractAddress, uint256 _fromId, address _toNFTContractAddress, uint256 _toId, uint256 _tokenId)++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[ICommanderToken-approve-address-uint256-uint256-]] ==== `[.contract-item-name]#++approve++#++(address _toNFTContractAddress, uint256 _approvedId, uint256 _tokenId)++` [.item-kind]#external#
+
+    Gives permission to an owner of an NFT token to transfer, set dependence or burn `tokenId` token to another account.
+The approval is cleared when the token is transferred.
+
+
+Only a single account can be approved at a time, so approving the zero address clears previous approvals.
+Approving an NFT account clears an approved address if there was any.
+
+Requirements:
+
+- The caller must own the token or be an approved operator.
+- `_tokenId` must exist in this contract, and '_approvedId' must exist in _toNFTContractAddress,
+
+Emits an {Approval} event.
+
+    [.contract-item] [[ICommanderToken-getApprovedNft-uint256-]] ==== `[.contract-item-name]#++getApprovedNft++#++(uint256 tokenId) → address _NFTContractAddress, uint256 _tokenId++` [.item-kind]#external#
+
+    Returns the account approved for `tokenId` token.
+
+Requirements:
+
+- `tokenId` must exist.
+
+    [.contract-item] [[ICommanderToken-setApprovalForAll-address-uint256-bool-]] ==== `[.contract-item-name]#++setApprovalForAll++#++(address _operatorNFTContractAddress, uint256 _operatorId, bool _approved)++` [.item-kind]#external#
+
+    Approve or remove NFT `operator` as an operator for the caller.
+Operators can call {transferFrom}, {safeTransferFrom}, {setDependence} or {burn} for any token owned by the caller.
+
+Requirements:
+
+- The `operator` cannot be the caller.
+
+Emits an {ApprovalForAll} event.
+
+    [.contract-item] [[ICommanderToken-isApprovedForAll-address-address-uint256-]] ==== `[.contract-item-name]#++isApprovedForAll++#++(address owner, address _operatorNFTContractAddress, uint256 _operatorId) → bool++` [.item-kind]#external#
+
+    Returns if the `operator` is allowed to manage all of the assets of `owner`.
+
+See {setApprovalForAll}
+
+    [.contract-item] [[ICommanderToken-isApprovedForAll-address-uint256-address-]] ==== `[.contract-item-name]#++isApprovedForAll++#++(address ownerNftContractAddress, uint256 ownerNftTokenId, address operator) → bool++` [.item-kind]#external#
+
+    Returns if the `operator` is allowed to manage all of the assets of `owner`.
+
+See {setApprovalForAll}
+
+    [.contract-item] [[ICommanderToken-setDependence-uint256-contract-ICommanderToken-uint256-bool-]] ==== `[.contract-item-name]#++setDependence++#++(uint256 _tokenId, contract ICommanderToken _dependableContractAddress, uint256 _dependentTokenId, bool _dependent)++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[ICommanderToken-isDependent-uint256-address-uint256-]] ==== `[.contract-item-name]#++isDependent++#++(uint256 _tokenId, address _dependableContractAddress, uint256 _dependentTokenId) → bool++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[ICommanderToken-setBurnable-uint256-bool-]] ==== `[.contract-item-name]#++setBurnable++#++(uint256 _tokenId, bool _burnable)++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[ICommanderToken-setTransferable-uint256-bool-]] ==== `[.contract-item-name]#++setTransferable++#++(uint256 _tokenId, bool _transferable)++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[ICommanderToken-isTransferable-uint256-]] ==== `[.contract-item-name]#++isTransferable++#++(uint256 _tokenId) → bool++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[ICommanderToken-isBurnable-uint256-]] ==== `[.contract-item-name]#++isBurnable++#++(uint256 _tokenId) → bool++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[ICommanderToken-burn-uint256-]] ==== `[.contract-item-name]#++burn++#++(uint256 tokenId)++` [.item-kind]#external#
+
+    
+
+
+
+    :ADDRESS_NOT_NFT: pass:normal[xref:#CommanderTokenV2-ADDRESS_NOT_NFT-uint256[`++ADDRESS_NOT_NFT++`]]
+    :Token: pass:normal[xref:#CommanderTokenV2-Token[`++Token++`]]
+    :defaultTransferable: pass:normal[xref:#CommanderTokenV2-defaultTransferable-bool[`++defaultTransferable++`]]
+    :defaultBurnable: pass:normal[xref:#CommanderTokenV2-defaultBurnable-bool[`++defaultBurnable++`]]
+    :constructor: pass:normal[xref:#CommanderTokenV2-constructor-string-string-[`++constructor++`]]
+    :supportsInterface: pass:normal[xref:#CommanderTokenV2-supportsInterface-bytes4-[`++supportsInterface++`]]
+    :balanceOf: pass:normal[xref:#CommanderTokenV2-balanceOf-address-[`++balanceOf++`]]
+    :balanceOf: pass:normal[xref:#CommanderTokenV2-balanceOf-address-uint256-[`++balanceOf++`]]
+    :burn: pass:normal[xref:#CommanderTokenV2-burn-uint256-[`++burn++`]]
+    :ownerOfNft: pass:normal[xref:#CommanderTokenV2-ownerOfNft-uint256-[`++ownerOfNft++`]]
+    :approve: pass:normal[xref:#CommanderTokenV2-approve-address-uint256-[`++approve++`]]
+    :getApproved: pass:normal[xref:#CommanderTokenV2-getApproved-uint256-[`++getApproved++`]]
+    :setApprovalForAll: pass:normal[xref:#CommanderTokenV2-setApprovalForAll-address-bool-[`++setApprovalForAll++`]]
+    :isApprovedForAll: pass:normal[xref:#CommanderTokenV2-isApprovedForAll-address-address-[`++isApprovedForAll++`]]
+    :approve: pass:normal[xref:#CommanderTokenV2-approve-address-uint256-uint256-[`++approve++`]]
+    :getApprovedNft: pass:normal[xref:#CommanderTokenV2-getApprovedNft-uint256-[`++getApprovedNft++`]]
+    :setApprovalForAll: pass:normal[xref:#CommanderTokenV2-setApprovalForAll-address-uint256-bool-[`++setApprovalForAll++`]]
+    :isApprovedForAll: pass:normal[xref:#CommanderTokenV2-isApprovedForAll-address-address-uint256-[`++isApprovedForAll++`]]
+    :isApprovedForAll: pass:normal[xref:#CommanderTokenV2-isApprovedForAll-address-uint256-address-[`++isApprovedForAll++`]]
+    :transferFrom: pass:normal[xref:#CommanderTokenV2-transferFrom-address-address-uint256-[`++transferFrom++`]]
+    :transferFrom: pass:normal[xref:#CommanderTokenV2-transferFrom-address-address-uint256-uint256-[`++transferFrom++`]]
+    :transferFrom: pass:normal[xref:#CommanderTokenV2-transferFrom-address-uint256-address-uint256-[`++transferFrom++`]]
+    :transferFrom: pass:normal[xref:#CommanderTokenV2-transferFrom-address-uint256-address-uint256-uint256-[`++transferFrom++`]]
+    :safeTransferFrom: pass:normal[xref:#CommanderTokenV2-safeTransferFrom-address-address-uint256-uint256-[`++safeTransferFrom++`]]
+    :safeTransferFrom: pass:normal[xref:#CommanderTokenV2-safeTransferFrom-address-uint256-address-uint256-[`++safeTransferFrom++`]]
+    :safeTransferFrom: pass:normal[xref:#CommanderTokenV2-safeTransferFrom-address-uint256-address-uint256-uint256-[`++safeTransferFrom++`]]
+    :safeTransferFrom: pass:normal[xref:#CommanderTokenV2-safeTransferFrom-address-address-uint256-[`++safeTransferFrom++`]]
+    :safeTransferFrom: pass:normal[xref:#CommanderTokenV2-safeTransferFrom-address-address-uint256-bytes-[`++safeTransferFrom++`]]
+    :_safeTransfer: pass:normal[xref:#CommanderTokenV2-_safeTransfer-address-address-uint256-bytes-[`++_safeTransfer++`]]
+    :_ownerOf: pass:normal[xref:#CommanderTokenV2-_ownerOf-uint256-[`++_ownerOf++`]]
+    :_ownerOfNft: pass:normal[xref:#CommanderTokenV2-_ownerOfNft-uint256-[`++_ownerOfNft++`]]
+    :_exists: pass:normal[xref:#CommanderTokenV2-_exists-uint256-[`++_exists++`]]
+    :_existsNft: pass:normal[xref:#CommanderTokenV2-_existsNft-uint256-[`++_existsNft++`]]
+    :_isApprovedOrOwner: pass:normal[xref:#CommanderTokenV2-_isApprovedOrOwner-address-uint256-[`++_isApprovedOrOwner++`]]
+    :_safeMint: pass:normal[xref:#CommanderTokenV2-_safeMint-address-uint256-[`++_safeMint++`]]
+    :_safeMint: pass:normal[xref:#CommanderTokenV2-_safeMint-address-uint256-bytes-[`++_safeMint++`]]
+    :_mint: pass:normal[xref:#CommanderTokenV2-_mint-address-uint256-[`++_mint++`]]
+    :_mint: pass:normal[xref:#CommanderTokenV2-_mint-address-uint256-uint256-[`++_mint++`]]
+    :_burn: pass:normal[xref:#CommanderTokenV2-_burn-uint256-[`++_burn++`]]
+    :_transfer: pass:normal[xref:#CommanderTokenV2-_transfer-address-address-uint256-[`++_transfer++`]]
+    :_approve: pass:normal[xref:#CommanderTokenV2-_approve-address-uint256-[`++_approve++`]]
+    :_setApprovalForAll: pass:normal[xref:#CommanderTokenV2-_setApprovalForAll-address-address-bool-[`++_setApprovalForAll++`]]
+    :_beforeTokenTransfer: pass:normal[xref:#CommanderTokenV2-_beforeTokenTransfer-address-address-uint256-uint256-[`++_beforeTokenTransfer++`]]
+    :_checkTokenDefaults: pass:normal[xref:#CommanderTokenV2-_checkTokenDefaults-uint256-[`++_checkTokenDefaults++`]]
+    :setDependence: pass:normal[xref:#CommanderTokenV2-setDependence-uint256-contract-ICommanderToken-uint256-bool-[`++setDependence++`]]
+    :isDependent: pass:normal[xref:#CommanderTokenV2-isDependent-uint256-address-uint256-[`++isDependent++`]]
+    :setDefaultTransferable: pass:normal[xref:#CommanderTokenV2-setDefaultTransferable-bool-[`++setDefaultTransferable++`]]
+    :setTransferable: pass:normal[xref:#CommanderTokenV2-setTransferable-uint256-bool-[`++setTransferable++`]]
+    :setDefaultBurnable: pass:normal[xref:#CommanderTokenV2-setDefaultBurnable-bool-[`++setDefaultBurnable++`]]
+    :setBurnable: pass:normal[xref:#CommanderTokenV2-setBurnable-uint256-bool-[`++setBurnable++`]]
+    :isTransferable: pass:normal[xref:#CommanderTokenV2-isTransferable-uint256-[`++isTransferable++`]]
+    :isBurnable: pass:normal[xref:#CommanderTokenV2-isBurnable-uint256-[`++isBurnable++`]]
+    :isBurnable2: pass:normal[xref:#CommanderTokenV2-isBurnable2-uint256-[`++isBurnable2++`]]
+
+[.contract] [[CommanderTokenV2]] === `++CommanderTokenV2++`
+link:https://github.com/OpenZeppelin/commander-token-contracts/blob/v0.0.1/contracts/CommanderToken/CommanderTokenV2.sol[{github-icon},role=heading-link]
+[.hljs-theme-light.nopadding] ```solidity import "@woolballers/contracts/CommanderToken/CommanderTokenV2.sol";
+```
+
+Implementation of CommanderToken Standard
+
+    [.contract-index] .Functions --
+            * {xref-CommanderTokenV2-constructor-string-string-}[`++constructor(name_, symbol_)++`]
+            * {xref-CommanderTokenV2-supportsInterface-bytes4-}[`++supportsInterface(interfaceId)++`]
+            * {xref-CommanderTokenV2-balanceOf-address-}[`++balanceOf(owner)++`]
+            * {xref-CommanderTokenV2-balanceOf-address-uint256-}[`++balanceOf(_NFTContract, _NFTTokenId)++`]
+            * {xref-CommanderTokenV2-burn-uint256-}[`++burn(tokenId)++`]
+            * {xref-CommanderTokenV2-ownerOfNft-uint256-}[`++ownerOfNft(_tokenId)++`]
+            * {xref-CommanderTokenV2-approve-address-uint256-}[`++approve(to, tokenId)++`]
+            * {xref-CommanderTokenV2-getApproved-uint256-}[`++getApproved(tokenId)++`]
+            * {xref-CommanderTokenV2-setApprovalForAll-address-bool-}[`++setApprovalForAll(operator, approved)++`]
+            * {xref-CommanderTokenV2-isApprovedForAll-address-address-}[`++isApprovedForAll(owner, operator)++`]
+            * {xref-CommanderTokenV2-approve-address-uint256-uint256-}[`++approve(_toNFTContractAddress, _approvedId, _tokenId)++`]
+            * {xref-CommanderTokenV2-getApprovedNft-uint256-}[`++getApprovedNft(tokenId)++`]
+            * {xref-CommanderTokenV2-setApprovalForAll-address-uint256-bool-}[`++setApprovalForAll(_operatorNFTContractAddress, _operatorId, _approved)++`]
+            * {xref-CommanderTokenV2-isApprovedForAll-address-address-uint256-}[`++isApprovedForAll(owner, operatorNFTContractAddress, operatorNftTokenId)++`]
+            * {xref-CommanderTokenV2-isApprovedForAll-address-uint256-address-}[`++isApprovedForAll(ownerNftContractAddress, ownerNftTokenId, operator)++`]
+            * {xref-CommanderTokenV2-transferFrom-address-address-uint256-}[`++transferFrom(from, to, tokenId)++`]
+            * {xref-CommanderTokenV2-transferFrom-address-address-uint256-uint256-}[`++transferFrom(_fromAddress, _toNFTContractAddress, _toId, _tokenId)++`]
+            * {xref-CommanderTokenV2-transferFrom-address-uint256-address-uint256-}[`++transferFrom(_fromNFTContractAddress, _fromId, _toAddress, _tokenId)++`]
+            * {xref-CommanderTokenV2-transferFrom-address-uint256-address-uint256-uint256-}[`++transferFrom(_fromNFTContractAddress, _fromId, _toNFTContractAddress, _toId, _tokenId)++`]
+            * {xref-CommanderTokenV2-safeTransferFrom-address-address-uint256-uint256-}[`++safeTransferFrom(_fromAddress, _toNFTContractAddress, _toTokenId, _tokenId)++`]
+            * {xref-CommanderTokenV2-safeTransferFrom-address-uint256-address-uint256-}[`++safeTransferFrom(_fromNFTContractAddress, _fromTokenId, _toAddress, _tokenId)++`]
+            * {xref-CommanderTokenV2-safeTransferFrom-address-uint256-address-uint256-uint256-}[`++safeTransferFrom(_fromNFTContractAddress, _fromTokenId, _toNFTContractAddress, _toTokenId, _tokenId)++`]
+            * {xref-CommanderTokenV2-safeTransferFrom-address-address-uint256-}[`++safeTransferFrom(from, to, tokenId)++`]
+            * {xref-CommanderTokenV2-safeTransferFrom-address-address-uint256-bytes-}[`++safeTransferFrom(from, to, tokenId, data)++`]
+            * {xref-CommanderTokenV2-_safeTransfer-address-address-uint256-bytes-}[`++_safeTransfer(from, to, tokenId, data)++`]
+            * {xref-CommanderTokenV2-_ownerOf-uint256-}[`++_ownerOf(tokenId)++`]
+            * {xref-CommanderTokenV2-_ownerOfNft-uint256-}[`++_ownerOfNft(tokenId)++`]
+            * {xref-CommanderTokenV2-_exists-uint256-}[`++_exists(tokenId)++`]
+            * {xref-CommanderTokenV2-_existsNft-uint256-}[`++_existsNft(tokenId)++`]
+            * {xref-CommanderTokenV2-_isApprovedOrOwner-address-uint256-}[`++_isApprovedOrOwner(spender, tokenId)++`]
+            * {xref-CommanderTokenV2-_safeMint-address-uint256-}[`++_safeMint(to, tokenId)++`]
+            * {xref-CommanderTokenV2-_safeMint-address-uint256-bytes-}[`++_safeMint(to, tokenId, data)++`]
+            * {xref-CommanderTokenV2-_mint-address-uint256-}[`++_mint(to, tokenId)++`]
+            * {xref-CommanderTokenV2-_mint-address-uint256-uint256-}[`++_mint(toNftContract, toNftTokenId, tokenId)++`]
+            * {xref-CommanderTokenV2-_burn-uint256-}[`++_burn(tokenId)++`]
+            * {xref-CommanderTokenV2-_transfer-address-address-uint256-}[`++_transfer(from, to, tokenId)++`]
+            * {xref-CommanderTokenV2-_approve-address-uint256-}[`++_approve(to, tokenId)++`]
+            * {xref-CommanderTokenV2-_setApprovalForAll-address-address-bool-}[`++_setApprovalForAll(owner, operator, approved)++`]
+            * {xref-CommanderTokenV2-_beforeTokenTransfer-address-address-uint256-uint256-}[`++_beforeTokenTransfer(from, to, , batchSize)++`]
+            * {xref-CommanderTokenV2-_checkTokenDefaults-uint256-}[`++_checkTokenDefaults(tokenId)++`]
+            * {xref-CommanderTokenV2-setDependence-uint256-contract-ICommanderToken-uint256-bool-}[`++setDependence(_tokenId, _dependableContractAddress, _dependentTokenId, _dependent)++`]
+            * {xref-CommanderTokenV2-isDependent-uint256-address-uint256-}[`++isDependent(_tokenId, _dependableContractAddress, _dependentTokenId)++`]
+            * {xref-CommanderTokenV2-setDefaultTransferable-bool-}[`++setDefaultTransferable(transferable)++`]
+            * {xref-CommanderTokenV2-setTransferable-uint256-bool-}[`++setTransferable(tokenId, transferable)++`]
+            * {xref-CommanderTokenV2-setDefaultBurnable-bool-}[`++setDefaultBurnable(burnable)++`]
+            * {xref-CommanderTokenV2-setBurnable-uint256-bool-}[`++setBurnable(tokenId, burnable)++`]
+            * {xref-CommanderTokenV2-isTransferable-uint256-}[`++isTransferable(_tokenId)++`]
+            * {xref-CommanderTokenV2-isBurnable-uint256-}[`++isBurnable(_tokenId)++`]
+            * {xref-CommanderTokenV2-isBurnable2-uint256-}[`++isBurnable2(_tokenId)++`]
+
+            [.contract-subindex-inherited] .Ownable
+            * {xref-Ownable-owner--}[`++owner()++`]
+            * {xref-Ownable-_checkOwner--}[`++_checkOwner()++`]
+            * {xref-Ownable-renounceOwnership--}[`++renounceOwnership()++`]
+            * {xref-Ownable-transferOwnership-address-}[`++transferOwnership(newOwner)++`]
+            * {xref-Ownable-_transferOwnership-address-}[`++_transferOwnership(newOwner)++`]
+
+            [.contract-subindex-inherited] .ERC721
+            * {xref-ERC721-ownerOf-uint256-}[`++ownerOf(tokenId)++`]
+            * {xref-ERC721-name--}[`++name()++`]
+            * {xref-ERC721-symbol--}[`++symbol()++`]
+            * {xref-ERC721-tokenURI-uint256-}[`++tokenURI(tokenId)++`]
+            * {xref-ERC721-_baseURI--}[`++_baseURI()++`]
+            * {xref-ERC721-_requireMinted-uint256-}[`++_requireMinted(tokenId)++`]
+            * {xref-ERC721-_afterTokenTransfer-address-address-uint256-uint256-}[`++_afterTokenTransfer(from, to, firstTokenId, batchSize)++`]
+
+            [.contract-subindex-inherited] .IERC721Metadata
+
+            [.contract-subindex-inherited] .ICommanderToken
+
+            [.contract-subindex-inherited] .IERC721
+
+            [.contract-subindex-inherited] .ERC165
+
+            [.contract-subindex-inherited] .IERC165
+
+    --
+
+    [.contract-index] .Events --
+
+            [.contract-subindex-inherited] .Ownable
+            * {xref-Ownable-OwnershipTransferred-address-address-}[`++OwnershipTransferred(previousOwner, newOwner)++`]
+
+            [.contract-subindex-inherited] .ERC721
+
+            [.contract-subindex-inherited] .IERC721Metadata
+
+            [.contract-subindex-inherited] .ICommanderToken
+
+            [.contract-subindex-inherited] .IERC721
+            * {xref-IERC721-Transfer-address-address-uint256-}[`++Transfer(from, to, tokenId)++`]
+            * {xref-IERC721-Approval-address-address-uint256-}[`++Approval(owner, approved, tokenId)++`]
+            * {xref-IERC721-ApprovalForAll-address-address-bool-}[`++ApprovalForAll(owner, operator, approved)++`]
+
+            [.contract-subindex-inherited] .ERC165
+
+            [.contract-subindex-inherited] .IERC165
+
+    --
+
+    [.contract-item] [[CommanderTokenV2-constructor-string-string-]] ==== `[.contract-item-name]#++constructor++#++(string name_, string symbol_)++` [.item-kind]#public#
+
+    Initializes the contract by setting a `name` and a `symbol` to the token collection.
+
+    [.contract-item] [[CommanderTokenV2-supportsInterface-bytes4-]] ==== `[.contract-item-name]#++supportsInterface++#++(bytes4 interfaceId) → bool++` [.item-kind]#public#
+
+    See {IERC165-supportsInterface}.
+
+    [.contract-item] [[CommanderTokenV2-balanceOf-address-]] ==== `[.contract-item-name]#++balanceOf++#++(address owner) → uint256++` [.item-kind]#public#
+
+    See {IERC721-balanceOf}.
+
+    [.contract-item] [[CommanderTokenV2-balanceOf-address-uint256-]] ==== `[.contract-item-name]#++balanceOf++#++(address _NFTContract, uint256 _NFTTokenId) → uint256 balance++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-burn-uint256-]] ==== `[.contract-item-name]#++burn++#++(uint256 tokenId)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-ownerOfNft-uint256-]] ==== `[.contract-item-name]#++ownerOfNft++#++(uint256 _tokenId) → address NFTContractAddress, uint256 owner++` [.item-kind]#public#
+
+    Returns the NFT owner of the `tokenId` token.
+If the token is not owned by another  NFT, it returns (0x, 0).
+
+Requirements:
+
+- `tokenId` must exist.
+
+    [.contract-item] [[CommanderTokenV2-approve-address-uint256-]] ==== `[.contract-item-name]#++approve++#++(address to, uint256 tokenId)++` [.item-kind]#public#
+
+    See {IERC721-approve}.
+
+    [.contract-item] [[CommanderTokenV2-getApproved-uint256-]] ==== `[.contract-item-name]#++getApproved++#++(uint256 tokenId) → address++` [.item-kind]#public#
+
+    See {IERC721-getApproved}.
+
+    [.contract-item] [[CommanderTokenV2-setApprovalForAll-address-bool-]] ==== `[.contract-item-name]#++setApprovalForAll++#++(address operator, bool approved)++` [.item-kind]#public#
+
+    See {IERC721-setApprovalForAll}.
+
+    [.contract-item] [[CommanderTokenV2-isApprovedForAll-address-address-]] ==== `[.contract-item-name]#++isApprovedForAll++#++(address owner, address operator) → bool++` [.item-kind]#public#
+
+    See {IERC721-isApprovedForAll}.
+
+    [.contract-item] [[CommanderTokenV2-approve-address-uint256-uint256-]] ==== `[.contract-item-name]#++approve++#++(address _toNFTContractAddress, uint256 _approvedId, uint256 _tokenId)++` [.item-kind]#external#
+
+    Gives permission to an owner of an NFT token to transfer, set dependence or burn `tokenId` token to another account.
+The approval is cleared when the token is transferred.
+
+
+Only a single account can be approved at a time, so approving the zero address clears previous approvals.
+Approving an NFT account clears an approved address if there was any.
+
+Requirements:
+
+- The caller must own the token or be an approved operator.
+- `_tokenId` must exist in this contract, and '_approvedId' must exist in _toNFTContractAddress,
+
+Emits an {Approval} event.
+
+    [.contract-item] [[CommanderTokenV2-getApprovedNft-uint256-]] ==== `[.contract-item-name]#++getApprovedNft++#++(uint256 tokenId) → address _NFTContractAddress, uint256 _tokenId++` [.item-kind]#public#
+
+    Returns the account approved for `tokenId` token.
+
+Requirements:
+
+- `tokenId` must exist.
+
+    [.contract-item] [[CommanderTokenV2-setApprovalForAll-address-uint256-bool-]] ==== `[.contract-item-name]#++setApprovalForAll++#++(address _operatorNFTContractAddress, uint256 _operatorId, bool _approved)++` [.item-kind]#public#
+
+    Approve or remove NFT `operator` as an operator for the caller.
+Operators can call {transferFrom}, {safeTransferFrom}, {setDependence} or {burn} for any token owned by the caller.
+
+Requirements:
+
+- The `operator` cannot be the caller.
+
+Emits an {ApprovalForAll} event.
+
+    [.contract-item] [[CommanderTokenV2-isApprovedForAll-address-address-uint256-]] ==== `[.contract-item-name]#++isApprovedForAll++#++(address owner, address operatorNFTContractAddress, uint256 operatorNftTokenId) → bool++` [.item-kind]#public#
+
+    Returns if the `operator` is allowed to manage all of the assets of `owner`.
+
+See {setApprovalForAll}
+
+    [.contract-item] [[CommanderTokenV2-isApprovedForAll-address-uint256-address-]] ==== `[.contract-item-name]#++isApprovedForAll++#++(address ownerNftContractAddress, uint256 ownerNftTokenId, address operator) → bool++` [.item-kind]#public#
+
+    Returns if the `operator` is allowed to manage all of the assets of `owner`.
+
+See {setApprovalForAll}
+
+    [.contract-item] [[CommanderTokenV2-transferFrom-address-address-uint256-]] ==== `[.contract-item-name]#++transferFrom++#++(address from, address to, uint256 tokenId)++` [.item-kind]#public#
+
+    See {IERC721-transferFrom}.
+
+    [.contract-item] [[CommanderTokenV2-transferFrom-address-address-uint256-uint256-]] ==== `[.contract-item-name]#++transferFrom++#++(address _fromAddress, address _toNFTContractAddress, uint256 _toId, uint256 _tokenId)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-transferFrom-address-uint256-address-uint256-]] ==== `[.contract-item-name]#++transferFrom++#++(address _fromNFTContractAddress, uint256 _fromId, address _toAddress, uint256 _tokenId)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-transferFrom-address-uint256-address-uint256-uint256-]] ==== `[.contract-item-name]#++transferFrom++#++(address _fromNFTContractAddress, uint256 _fromId, address _toNFTContractAddress, uint256 _toId, uint256 _tokenId)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-safeTransferFrom-address-address-uint256-uint256-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address _fromAddress, address _toNFTContractAddress, uint256 _toTokenId, uint256 _tokenId)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-safeTransferFrom-address-uint256-address-uint256-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address _fromNFTContractAddress, uint256 _fromTokenId, address _toAddress, uint256 _tokenId)++` [.item-kind]#public#
+
+    Safely transfers `tokenId` to the posession of an NFT token
+
+Requirements:
+
+    [.contract-item] [[CommanderTokenV2-safeTransferFrom-address-uint256-address-uint256-uint256-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address _fromNFTContractAddress, uint256 _fromTokenId, address _toNFTContractAddress, uint256 _toTokenId, uint256 _tokenId)++` [.item-kind]#public#
+
+    Safely transfers `tokenId` to the posession of an NFT token
+
+Requirements:
+
+    [.contract-item] [[CommanderTokenV2-safeTransferFrom-address-address-uint256-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address from, address to, uint256 tokenId)++` [.item-kind]#public#
+
+    See {IERC721-safeTransferFrom}.
+
+    [.contract-item] [[CommanderTokenV2-safeTransferFrom-address-address-uint256-bytes-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address from, address to, uint256 tokenId, bytes data)++` [.item-kind]#public#
+
+    See {IERC721-safeTransferFrom}.
+
+    [.contract-item] [[CommanderTokenV2-_safeTransfer-address-address-uint256-bytes-]] ==== `[.contract-item-name]#++_safeTransfer++#++(address from, address to, uint256 tokenId, bytes data)++` [.item-kind]#internal#
+
+    Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
+are aware of the ERC721 protocol to prevent tokens from being forever locked.
+
+`data` is additional data, it has no specified format and it is sent in call to `to`.
+
+This internal function is equivalent to {safeTransferFrom}, and can be used to e.g.
+implement alternative mechanisms to perform token transfer, such as signature-based.
+
+Requirements:
+
+- `from` cannot be the zero address.
+- `to` cannot be the zero address.
+- `tokenId` token must exist and be owned by `from`.
+- If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+
+Emits a {Transfer} event.
+
+    [.contract-item] [[CommanderTokenV2-_ownerOf-uint256-]] ==== `[.contract-item-name]#++_ownerOf++#++(uint256 tokenId) → address++` [.item-kind]#internal#
+
+    Returns the owner of the `tokenId`. Does NOT revert if token doesn't exist
+
+    [.contract-item] [[CommanderTokenV2-_ownerOfNft-uint256-]] ==== `[.contract-item-name]#++_ownerOfNft++#++(uint256 tokenId) → struct AddressesOrNFTs.AddressOrNFT++` [.item-kind]#internal#
+
+    Returns the owner of the `tokenId`. Does NOT revert if token doesn't exist
+
+    [.contract-item] [[CommanderTokenV2-_exists-uint256-]] ==== `[.contract-item-name]#++_exists++#++(uint256 tokenId) → bool++` [.item-kind]#internal#
+
+    Returns whether `tokenId` exists.
+
+Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
+
+Tokens start existing when they are minted (`_mint`),
+and stop existing when they are burned (`_burn`).
+
+    [.contract-item] [[CommanderTokenV2-_existsNft-uint256-]] ==== `[.contract-item-name]#++_existsNft++#++(uint256 tokenId) → bool++` [.item-kind]#internal#
+
+    Returns whether `tokenId` exists.
+
+Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
+
+Tokens start existing when they are minted (`_mint`),
+and stop existing when they are burned (`_burn`).
+
+    [.contract-item] [[CommanderTokenV2-_isApprovedOrOwner-address-uint256-]] ==== `[.contract-item-name]#++_isApprovedOrOwner++#++(address spender, uint256 tokenId) → bool++` [.item-kind]#internal#
+
+    Returns whether `spender` is allowed to manage `tokenId`.
+
+Requirements:
+
+- `tokenId` must exist.
+
+    [.contract-item] [[CommanderTokenV2-_safeMint-address-uint256-]] ==== `[.contract-item-name]#++_safeMint++#++(address to, uint256 tokenId)++` [.item-kind]#internal#
+
+    Safely mints `tokenId` and transfers it to `to`.
+
+Requirements:
+
+- `tokenId` must not exist.
+- If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+
+Emits a {Transfer} event.
+
+    [.contract-item] [[CommanderTokenV2-_safeMint-address-uint256-bytes-]] ==== `[.contract-item-name]#++_safeMint++#++(address to, uint256 tokenId, bytes data)++` [.item-kind]#internal#
+
+    Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
+forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
+
+    [.contract-item] [[CommanderTokenV2-_mint-address-uint256-]] ==== `[.contract-item-name]#++_mint++#++(address to, uint256 tokenId)++` [.item-kind]#internal#
+
+    Mints `tokenId` and transfers it to `to`.
+
+WARNING: Usage of this method is discouraged, use {_safeMint} whenever possible
+
+Requirements:
+
+- `tokenId` must not exist.
+- `to` cannot be the zero address.
+
+Emits a {Transfer} event.
+
+    [.contract-item] [[CommanderTokenV2-_mint-address-uint256-uint256-]] ==== `[.contract-item-name]#++_mint++#++(address toNftContract, uint256 toNftTokenId, uint256 tokenId)++` [.item-kind]#internal#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-_burn-uint256-]] ==== `[.contract-item-name]#++_burn++#++(uint256 tokenId)++` [.item-kind]#internal#
+
+    Destroys `tokenId`.
+The approval is cleared when the token is burned.
+This is an internal function that does not check if the sender is authorized to operate on the token.
+
+Requirements:
+
+- `tokenId` must exist.
+
+Emits a {Transfer} event.
+
+    [.contract-item] [[CommanderTokenV2-_transfer-address-address-uint256-]] ==== `[.contract-item-name]#++_transfer++#++(address from, address to, uint256 tokenId)++` [.item-kind]#internal#
+
+    Transfers `tokenId` from `from` to `to`.
+ As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
+
+Requirements:
+
+- `to` cannot be the zero address.
+- `tokenId` token must be owned by `from`.
+
+Emits a {Transfer} event.
+
+    [.contract-item] [[CommanderTokenV2-_approve-address-uint256-]] ==== `[.contract-item-name]#++_approve++#++(address to, uint256 tokenId)++` [.item-kind]#internal#
+
+    Approve `to` to operate on `tokenId`
+
+Emits an {Approval} event.
+
+    [.contract-item] [[CommanderTokenV2-_setApprovalForAll-address-address-bool-]] ==== `[.contract-item-name]#++_setApprovalForAll++#++(address owner, address operator, bool approved)++` [.item-kind]#internal#
+
+    Approve `operator` to operate on all of `owner` tokens
+
+Emits an {ApprovalForAll} event.
+
+    [.contract-item] [[CommanderTokenV2-_beforeTokenTransfer-address-address-uint256-uint256-]] ==== `[.contract-item-name]#++_beforeTokenTransfer++#++(address from, address to, uint256, uint256 batchSize)++` [.item-kind]#internal#
+
+    Hook that is called before any token transfer. This includes minting and burning. If {ERC721Consecutive} is
+used, the hook may be called as part of a consecutive (batch) mint, as indicated by `batchSize` greater than 1.
+
+Calling conditions:
+
+- When `from` and `to` are both non-zero, ``from``'s tokens will be transferred to `to`.
+- When `from` is zero, the tokens will be minted for `to`.
+- When `to` is zero, ``from``'s tokens will be burned.
+- `from` and `to` are never both zero.
+- `batchSize` is non-zero.
+
+To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
+
+    [.contract-item] [[CommanderTokenV2-_checkTokenDefaults-uint256-]] ==== `[.contract-item-name]#++_checkTokenDefaults++#++(uint256 tokenId)++` [.item-kind]#internal#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-setDependence-uint256-contract-ICommanderToken-uint256-bool-]] ==== `[.contract-item-name]#++setDependence++#++(uint256 _tokenId, contract ICommanderToken _dependableContractAddress, uint256 _dependentTokenId, bool _dependent)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-isDependent-uint256-address-uint256-]] ==== `[.contract-item-name]#++isDependent++#++(uint256 _tokenId, address _dependableContractAddress, uint256 _dependentTokenId) → bool++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-setDefaultTransferable-bool-]] ==== `[.contract-item-name]#++setDefaultTransferable++#++(bool transferable)++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-setTransferable-uint256-bool-]] ==== `[.contract-item-name]#++setTransferable++#++(uint256 tokenId, bool transferable)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-setDefaultBurnable-bool-]] ==== `[.contract-item-name]#++setDefaultBurnable++#++(bool burnable)++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-setBurnable-uint256-bool-]] ==== `[.contract-item-name]#++setBurnable++#++(uint256 tokenId, bool burnable)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-isTransferable-uint256-]] ==== `[.contract-item-name]#++isTransferable++#++(uint256 _tokenId) → bool++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-isBurnable-uint256-]] ==== `[.contract-item-name]#++isBurnable++#++(uint256 _tokenId) → bool++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderTokenV2-isBurnable2-uint256-]] ==== `[.contract-item-name]#++isBurnable2++#++(uint256 _tokenId) → bool++` [.item-kind]#public#
+
+    
+
+
+
+    :TokenTypes: pass:normal[xref:#CommanderToken-TokenTypes[`++TokenTypes++`]]
+    :defaultTransferable: pass:normal[xref:#CommanderToken-defaultTransferable-bool[`++defaultTransferable++`]]
+    :defaultBurnable: pass:normal[xref:#CommanderToken-defaultBurnable-bool[`++defaultBurnable++`]]
+    :NftOwner: pass:normal[xref:#CommanderToken-NftOwner[`++NftOwner++`]]
+    :Token: pass:normal[xref:#CommanderToken-Token[`++Token++`]]
+    :constructor: pass:normal[xref:#CommanderToken-constructor-string-string-[`++constructor++`]]
+    :balanceOf: pass:normal[xref:#CommanderToken-balanceOf-address-uint256-[`++balanceOf++`]]
+    :ownerOfNft: pass:normal[xref:#CommanderToken-ownerOfNft-uint256-[`++ownerOfNft++`]]
+    :safeTransferFrom: pass:normal[xref:#CommanderToken-safeTransferFrom-address-address-uint256-uint256-[`++safeTransferFrom++`]]
+    :safeTransferFrom: pass:normal[xref:#CommanderToken-safeTransferFrom-address-uint256-address-uint256-[`++safeTransferFrom++`]]
+    :safeTransferFrom: pass:normal[xref:#CommanderToken-safeTransferFrom-address-uint256-address-uint256-uint256-[`++safeTransferFrom++`]]
+    :transferFrom: pass:normal[xref:#CommanderToken-transferFrom-address-address-uint256-uint256-[`++transferFrom++`]]
+    :transferFrom: pass:normal[xref:#CommanderToken-transferFrom-address-uint256-address-uint256-[`++transferFrom++`]]
+    :transferFrom: pass:normal[xref:#CommanderToken-transferFrom-address-uint256-address-uint256-uint256-[`++transferFrom++`]]
+    :approve: pass:normal[xref:#CommanderToken-approve-address-uint256-uint256-[`++approve++`]]
+    :getApprovedNft: pass:normal[xref:#CommanderToken-getApprovedNft-uint256-[`++getApprovedNft++`]]
+    :setApprovalForAll: pass:normal[xref:#CommanderToken-setApprovalForAll-address-uint256-bool-[`++setApprovalForAll++`]]
+    :isApprovedForAll: pass:normal[xref:#CommanderToken-isApprovedForAll-address-address-uint256-[`++isApprovedForAll++`]]
+    :isApprovedForAll: pass:normal[xref:#CommanderToken-isApprovedForAll-address-uint256-address-[`++isApprovedForAll++`]]
+    :setDependence: pass:normal[xref:#CommanderToken-setDependence-uint256-contract-ICommanderToken-uint256-bool-[`++setDependence++`]]
+    :isDependent: pass:normal[xref:#CommanderToken-isDependent-uint256-address-uint256-[`++isDependent++`]]
+    :setDefaultTransferable: pass:normal[xref:#CommanderToken-setDefaultTransferable-bool-[`++setDefaultTransferable++`]]
+    :setTransferable: pass:normal[xref:#CommanderToken-setTransferable-uint256-bool-[`++setTransferable++`]]
+    :setDefaultBurnable: pass:normal[xref:#CommanderToken-setDefaultBurnable-bool-[`++setDefaultBurnable++`]]
+    :setBurnable: pass:normal[xref:#CommanderToken-setBurnable-uint256-bool-[`++setBurnable++`]]
+    :isTransferable: pass:normal[xref:#CommanderToken-isTransferable-uint256-[`++isTransferable++`]]
+    :isBurnable: pass:normal[xref:#CommanderToken-isBurnable-uint256-[`++isBurnable++`]]
+    :burn: pass:normal[xref:#CommanderToken-burn-uint256-[`++burn++`]]
+    :_isApprovedOrOwner: pass:normal[xref:#CommanderToken-_isApprovedOrOwner-address-uint256-[`++_isApprovedOrOwner++`]]
+    :_ownerOfNft: pass:normal[xref:#CommanderToken-_ownerOfNft-uint256-[`++_ownerOfNft++`]]
+    :_exists: pass:normal[xref:#CommanderToken-_exists-uint256-[`++_exists++`]]
+    :_existsNft: pass:normal[xref:#CommanderToken-_existsNft-uint256-[`++_existsNft++`]]
+    :_typeOf: pass:normal[xref:#CommanderToken-_typeOf-uint256-[`++_typeOf++`]]
+    :_mint: pass:normal[xref:#CommanderToken-_mint-address-uint256-uint256-[`++_mint++`]]
+    :_checkTokenDefaults: pass:normal[xref:#CommanderToken-_checkTokenDefaults-uint256-[`++_checkTokenDefaults++`]]
+
+[.contract] [[CommanderToken]] === `++CommanderToken++`
+link:https://github.com/OpenZeppelin/commander-token-contracts/blob/v0.0.1/contracts/CommanderToken/CommanderToken.sol[{github-icon},role=heading-link]
+[.hljs-theme-light.nopadding] ```solidity import "@woolballers/contracts/CommanderToken/CommanderToken.sol";
+```
+
+    [.contract-index] .Functions --
+            * {xref-CommanderToken-constructor-string-string-}[`++constructor(name_, symbol_)++`]
+            * {xref-CommanderToken-balanceOf-address-uint256-}[`++balanceOf(_NFTContract, _NFTTokenId)++`]
+            * {xref-CommanderToken-ownerOfNft-uint256-}[`++ownerOfNft(_tokenId)++`]
+            * {xref-CommanderToken-safeTransferFrom-address-address-uint256-uint256-}[`++safeTransferFrom(_fromAddress, _toNFTContractAddress, _toTokenId, _tokenId)++`]
+            * {xref-CommanderToken-safeTransferFrom-address-uint256-address-uint256-}[`++safeTransferFrom(_fromNFTContractAddress, _fromTokenId, _toAddress, _tokenId)++`]
+            * {xref-CommanderToken-safeTransferFrom-address-uint256-address-uint256-uint256-}[`++safeTransferFrom(_fromNFTContractAddress, _fromTokenId, _toNFTContractAddress, _toTokenId, _tokenId)++`]
+            * {xref-CommanderToken-transferFrom-address-address-uint256-uint256-}[`++transferFrom(_fromAddress, _toNFTContractAddress, _toId, _tokenId)++`]
+            * {xref-CommanderToken-transferFrom-address-uint256-address-uint256-}[`++transferFrom(_fromNFTContractAddress, _fromId, _toAddress, _tokenId)++`]
+            * {xref-CommanderToken-transferFrom-address-uint256-address-uint256-uint256-}[`++transferFrom(_fromNFTContractAddress, _fromId, _toNFTContractAddress, _toId, _tokenId)++`]
+            * {xref-CommanderToken-approve-address-uint256-uint256-}[`++approve(_toNFTContractAddress, _approvedId, _tokenId)++`]
+            * {xref-CommanderToken-getApprovedNft-uint256-}[`++getApprovedNft(tokenId)++`]
+            * {xref-CommanderToken-setApprovalForAll-address-uint256-bool-}[`++setApprovalForAll(_operatorNFTContractAddress, _operatorId, _approved)++`]
+            * {xref-CommanderToken-isApprovedForAll-address-address-uint256-}[`++isApprovedForAll(owner, operatorNFTContractAddress, operatorNftTokenId)++`]
+            * {xref-CommanderToken-isApprovedForAll-address-uint256-address-}[`++isApprovedForAll(ownerNftContractAddress, ownerNftTokenId, operator)++`]
+            * {xref-CommanderToken-setDependence-uint256-contract-ICommanderToken-uint256-bool-}[`++setDependence(_tokenId, _dependableContractAddress, _dependentTokenId, _dependent)++`]
+            * {xref-CommanderToken-isDependent-uint256-address-uint256-}[`++isDependent(_tokenId, _dependableContractAddress, _dependentTokenId)++`]
+            * {xref-CommanderToken-setDefaultTransferable-bool-}[`++setDefaultTransferable(transferable)++`]
+            * {xref-CommanderToken-setTransferable-uint256-bool-}[`++setTransferable(tokenId, transferable)++`]
+            * {xref-CommanderToken-setDefaultBurnable-bool-}[`++setDefaultBurnable(burnable)++`]
+            * {xref-CommanderToken-setBurnable-uint256-bool-}[`++setBurnable(tokenId, burnable)++`]
+            * {xref-CommanderToken-isTransferable-uint256-}[`++isTransferable(_tokenId)++`]
+            * {xref-CommanderToken-isBurnable-uint256-}[`++isBurnable(_tokenId)++`]
+            * {xref-CommanderToken-burn-uint256-}[`++burn(tokenId)++`]
+            * {xref-CommanderToken-_isApprovedOrOwner-address-uint256-}[`++_isApprovedOrOwner(spender, tokenId)++`]
+            * {xref-CommanderToken-_ownerOfNft-uint256-}[`++_ownerOfNft(tokenId)++`]
+            * {xref-CommanderToken-_exists-uint256-}[`++_exists(tokenId)++`]
+            * {xref-CommanderToken-_existsNft-uint256-}[`++_existsNft(tokenId)++`]
+            * {xref-CommanderToken-_typeOf-uint256-}[`++_typeOf(tokenId)++`]
+            * {xref-CommanderToken-_mint-address-uint256-uint256-}[`++_mint(toNftContract, toNftTokenId, tokenId)++`]
+            * {xref-CommanderToken-_checkTokenDefaults-uint256-}[`++_checkTokenDefaults(tokenId)++`]
+
+            [.contract-subindex-inherited] .Ownable
+            * {xref-Ownable-owner--}[`++owner()++`]
+            * {xref-Ownable-_checkOwner--}[`++_checkOwner()++`]
+            * {xref-Ownable-renounceOwnership--}[`++renounceOwnership()++`]
+            * {xref-Ownable-transferOwnership-address-}[`++transferOwnership(newOwner)++`]
+            * {xref-Ownable-_transferOwnership-address-}[`++_transferOwnership(newOwner)++`]
+
+            [.contract-subindex-inherited] .ERC721
+            * {xref-ERC721-supportsInterface-bytes4-}[`++supportsInterface(interfaceId)++`]
+            * {xref-ERC721-balanceOf-address-}[`++balanceOf(owner)++`]
+            * {xref-ERC721-ownerOf-uint256-}[`++ownerOf(tokenId)++`]
+            * {xref-ERC721-name--}[`++name()++`]
+            * {xref-ERC721-symbol--}[`++symbol()++`]
+            * {xref-ERC721-tokenURI-uint256-}[`++tokenURI(tokenId)++`]
+            * {xref-ERC721-_baseURI--}[`++_baseURI()++`]
+            * {xref-ERC721-approve-address-uint256-}[`++approve(to, tokenId)++`]
+            * {xref-ERC721-getApproved-uint256-}[`++getApproved(tokenId)++`]
+            * {xref-ERC721-setApprovalForAll-address-bool-}[`++setApprovalForAll(operator, approved)++`]
+            * {xref-ERC721-isApprovedForAll-address-address-}[`++isApprovedForAll(owner, operator)++`]
+            * {xref-ERC721-transferFrom-address-address-uint256-}[`++transferFrom(from, to, tokenId)++`]
+            * {xref-ERC721-safeTransferFrom-address-address-uint256-}[`++safeTransferFrom(from, to, tokenId)++`]
+            * {xref-ERC721-safeTransferFrom-address-address-uint256-bytes-}[`++safeTransferFrom(from, to, tokenId, data)++`]
+            * {xref-ERC721-_safeTransfer-address-address-uint256-bytes-}[`++_safeTransfer(from, to, tokenId, data)++`]
+            * {xref-ERC721-_ownerOf-uint256-}[`++_ownerOf(tokenId)++`]
+            * {xref-ERC721-_safeMint-address-uint256-}[`++_safeMint(to, tokenId)++`]
+            * {xref-ERC721-_safeMint-address-uint256-bytes-}[`++_safeMint(to, tokenId, data)++`]
+            * {xref-ERC721-_mint-address-uint256-}[`++_mint(to, tokenId)++`]
+            * {xref-ERC721-_burn-uint256-}[`++_burn(tokenId)++`]
+            * {xref-ERC721-_transfer-address-address-uint256-}[`++_transfer(from, to, tokenId)++`]
+            * {xref-ERC721-_approve-address-uint256-}[`++_approve(to, tokenId)++`]
+            * {xref-ERC721-_setApprovalForAll-address-address-bool-}[`++_setApprovalForAll(owner, operator, approved)++`]
+            * {xref-ERC721-_requireMinted-uint256-}[`++_requireMinted(tokenId)++`]
+            * {xref-ERC721-_beforeTokenTransfer-address-address-uint256-uint256-}[`++_beforeTokenTransfer(from, to, , batchSize)++`]
+            * {xref-ERC721-_afterTokenTransfer-address-address-uint256-uint256-}[`++_afterTokenTransfer(from, to, firstTokenId, batchSize)++`]
+
+            [.contract-subindex-inherited] .IERC721Metadata
+
+            [.contract-subindex-inherited] .ICommanderToken
+
+            [.contract-subindex-inherited] .IERC721
+
+            [.contract-subindex-inherited] .ERC165
+
+            [.contract-subindex-inherited] .IERC165
+
+    --
+
+    [.contract-index] .Events --
+
+            [.contract-subindex-inherited] .Ownable
+            * {xref-Ownable-OwnershipTransferred-address-address-}[`++OwnershipTransferred(previousOwner, newOwner)++`]
+
+            [.contract-subindex-inherited] .ERC721
+
+            [.contract-subindex-inherited] .IERC721Metadata
+
+            [.contract-subindex-inherited] .ICommanderToken
+
+            [.contract-subindex-inherited] .IERC721
+            * {xref-IERC721-Transfer-address-address-uint256-}[`++Transfer(from, to, tokenId)++`]
+            * {xref-IERC721-Approval-address-address-uint256-}[`++Approval(owner, approved, tokenId)++`]
+            * {xref-IERC721-ApprovalForAll-address-address-bool-}[`++ApprovalForAll(owner, operator, approved)++`]
+
+            [.contract-subindex-inherited] .ERC165
+
+            [.contract-subindex-inherited] .IERC165
+
+    --
+
+    [.contract-item] [[CommanderToken-constructor-string-string-]] ==== `[.contract-item-name]#++constructor++#++(string name_, string symbol_)++` [.item-kind]#public#
+
+    Initializes the contract by setting a `name` and a `symbol` to the token collection.
+
+    [.contract-item] [[CommanderToken-balanceOf-address-uint256-]] ==== `[.contract-item-name]#++balanceOf++#++(address _NFTContract, uint256 _NFTTokenId) → uint256 balance++` [.item-kind]#external#
+
+    See {ICommanderToken}.
+
+    [.contract-item] [[CommanderToken-ownerOfNft-uint256-]] ==== `[.contract-item-name]#++ownerOfNft++#++(uint256 _tokenId) → address NFTContractAddress, uint256 owner++` [.item-kind]#public#
+
+    See {IERC721-balanceOf}.
+
+    [.contract-item] [[CommanderToken-safeTransferFrom-address-address-uint256-uint256-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address _fromAddress, address _toNFTContractAddress, uint256 _toTokenId, uint256 _tokenId)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-safeTransferFrom-address-uint256-address-uint256-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address _fromNFTContractAddress, uint256 _fromTokenId, address _toAddress, uint256 _tokenId)++` [.item-kind]#public#
+
+    Safely transfers `tokenId` to the posession of an NFT token
+
+Requirements:
+
+    [.contract-item] [[CommanderToken-safeTransferFrom-address-uint256-address-uint256-uint256-]] ==== `[.contract-item-name]#++safeTransferFrom++#++(address _fromNFTContractAddress, uint256 _fromTokenId, address _toNFTContractAddress, uint256 _toTokenId, uint256 _tokenId)++` [.item-kind]#public#
+
+    Safely transfers `tokenId` to the posession of an NFT token
+
+Requirements:
+
+    [.contract-item] [[CommanderToken-transferFrom-address-address-uint256-uint256-]] ==== `[.contract-item-name]#++transferFrom++#++(address _fromAddress, address _toNFTContractAddress, uint256 _toId, uint256 _tokenId)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-transferFrom-address-uint256-address-uint256-]] ==== `[.contract-item-name]#++transferFrom++#++(address _fromNFTContractAddress, uint256 _fromId, address _toAddress, uint256 _tokenId)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-transferFrom-address-uint256-address-uint256-uint256-]] ==== `[.contract-item-name]#++transferFrom++#++(address _fromNFTContractAddress, uint256 _fromId, address _toNFTContractAddress, uint256 _toId, uint256 _tokenId)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-approve-address-uint256-uint256-]] ==== `[.contract-item-name]#++approve++#++(address _toNFTContractAddress, uint256 _approvedId, uint256 _tokenId)++` [.item-kind]#external#
+
+    Gives permission to an owner of an NFT token to transfer, set dependence or burn `tokenId` token to another account.
+The approval is cleared when the token is transferred.
+
+
+Only a single account can be approved at a time, so approving the zero address clears previous approvals.
+Approving an NFT account clears an approved address if there was any.
+
+Requirements:
+
+- The caller must own the token or be an approved operator.
+- `_tokenId` must exist in this contract, and '_approvedId' must exist in _toNFTContractAddress,
+
+Emits an {Approval} event.
+
+    [.contract-item] [[CommanderToken-getApprovedNft-uint256-]] ==== `[.contract-item-name]#++getApprovedNft++#++(uint256 tokenId) → address _NFTContractAddress, uint256 _tokenId++` [.item-kind]#public#
+
+    Returns the account approved for `tokenId` token.
+
+Requirements:
+
+- `tokenId` must exist.
+
+    [.contract-item] [[CommanderToken-setApprovalForAll-address-uint256-bool-]] ==== `[.contract-item-name]#++setApprovalForAll++#++(address _operatorNFTContractAddress, uint256 _operatorId, bool _approved)++` [.item-kind]#public#
+
+    Approve or remove NFT `operator` as an operator for the caller.
+Operators can call {transferFrom}, {safeTransferFrom}, {setDependence} or {burn} for any token owned by the caller.
+
+Requirements:
+
+- The `operator` cannot be the caller.
+
+Emits an {ApprovalForAll} event.
+
+    [.contract-item] [[CommanderToken-isApprovedForAll-address-address-uint256-]] ==== `[.contract-item-name]#++isApprovedForAll++#++(address owner, address operatorNFTContractAddress, uint256 operatorNftTokenId) → bool++` [.item-kind]#public#
+
+    Returns if the `operator` is allowed to manage all of the assets of `owner`.
+
+See {setApprovalForAll}
+
+    [.contract-item] [[CommanderToken-isApprovedForAll-address-uint256-address-]] ==== `[.contract-item-name]#++isApprovedForAll++#++(address ownerNftContractAddress, uint256 ownerNftTokenId, address operator) → bool++` [.item-kind]#public#
+
+    Returns if the `operator` is allowed to manage all of the assets of `owner`.
+
+See {setApprovalForAll}
+
+    [.contract-item] [[CommanderToken-setDependence-uint256-contract-ICommanderToken-uint256-bool-]] ==== `[.contract-item-name]#++setDependence++#++(uint256 _tokenId, contract ICommanderToken _dependableContractAddress, uint256 _dependentTokenId, bool _dependent)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-isDependent-uint256-address-uint256-]] ==== `[.contract-item-name]#++isDependent++#++(uint256 _tokenId, address _dependableContractAddress, uint256 _dependentTokenId) → bool++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-setDefaultTransferable-bool-]] ==== `[.contract-item-name]#++setDefaultTransferable++#++(bool transferable)++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[CommanderToken-setTransferable-uint256-bool-]] ==== `[.contract-item-name]#++setTransferable++#++(uint256 tokenId, bool transferable)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-setDefaultBurnable-bool-]] ==== `[.contract-item-name]#++setDefaultBurnable++#++(bool burnable)++` [.item-kind]#external#
+
+    
+
+    [.contract-item] [[CommanderToken-setBurnable-uint256-bool-]] ==== `[.contract-item-name]#++setBurnable++#++(uint256 tokenId, bool burnable)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-isTransferable-uint256-]] ==== `[.contract-item-name]#++isTransferable++#++(uint256 _tokenId) → bool++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-isBurnable-uint256-]] ==== `[.contract-item-name]#++isBurnable++#++(uint256 _tokenId) → bool++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-burn-uint256-]] ==== `[.contract-item-name]#++burn++#++(uint256 tokenId)++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[CommanderToken-_isApprovedOrOwner-address-uint256-]] ==== `[.contract-item-name]#++_isApprovedOrOwner++#++(address spender, uint256 tokenId) → bool++` [.item-kind]#internal#
+
+    Returns whether `spender` is allowed to manage `tokenId`.
+
+Requirements:
+
+- `tokenId` must exist.
+
+    [.contract-item] [[CommanderToken-_ownerOfNft-uint256-]] ==== `[.contract-item-name]#++_ownerOfNft++#++(uint256 tokenId) → struct CommanderToken.NftOwner++` [.item-kind]#internal#
+
+    Returns the owner of the `tokenId`. Does NOT revert if token doesn't exist
+
+    [.contract-item] [[CommanderToken-_exists-uint256-]] ==== `[.contract-item-name]#++_exists++#++(uint256 tokenId) → bool++` [.item-kind]#internal#
+
+    Returns whether `tokenId` exists.
+
+Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
+
+Tokens start existing when they are minted (`_mint`),
+and stop existing when they are burned (`_burn`).
+
+    [.contract-item] [[CommanderToken-_existsNft-uint256-]] ==== `[.contract-item-name]#++_existsNft++#++(uint256 tokenId) → bool++` [.item-kind]#internal#
+
+    Returns whether `tokenId` exists.
+
+Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
+
+Tokens start existing when they are minted (`_mint`),
+and stop existing when they are burned (`_burn`).
+
+    [.contract-item] [[CommanderToken-_typeOf-uint256-]] ==== `[.contract-item-name]#++_typeOf++#++(uint256 tokenId) → enum CommanderToken.TokenTypes++` [.item-kind]#internal#
+
+    
+
+    [.contract-item] [[CommanderToken-_mint-address-uint256-uint256-]] ==== `[.contract-item-name]#++_mint++#++(address toNftContract, uint256 toNftTokenId, uint256 tokenId)++` [.item-kind]#internal#
+
+    
+
+    [.contract-item] [[CommanderToken-_checkTokenDefaults-uint256-]] ==== `[.contract-item-name]#++_checkTokenDefaults++#++(uint256 tokenId)++` [.item-kind]#internal#
+
+    
+
+
+
+
+== Utilities
+
+    :AddressOrNFT: pass:normal[xref:#AddressesOrNFTs-AddressOrNFT[`++AddressOrNFT++`]]
+    :isNFT: pass:normal[xref:#AddressesOrNFTs-isNFT-struct-AddressesOrNFTs-AddressOrNFT-[`++isNFT++`]]
+    :getAddress: pass:normal[xref:#AddressesOrNFTs-getAddress-struct-AddressesOrNFTs-AddressOrNFT-[`++getAddress++`]]
+    :toString: pass:normal[xref:#AddressesOrNFTs-toString-struct-AddressesOrNFTs-AddressOrNFT-[`++toString++`]]
+
+[.contract] [[AddressesOrNFTs]] === `++AddressesOrNFTs++`
+link:https://github.com/OpenZeppelin/commander-token-contracts/blob/v0.0.1/contracts/CommanderToken/utils/AddressesOrNFTs.sol[{github-icon},role=heading-link]
+[.hljs-theme-light.nopadding] ```solidity import "@woolballers/contracts/CommanderToken/utils/AddressesOrNFTs.sol";
+```
+
+    [.contract-index] .Functions --
+            * {xref-AddressesOrNFTs-isNFT-struct-AddressesOrNFTs-AddressOrNFT-}[`++isNFT(addressOrNFT)++`]
+            * {xref-AddressesOrNFTs-getAddress-struct-AddressesOrNFTs-AddressOrNFT-}[`++getAddress(addressOrNFT)++`]
+            * {xref-AddressesOrNFTs-toString-struct-AddressesOrNFTs-AddressOrNFT-}[`++toString(addressOrNFT)++`]
+
+    --
+
+    [.contract-item] [[AddressesOrNFTs-isNFT-struct-AddressesOrNFTs-AddressOrNFT-]] ==== `[.contract-item-name]#++isNFT++#++(struct AddressesOrNFTs.AddressOrNFT addressOrNFT) → bool++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[AddressesOrNFTs-getAddress-struct-AddressesOrNFTs-AddressOrNFT-]] ==== `[.contract-item-name]#++getAddress++#++(struct AddressesOrNFTs.AddressOrNFT addressOrNFT) → address++` [.item-kind]#public#
+
+    
+
+    [.contract-item] [[AddressesOrNFTs-toString-struct-AddressesOrNFTs-AddressOrNFT-]] ==== `[.contract-item-name]#++toString++#++(struct AddressesOrNFTs.AddressOrNFT addressOrNFT) → string++` [.item-kind]#public#
+
+    
+
