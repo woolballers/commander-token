@@ -49,4 +49,18 @@ library AddressesOrNFTs {
                 Strings.toHexString(uint160(addressOrNFT.addressOrNftContract));
         }
     }
+
+    function encodeUint(
+        AddressOrNFT memory addressOrNFT
+    ) public view returns (uint256) {
+        return
+            uint256(
+                keccak256(
+                    abi.encodePacked(
+                        addressOrNFT.addressOrNftContract,
+                        addressOrNFT.tokenId
+                    )
+                )
+            );
+    }
 }

@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 import "./utils/AddressesOrNFTs.sol";
 import "./interfaces/ICommanderToken.sol";
@@ -19,12 +20,14 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
     using Address for address;
     using Strings for uint256;
     using AddressesOrNFTs for AddressesOrNFTs.AddressOrNFT;
+    using EnumerableSet for EnumerableSet.UintSet;
 
     uint256 public constant ADDRESS_NOT_NFT = 0;
 
     struct Token {
         bool exists;
-        mapping(address => mapping(uint256 => bool)) dependencies; //NFT contract & Token Id to dependent/independent
+        //mapping(address => mapping(uint256 => bool)) dependencies; //NFT contract & Token Id to dependent/independent
+        EnumerableSet.UintSet dependencies; //NFT contract & Token Id to dependent/independent
         bool transferable;
         bool burnable;
     }
@@ -38,6 +41,10 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
 
     // Mapping from token ID to owner address
     mapping(uint256 => AddressesOrNFTs.AddressOrNFT) private _owners;
+
+    // Mapping from token ID to owner address
+    mapping(uint256 => AddressesOrNFTs.AddressOrNFT)
+        private _setHashToExternalNft;
 
     // Mapping owner address or NFT owner to token count
     mapping(address /* addressOrNFT */ => mapping(uint256 /* nftTokenIdOr0 */ => uint256))
@@ -936,10 +943,20 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
             _isApprovedOrOwner(_msgSender(), tokenId),
             "ERC721: caller is not token owner or approved"
         );
+
+        uint256 nftHash = AddressesOrNFTs
+            .AddressOrNFT(dependableContractAddress, dependentTokenId)
+            .encodeUint();
         _checkTokenDefaults(tokenId);
-        _tokens[tokenId].dependencies[dependableContractAddress][
-            dependentTokenId
-        ] = dependent;
+        if (dependent) {
+            _setHashToExternalNft[nftHash] = AddressesOrNFTs.AddressOrNFT(
+                dependableContractAddress,
+                dependentTokenId
+            );
+            EnumerableSet.add(_tokens[tokenId].dependencies, nftHash);
+        } else {
+            EnumerableSet.remove(_tokens[tokenId].dependencies, nftHash);
+        }
     }
 
     // EYAL'S ADDITION
@@ -949,9 +966,12 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         uint256 dependentTokenId
     ) public view virtual override returns (bool) {
         return
-            _tokens[tokenId].dependencies[dependableContractAddress][
-                dependentTokenId
-            ];
+            EnumerableSet.contains(
+                _tokens[tokenId].dependencies,
+                AddressesOrNFTs
+                    .AddressOrNFT(dependableContractAddress, dependentTokenId)
+                    .encodeUint()
+            );
     }
 
     // Set default value of `transferable` field of token
@@ -1000,6 +1020,38 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
             _tokens[_tokenId].exists
                 ? _tokens[_tokenId].transferable
                 : defaultTransferable;
+    }
+
+    function tokenTranferable(
+        uint256 _tokenId
+    ) public view virtual returns (bool) {
+        return isTransferable(_tokenId) && isDependentTransferable(_tokenId);
+    }
+
+    function isDependentTransferable(
+        uint256 _tokenId
+    ) public view virtual returns (bool) {
+        for (
+            uint256 i = 0;
+            i < EnumerableSet.length(_tokens[_tokenId].dependencies);
+            i++
+        ) {
+            uint256 nftHash = EnumerableSet.at(
+                _tokens[_tokenId].dependencies,
+                i
+            );
+            AddressesOrNFTs.AddressOrNFT storage extDep = _setHashToExternalNft[
+                nftHash
+            ];
+            if (
+                !ICommanderToken(extDep.addressOrNftContract).tokenTranferable(
+                    extDep.tokenId
+                )
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     function isBurnable(

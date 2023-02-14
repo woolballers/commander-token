@@ -207,6 +207,12 @@ interface ICommanderToken is IERC721 {
 
     function isTransferable(uint256 _tokenId) external view returns (bool);
 
+    function tokenTranferable(uint256 _tokenId) external view returns (bool);
+
+    function isDependentTransferable(
+        uint256 _tokenId
+    ) external view returns (bool);
+
     function isBurnable(uint256 _tokenId) external view returns (bool);
 
     function burn(uint256 tokenId) external;
