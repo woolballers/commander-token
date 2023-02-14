@@ -79,7 +79,7 @@ interface ICommanderToken is IERC721 {
     /**
      * From address to NFT
      */
-    function transferFrom(
+    function transferFromToNft(
         address _fromAddress,
         address _toNFTContractAddress,
         uint256 _toId,
@@ -89,7 +89,7 @@ interface ICommanderToken is IERC721 {
     /**
      * From NFT to address
      */
-    function transferFrom(
+    function transferFromNft(
         address _fromNFTContractAddress,
         uint256 _fromId,
         address _toAddress,
@@ -99,7 +99,7 @@ interface ICommanderToken is IERC721 {
     /**
      * From NFT to NFT
      */
-    function transferFrom(
+    function transferFromNftToNft(
         address _fromNFTContractAddress,
         uint256 _fromId,
         address _toNFTContractAddress,

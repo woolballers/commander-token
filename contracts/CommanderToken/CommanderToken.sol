@@ -272,7 +272,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
      * From address to NFT
      *
      */
-    function transferFrom(
+    function transferFromToNft(
         address _fromAddress,
         address _toNFTContractAddress,
         uint256 _toId,
@@ -284,7 +284,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
     /**
      * From NFT to address
      */
-    function transferFrom(
+    function transferFromNft(
         address _fromNFTContractAddress,
         uint256 _fromId,
         address _toAddress,
@@ -296,7 +296,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
     /**
      * From NFT to NFT
      */
-    function transferFrom(
+    function transferFromNftToNft(
         address _fromNFTContractAddress,
         uint256 _fromId,
         address _toNFTContractAddress,
