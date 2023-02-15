@@ -89,8 +89,9 @@ describe('CommanderToken', function () {
 
         await mintTokensFixture(this);
 
-        comanderTokenSetBurnableDefaultFixture(this);
-        comanderTokenSetTransferableDefaultFixture(this);
+
+        this.defaultBurnable = true;
+        this.defaultTransferable = true;
 
 
 
@@ -320,6 +321,64 @@ describe('CommanderToken', function () {
 
 
         })
+
+        it('Token not transfarable', async function () {
+            const tokenIdToTransfer = getRandomMintedTokenId(this.initialMint);
+            const transferToWallet = this.wallet2.address;
+
+            const ownerAddress = await this.CommanderToken.ownerOf(tokenIdToTransfer);
+            expect(ownerAddress).to.not.equal(transferToWallet);
+            expect(ownerAddress).to.equal(this.owner.address);
+
+            await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToTransfer, false);
+
+            expect(await this.CommanderToken.tokenTranferable(tokenIdToTransfer)).to.equal(false);
+
+            // await this.CommanderToken.connect(this.owner).transferFrom(ownerAddress, transferToWallet, tokenIdToTransfer);
+
+            // const newOwnerAddress = await this.CommanderToken.ownerOf(tokenIdToTransfer);
+
+            // expect(newOwnerAddress).to.equal(transferToWallet);
+
+
+        })
+
+        it('Dependency not transfarable', async function () {
+
+            const [tokenIdToChange, dependentTokenId] = getRandomMintedTokens(this.initialMint)
+
+            const defaultDependence = false;
+            const isDependent = true;
+            const dependableContractAddress = this.CommanderToken.address;
+
+            await this.CommanderToken.connect(this.owner).setTransferable(dependentTokenId, false);
+
+
+            expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
+
+            // Change default burnability of one of the NFTs
+            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId, isDependent);
+
+
+            expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(isDependent);
+
+
+
+            const transferToWallet = this.wallet2.address;
+
+
+            expect(await this.CommanderToken.tokenTranferable(tokenIdToChange)).to.equal(false);
+            // await this.CommanderToken.connect(this.owner).transferFrom(this.owner.address, transferToWallet, tokenIdToChange);
+
+            // const newOwnerAddress = await this.CommanderToken.ownerOf(tokenIdToChange);
+
+            // expect(newOwnerAddress).to.equal(transferToWallet);
+
+
+        })
+
+
+
     });
 
     // it('Emits a transfer event for newly minted NFTs', async function () {

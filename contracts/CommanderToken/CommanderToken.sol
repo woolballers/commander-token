@@ -13,6 +13,8 @@ import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "./utils/AddressesOrNFTs.sol";
 import "./interfaces/ICommanderToken.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @dev Implementation of CommanderToken Standard
  */
@@ -63,7 +65,10 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
     constructor(
         string memory name_,
         string memory symbol_
-    ) ERC721(name_, symbol_) {}
+    ) ERC721(name_, symbol_) {
+        defaultTransferable = true;
+        defaultBurnable = true;
+    }
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -666,6 +671,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         );
         require(to != address(0), "ERC721: transfer to the zero address");
 
+        _beforeTokenTransfer(tokenId);
         _beforeTokenTransfer(from, to, tokenId, 1);
 
         // Check that tokenId was not transferred by `_beforeTokenTransfer` hook
@@ -714,6 +720,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
             CommanderToken.ownerOf(tokenId) == from,
             "ERC721: transfer from incorrect owner"
         );
+        _beforeTokenTransfer(tokenId);
 
         // _beforeTokenTransfer(from, to, tokenId, 1);
 
@@ -773,6 +780,7 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
             to != address(0),
             "CommanderToken: transfer to the zero address"
         );
+        _beforeTokenTransfer(tokenId);
 
         //_beforeTokenTransfer(from, to, tokenId, 1);
 
@@ -829,6 +837,8 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         //require(to != address(0), "ERC721: transfer to the zero address");
 
         //_beforeTokenTransfer(from, to, tokenId, 1);
+
+        _beforeTokenTransfer(tokenId);
 
         // Check that tokenId was not transferred by `_beforeTokenTransfer` hook
         // require(
@@ -918,6 +928,13 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
         }
     }
 
+    function _beforeTokenTransfer(uint256 tokenID) internal virtual {
+        require(
+            tokenTranferable(tokenID),
+            "ICommanderToken: token not transferable"
+        );
+    }
+
     function _checkTokenDefaults(uint256 tokenId) internal virtual {
         if (!_tokens[tokenId].exists) {
             _tokens[tokenId].exists = true;
@@ -975,8 +992,8 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
     }
 
     // Set default value of `transferable` field of token
-    function setDefaultTransferable(bool transferable) external {
-        defaultTransferable = transferable;
+    function setDefaultTransferable(bool newDefaultTransferable) external {
+        defaultTransferable = newDefaultTransferable;
     }
 
     // EYAL'S ADDITION
@@ -1031,6 +1048,12 @@ contract CommanderToken is ICommanderToken, ERC721, Ownable {
     function isDependentTransferable(
         uint256 _tokenId
     ) public view virtual returns (bool) {
+        if (
+            (!_tokens[_tokenId].exists) ||
+            (EnumerableSet.length(_tokens[_tokenId].dependencies) == 0)
+        ) {
+            return true;
+        }
         for (
             uint256 i = 0;
             i < EnumerableSet.length(_tokens[_tokenId].dependencies);
