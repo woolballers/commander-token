@@ -1,213 +1,74 @@
 // SPDX-License-Identifier: MIT
-// Contract for an NFT that can be belonged to another NFT
+// Interface for an NFT that command another NFT or be commanded by another NFT
 
 pragma solidity >=0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
- * @dev An interface extending ERC721 to allow owner to be another NFT, from any collection
+ * @dev An interface extending ERC721 where one token can be locked or dependent on another token.
+ * @dev Both cases (dependence, locking) are possible only if the tokens have the same owner.
+ * @dev If token A is locked to token B, we call B a Commander Token (CT), and A Private Token (PT).
+ * @dev if token B depedns on A, we again call B a Commander Token (CT), and A Private Token (PT).
+ * @dev If token A is locked to token B, then A cannot be transferred without B being transferred.
  */
 interface ICommanderToken is IERC721 {
     /**
-     * @dev Returns the number of tokens in ``owner``'s account.
+     * Sets dependence of one token (called Commander Token or CT) on another token (called Private Token or PT). 
+     * The Private Token must be locked to the Commander Token, in order to prevent that Private Token will be transfered
+     * while the dependency is in place. If such a locking does not exist yet, setDependence creates it.
+     * 
+     * When Token A depends on Token B it means that each transfer or burn of token A, also transfers or
+     * burns token B, and if token B is untransferable or unburnable, then so does token A. 
+     * 
+     * Both tokens must have the same owner.
      */
-    function balanceOf(
-        address _NFTContract,
-        uint256 _ownerId
-    ) external view returns (uint256 balance);
+    function setDependence(uint256 CTId, address PTContractAddress, uint256 PTId) external;
+
+    function removeDependence(uint256 CTId, address PTContractAddress, uint256 PTId) external;
+
+    function isDependent(uint256 CTId, address PTContractAddress, uint256 PTId) external view returns (bool);
 
     /**
-     * @dev Returns the NFT owner of the `tokenId` token.
-     * @dev If the token is not owned by another  NFT, it returns (0x, 0).
-     *
-     * Requirements:
-     *
-     * - `tokenId` must exist.
-     */
-    function ownerOfNft(
-        uint256 _tokenId
-    ) external view returns (address NFTContractAddress, uint256 owner);
+     * Locks a Private Token to a Commander Token. Both tokens must have the same owner.
+     * 
+     * The Private Token transfer and burn functions can't be called by its owner as long as the locking is in place.
+     * 
+     * If the Commander Token is transferred or burned, it also transfers or burns the Private Token.
+     * If the Private Token is untransferable or unburnable, then a call to the transfer or burn function of the Commander Token unlocks
+     * the Private  Tokens.
+     * 
+    */
+    function lock(uint256 PTId, address CTContract, uint256 CTId) external;
+
+    function unlock(uint256 PTId) external;
+
+    function isLocked(uint256 PTId) external view returns (address, uint256);
 
     /**
-     * @dev Safely transfers `tokenId` to the posession of an NFT token
-     *
-     * Requirements:
-     *
-     * - `fromAddress` cannot be the zero address.
-     * - `toNFTContractAddress` MUST be an address of an ITokenOwnableTokens contract.
-     * - `toTokenId` MUST be an ID of a minted token in toNFTContractAddress (i.e., owner is not 0x0).
-     * - `tokenId` token must exists in this contract.
-     *
-     */
-    function safeTransferFrom(
-        address fromAddress,
-        address toNFTContractAddress,
-        uint256 toTokenId,
-        uint256 tokenId
-    ) external;
+     * addLockedToken notifies a Commander Token that a Private Token, with the same owner, is locked to it. 
+     * removeLockedToken let a Commander Token remove the locking of a Private Token.
+    */ 
+    function addLockedToken(uint256 PTId, address CTContract, uint256 CTId) external;
+
+    function removeLockedToken(uint256 PTId, address CTContract, uint256 CTId) external;
 
     /**
-     * @dev Safely transfers `tokenId` to the posession of an NFT token
-     *
-     * Requirements:
-     *
-     *
+     * These functions are for managing the effect of dependence of tokens.
+     * If a token is untransferable, then all the tokens depending on it are untransferable as well.
+     * If a token is unburnable, then all the tokens depending on it are unburnable as well.
      */
-    function safeTransferFrom(
-        address _fromNFTContractAddress,
-        uint256 _fromTokenId,
-        address _toAddress,
-        uint256 _tokenId
-    ) external;
+    function setTransferable(uint256 tokenId, bool transferable) external;
+
+    function setBurnable(uint256 tokenId, bool burnable) external;
+
+    function isTransferable(uint256 tokenId) external view returns (bool);
+
+    function isBurnable(uint256 tokenId) external view returns (bool);
 
     /**
-     * @dev Safely transfers `tokenId` to the posession of an NFT token
-     *
-     * Requirements:
-     *
-     *
+     * Mint and burn are not part of ERC721, since the standard doesn't specify any rules for how they're done (or if they're done at all).
+     * However, we add a burn function to ICommanderToken, since its implementation depends on the dependence system.
      */
-    function safeTransferFrom(
-        address _fromNFTContractAddress,
-        uint256 _fromTokenId,
-        address _toNFTContractAddress,
-        uint256 _toTokenId,
-        uint256 _tokenId
-    ) external;
-
-    /**
-     * From address to NFT
-     */
-    function transferFrom(
-        address _fromAddress,
-        address _toNFTContractAddress,
-        uint256 _toId,
-        uint256 _tokenId
-    ) external;
-
-    /**
-     * From NFT to address
-     */
-    function transferFrom(
-        address _fromNFTContractAddress,
-        uint256 _fromId,
-        address _toAddress,
-        uint256 _tokenId
-    ) external;
-
-    /**
-     * From NFT to NFT
-     */
-    function transferFrom(
-        address _fromNFTContractAddress,
-        uint256 _fromId,
-        address _toNFTContractAddress,
-        uint256 _toId,
-        uint256 _tokenId
-    ) external;
-
-    /**
-     * @dev Gives permission to an owner of an NFT token to transfer, set dependence or burn `tokenId` token to another account.
-     * The approval is cleared when the token is transferred.
-     *
-     *
-     * Only a single account can be approved at a time, so approving the zero address clears previous approvals.
-     * Approving an NFT account clears an approved address if there was any.
-     *
-     * Requirements:
-     *
-     * - The caller must own the token or be an approved operator.
-     * - `_tokenId` must exist in this contract, and '_approvedId' must exist in _toNFTContractAddress,
-     *
-     * Emits an {Approval} event.
-     */
-    function approve(
-        address _toNFTContractAddress,
-        uint256 _approvedId,
-        uint256 _tokenId
-    ) external;
-
-    /**
-     * @dev Returns the account approved for `tokenId` token.
-     *
-     * Requirements:
-     *
-     * - `tokenId` must exist.
-     */
-    function getApprovedNft(
-        uint256 tokenId
-    ) external view returns (address _NFTContractAddress, uint256 _tokenId);
-
-    /**
-     * @dev Approve or remove NFT `operator` as an operator for the caller.
-     * Operators can call {transferFrom}, {safeTransferFrom}, {setDependence} or {burn} for any token owned by the caller.
-     *
-     * Requirements:
-     *
-     * - The `operator` cannot be the caller.
-     *
-     * Emits an {ApprovalForAll} event.
-     */
-    function setApprovalForAll(
-        address _operatorNFTContractAddress,
-        uint256 _operatorId,
-        bool _approved
-    ) external;
-
-    /**
-     * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`.
-     *
-     * See {setApprovalForAll}
-     */
-    function isApprovedForAll(
-        address owner,
-        address _operatorNFTContractAddress,
-        uint256 _operatorId
-    ) external view returns (bool);
-
-    /**
-     * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`.
-     *
-     * See {setApprovalForAll}
-     */
-    function isApprovedForAll(
-        address ownerNftContractAddress,
-        uint256 ownerNftTokenId,
-        address operator
-    ) external view returns (bool);
-
-    /**
-     * Let transfer and burn be dependent on another token.
-     * In this caes you cannot transfer or burn your token unless all the tokens you depend on
-     * are transferable or burnable.
-     * dependency only works if '_dependentTokenId' from '_dependableContractAddress' is owned by uint256 '_tokenId'.
-     * Caller must be the owner, opertaor or approved to use _tokenId.
-     */
-    function setDependence(
-        uint256 _tokenId,
-        ICommanderToken _dependableContractAddress,
-        uint256 _dependentTokenId,
-        bool _dependent
-    ) external;
-
-    function isDependent(
-        uint256 _tokenId,
-        address _dependableContractAddress,
-        uint256 _dependentTokenId
-    ) external view returns (bool);
-
-    /**
-     * These functions are for managing dependence of one token on another.
-     */
-
-    function setBurnable(uint256 _tokenId, bool _burnable) external;
-
-    function setTransferable(uint256 _tokenId, bool _transferable) external;
-
-    function isTransferable(uint256 _tokenId) external view returns (bool);
-
-    function isBurnable(uint256 _tokenId) external view returns (bool);
-
     function burn(uint256 tokenId) external;
 }
