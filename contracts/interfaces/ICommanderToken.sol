@@ -3,7 +3,7 @@
 
 pragma solidity >=0.8.17;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 /**
  * @dev An interface extending ERC721 where one token can be locked or dependent on another token.
@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  * @dev if token B depedns on A, we again call B a Commander Token (CT), and A Private Token (PT).
  * @dev If token A is locked to token B, then A cannot be transferred without B being transferred.
  */
-interface ICommanderToken is IERC721 {
+interface ICommanderToken is IERC721Enumerable {
     /**
      * Sets dependence of one token (called Commander Token or CT) on another token (called Private Token or PT). 
      * The Private Token must be locked to the Commander Token, in order to prevent that Private Token will be transfered

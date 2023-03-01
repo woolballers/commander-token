@@ -3,6 +3,7 @@
 
 pragma solidity >=0.8.17;
 
+import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 import "./interfaces/ICommanderToken.sol";
@@ -10,7 +11,7 @@ import "./interfaces/ICommanderToken.sol";
 /**
  * @dev Implementation of CommanderToken Standard
  */
-contract CommanderTokenV3 is ICommanderToken, ERC721 {
+contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
     struct ExternalToken {
         ICommanderToken tokensCollection;
         uint256         tokenId;
@@ -286,9 +287,10 @@ contract CommanderTokenV3 is ICommanderToken, ERC721 {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
+     // TODO: not sure about what I did here
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(ERC721, IERC165) returns (bool) {
+    ) public view virtual override(ERC721Enumerable, IERC165) returns (bool) {
         return
             interfaceId == type(ICommanderToken).interfaceId ||
             super.supportsInterface(interfaceId);
@@ -301,6 +303,7 @@ contract CommanderTokenV3 is ICommanderToken, ERC721 {
     function transferFrom(address from, address to, uint256 tokenId) public virtual override(IERC721, ERC721) {
         //solhint-disable-next-line max-line-length
 
+        // TODO: don't we need to unlock tokenId? otherwise it's still locked, and to the wrong token
         (, uint256 lockedCT) = isLocked(tokenId);
         if (lockedCT > 0)
             require(msg.sender == address(_tokens[tokenId].locked.tokensCollection), "Commander Token: token is locked and caller is not the contract holding the locking token");
@@ -344,14 +347,7 @@ contract CommanderTokenV3 is ICommanderToken, ERC721 {
         uint256 tokenId,
         uint256 batchSize
     ) internal virtual override {
-        if (batchSize > 1) {
-            if (from != address(0)) {
-                _balances[from] -= batchSize;
-            }
-            if (to != address(0)) {
-                _balances[to] += batchSize;
-            }
-        }
+        super._beforeTokenTransfer(from, to, tokenId, batchSize);
 
         // transfer each token that tokenId depends on
         for (uint i; i < _tokens[tokenId].dependencies.length; i++) {
