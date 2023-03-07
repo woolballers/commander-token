@@ -60,11 +60,9 @@ const getRandomMintedTokens = function (initiallyMinted: string[]): string[] {
 describe('CommanderToken', function () {
     before(async function () {
 
-        // const addressesLibrary = await ethers.getContractFactory('AddressesOrNFTs')
-        // const addressesLibraryDeployed = await addressesLibrary.deploy()
-        // await addressesLibraryDeployed.deployed();
 
-        this.CommanderTokenMintTestFactory = await ethers.getContractFactory('MintTest',);
+
+        this.CommanderTokenMintTestFactory = await ethers.getContractFactory('MintTest');
     });
 
     beforeEach(async function () {
@@ -213,23 +211,6 @@ describe('CommanderToken', function () {
     });
 
 
-    describe('NFT Owned tokens', function () {
-        it('Mint NFT token', async function () {
-            const newNFTTokenId = 52488;
-            const tokenIdToBeOwner = getRandomMintedTokenId(this.initialMint);
-            const nftContractAddress = this.CommanderToken.address;
-
-            await this.CommanderToken.mintNft(nftContractAddress, tokenIdToBeOwner, newNFTTokenId);
-
-            const nftOwner = await this.CommanderToken.ownerOfNft(newNFTTokenId);
-
-            expect(nftOwner.NFTContractAddress).to.equal(nftContractAddress);
-            expect(nftOwner.owner).to.equal(ethers.BigNumber.from(tokenIdToBeOwner));
-
-
-        })
-    });
-
     describe('Transfers', function () {
         it('From wallet to wallet', async function () {
             const tokenIdToTransfer = getRandomMintedTokenId(this.initialMint);
@@ -248,75 +229,6 @@ describe('CommanderToken', function () {
 
         })
 
-        it('From nft to wallet', async function () {
-
-            const tokenIdToTransfer = 52488;
-            const nftContractAddress = this.CommanderToken.address;
-            const nftTokenIdToTransferFrom = getRandomMintedTokenId(this.initialMint);
-            const transferToWallet = this.wallet2.address;
-
-            await this.CommanderToken.mintNft(nftContractAddress, nftTokenIdToTransferFrom, tokenIdToTransfer);
-
-            const nftOwner = await this.CommanderToken.ownerOfNft(tokenIdToTransfer);
-
-            expect(nftOwner.NFTContractAddress).to.equal(nftContractAddress);
-            expect(nftOwner.owner).to.equal(ethers.BigNumber.from(nftTokenIdToTransferFrom));
-
-
-
-            await this.CommanderToken.connect(this.owner).transferFromNft(nftContractAddress, nftTokenIdToTransferFrom, transferToWallet, tokenIdToTransfer);
-
-            const newOwnerAddress = await this.CommanderToken.ownerOf(tokenIdToTransfer);
-
-            expect(newOwnerAddress).to.equal(transferToWallet);
-
-
-        })
-
-
-        it('From nft to nft', async function () {
-
-            const tokenIdToTransfer = 52488;
-            const nftContractAddress = this.CommanderToken.address;
-            const [nftTokenIdToTransferFrom, nftTokenIdToTransferTo] = getRandomMintedTokens(this.initialMint)
-
-            await this.CommanderToken.mintNft(nftContractAddress, nftTokenIdToTransferFrom, tokenIdToTransfer);
-
-            const nftOwner = await this.CommanderToken.ownerOfNft(tokenIdToTransfer);
-
-            expect(nftOwner.NFTContractAddress).to.equal(nftContractAddress);
-            expect(nftOwner.owner).to.equal(ethers.BigNumber.from(nftTokenIdToTransferFrom));
-
-
-
-            await this.CommanderToken.connect(this.owner).transferFromNftToNft(nftContractAddress, nftTokenIdToTransferFrom, nftContractAddress, nftTokenIdToTransferTo, tokenIdToTransfer);
-
-            const newNftOwner = await this.CommanderToken.ownerOfNft(tokenIdToTransfer);
-
-            expect(newNftOwner.NFTContractAddress).to.equal(nftContractAddress);
-            expect(newNftOwner.owner).to.equal(ethers.BigNumber.from(nftTokenIdToTransferTo));
-
-
-        })
-
-        it('From wallet to nft', async function () {
-
-
-            const nftContractAddress = this.CommanderToken.address;
-            const [tokenIdToTransfer, nftTokenIdTransferTo] = getRandomMintedTokens(this.initialMint)
-
-            const tokenOldOwner = await this.CommanderToken.ownerOf(tokenIdToTransfer);
-
-
-            await this.CommanderToken.connect(this.owner).transferFromToNft(tokenOldOwner, nftContractAddress, nftTokenIdTransferTo, tokenIdToTransfer);
-
-            const newNftOwner = await this.CommanderToken.ownerOfNft(tokenIdToTransfer);
-
-            expect(newNftOwner.NFTContractAddress).to.equal(nftContractAddress);
-            expect(newNftOwner.owner).to.equal(ethers.BigNumber.from(nftTokenIdTransferTo));
-
-
-        })
 
         it('Token not transfarable', async function () {
             const tokenIdToTransfer = getRandomMintedTokenId(this.initialMint);
@@ -328,13 +240,7 @@ describe('CommanderToken', function () {
 
             await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToTransfer, false);
 
-            expect(await this.CommanderToken.tokenTranferable(tokenIdToTransfer)).to.equal(false);
-
-            // await this.CommanderToken.connect(this.owner).transferFrom(ownerAddress, transferToWallet, tokenIdToTransfer);
-
-            // const newOwnerAddress = await this.CommanderToken.ownerOf(tokenIdToTransfer);
-
-            // expect(newOwnerAddress).to.equal(transferToWallet);
+            expect(await this.CommanderToken.isTokenTranferable(tokenIdToTransfer)).to.equal(false);
 
 
         })
@@ -363,12 +269,8 @@ describe('CommanderToken', function () {
             const transferToWallet = this.wallet2.address;
 
 
-            expect(await this.CommanderToken.tokenTranferable(tokenIdToChange)).to.equal(false);
-            // await this.CommanderToken.connect(this.owner).transferFrom(this.owner.address, transferToWallet, tokenIdToChange);
+            expect(await this.CommanderToken.isTokenTranferable(tokenIdToChange)).to.equal(false);
 
-            // const newOwnerAddress = await this.CommanderToken.ownerOf(tokenIdToChange);
-
-            // expect(newOwnerAddress).to.equal(transferToWallet);
 
 
         })

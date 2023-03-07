@@ -13,13 +13,4 @@ contract MintTest is CommanderTokenV3 {
         // to do: change to _safeMint
         _mint(to, tokenId);
     }
-
-    // function mintNft(
-    //     address toNFTContract,
-    //     uint256 toNFTTokenId,
-    //     uint256 tokenId
-    // ) external {
-    //     // to do: change to _safeMint
-    //     _mint(toNFTContract, toNFTTokenId, tokenId);
-    // }
 }
