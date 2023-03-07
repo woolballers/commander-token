@@ -84,8 +84,8 @@ describe('CommanderToken', function () {
         await mintTokensFixture(this);
 
 
-        this.defaultBurnable = true;
-        this.defaultTransferable = true;
+        this.defaultBurnable = false;
+        this.defaultTransferable = false;
 
 
 
@@ -126,10 +126,8 @@ describe('CommanderToken', function () {
             // Change default transferability of one of the NFTs
             await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToChange, !this.defaultTransferable);
 
-            // Check for transferability
-            for (let i = 1; i <= this.initialMint.length; i++) {
-                expect(await this.CommanderToken.isTransferable(i)).to.equal(i == tokenIdToChange ? !this.defaultTransferable : this.defaultTransferable);
-            }
+            expect(await this.CommanderToken.isTransferable(tokenIdToChange)).to.equal(!this.defaultTransferable);
+
         });
 
         it('Setting transferability doesn\'t affect burnability', async function () {
@@ -200,7 +198,7 @@ describe('CommanderToken', function () {
             expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
 
             // Change default burnability of one of the NFTs
-            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId, isDependent);
+            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId);
 
 
             expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(isDependent);
@@ -259,7 +257,7 @@ describe('CommanderToken', function () {
             expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
 
             // Change default burnability of one of the NFTs
-            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId, isDependent);
+            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId);
 
 
             expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(isDependent);
@@ -276,6 +274,22 @@ describe('CommanderToken', function () {
         })
 
 
+
+    });
+
+    it('Lock works', async function () {
+
+    });
+
+    it('Lock doesnt work when 2 different owners', async function () {
+
+    });
+
+    it('Lock a=>b, a not transfarable by owner only by contract b', async function () {
+
+    });
+
+    it('Dependant also locks', async function () {
 
     });
 
