@@ -357,6 +357,27 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         return _tokens[tokenId].burnable;
     }
 
+    function isTokenTranferable(
+        uint256 CTId
+    ) public view virtual returns (bool) {
+        return isTransferable(CTId) && isDependentTransferable(CTId);
+    }
+
+    function isDependentTransferable(
+        uint256 CTId
+    ) public view virtual returns (bool) {
+        for (uint256 i = 0; i < _tokens[CTId].dependencies.length; i++) {
+            ICommanderToken PTContract = _tokens[CTId]
+                .dependencies[i]
+                .tokensCollection;
+            uint256 PTId = _tokens[CTId].dependencies[i].tokenId;
+            if (!PTContract.tokenTranferable(PTId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     function burn(uint256 tokenId) public virtual override {}
 
     /**
@@ -468,24 +489,5 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
                 removeLockedToken(tokenId, address(PTContract), PTId);
             else PTContract.transferFrom(from, to, PTId);
         }
-    }
-
-    function tokenTranferable(uint256 CTId) public view virtual returns (bool) {
-        return isTransferable(CTId) && isDependentTransferable(CTId);
-    }
-
-    function isDependentTransferable(
-        uint256 CTId
-    ) public view virtual returns (bool) {
-        for (uint256 i = 0; i < _tokens[CTId].dependencies.length; i++) {
-            ICommanderToken PTContract = _tokens[CTId]
-                .dependencies[i]
-                .tokensCollection;
-            uint256 PTId = _tokens[CTId].dependencies[i].tokenId;
-            if (!PTContract.tokenTranferable(PTId)) {
-                return false;
-            }
-        }
-        return true;
     }
 }
