@@ -359,19 +359,19 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
 
     function isTokenTranferable(
         uint256 CTId
-    ) public view virtual returns (bool) {
+    ) public view virtual override returns (bool) {
         return isTransferable(CTId) && isDependentTransferable(CTId);
     }
 
     function isDependentTransferable(
         uint256 CTId
-    ) public view virtual returns (bool) {
+    ) public view virtual override returns (bool) {
         for (uint256 i = 0; i < _tokens[CTId].dependencies.length; i++) {
             ICommanderToken PTContract = _tokens[CTId]
                 .dependencies[i]
                 .tokensCollection;
             uint256 PTId = _tokens[CTId].dependencies[i].tokenId;
-            if (!PTContract.tokenTranferable(PTId)) {
+            if (!PTContract.isTokenTranferable(PTId)) {
                 return false;
             }
         }
