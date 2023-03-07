@@ -64,6 +64,10 @@ interface ICommanderToken is IERC721Enumerable {
 
     function isTransferable(uint256 tokenId) external view returns (bool);
 
+    function tokenTranferable(uint256 tokenId) external view returns (bool);
+
+    function isDependentTransferable(uint256 tokenId) external view returns (bool);
+
     function isBurnable(uint256 tokenId) external view returns (bool);
 
     /**
