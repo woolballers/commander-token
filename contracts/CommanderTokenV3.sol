@@ -128,9 +128,9 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         newDependency.tokenId = PTId;
 
         // save the index of the new dependency
-        _tokens[CTId].dependenciesIndex[PTContractAddress][PTId] = _tokens[CTId]
-            .dependencies
-            .length;
+        _tokens[CTId].dependenciesIndex[PTContractAddress][PTId] =
+            _tokens[CTId].dependencies.length +
+            1;
 
         // add dependency
         _tokens[CTId].dependencies.push(newDependency);
