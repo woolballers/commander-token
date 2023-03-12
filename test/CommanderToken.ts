@@ -2,44 +2,61 @@ import { ethers } from "hardhat";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { loadFixture, time } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
-import { TOKEN_NAME, TOKEN_SYMBOL, INITIAL_MINT_COUNT } from "../constants/test";
+import { TOKEN_NAME, TOKEN_SYMBOL, INITIAL_MINT_COUNT, TOKEN_NAME2, TOKEN_SYMBOL2, INITIAL_MINT_COUNT2 } from "../constants/test";
 
-import {
-    CommanderTokenV3
-} from "../typechain-types";
-
-
-/*
-  const TestNftOwner = {
-    nftContract: "0x0000000000000000000000000000000000000000",
-    ownerTokenId: 0
+interface MintResponse {
+    initialMintCount: number;
+    initialMint: string[];
 }
-*/
+
+interface DeployAndMintResponse {
+    commanderToken: any;
+    mintResp: MintResponse;
+}
+
+
+async function expectTokenNotLocked(commanderTokenContract: any, tokenId: string): Promise<void> {
+    const [contractAddress1, tokenId1] = await commanderTokenContract.isLocked(tokenId)
+
+    expect(tokenId1).to.equal(ethers.BigNumber.from(0));
+}
+
+
+async function expectTokenShouldBeLocked(commanderTokenContract: any, tokenId: string): Promise<void> {
+    const [contractAddress1, tokenId1] = await commanderTokenContract.isLocked(tokenId)
+
+    expect(tokenId1).to.not.equal(ethers.BigNumber.from(0));
+}
+
 
 // etherjs overloading bug - https://github.com/NomicFoundation/hardhat/issues/2203
 
+//testObj: Mocha.Context
+const mintTokensFixture = async (collectorContract: any, tokensOwner: any, initialMintCount: number): Promise<MintResponse> => {
+    let mintResp: MintResponse = { initialMintCount: initialMintCount, initialMint: [] }
 
-const mintTokensFixture = async function (testObj: Mocha.Context) {
-    testObj.initialMintCount = INITIAL_MINT_COUNT;
-    testObj.initialMint = [];
-    for (let i = 1; i <= testObj.initialMintCount; i++) { // tokenId to start at 1
+    for (let i = 1; i <= mintResp.initialMintCount; i++) { // tokenId to start at 1
         // is called like that because of etherjs overloading bug - https://github.com/NomicFoundation/hardhat/issues/2203
-        await testObj.collectorContract["mint(address,uint256)"](testObj.contractOwner, i);
-        testObj.initialMint.push(i.toString());
+        await collectorContract["mint(address,uint256)"](tokensOwner, i);
+        mintResp.initialMint.push(i.toString());
     }
+
+    return mintResp
 }
 
-const comanderTokenSetBurnableDefaultFixture = async function (testObj: Mocha.Context) {
-    // Randomly set defaultBurnable
-    testObj.defaultBurnable = Math.random() < 0.5 ? false : true;
-    testObj.collectorContract["setDefaultBurnable(bool)"](testObj.defaultBurnable);
+
+const deployAndMint2TokensFixture = async (contractOwner: any, tokensOwner: any): Promise<DeployAndMintResponse> => {
+    let resp: DeployAndMintResponse = { commanderToken: null, mintResp: { initialMintCount: INITIAL_MINT_COUNT2, initialMint: [] } }
+    const CommanderTokenMintTestFactory = await ethers.getContractFactory('MintTest');
+
+    resp.commanderToken = await CommanderTokenMintTestFactory.connect(contractOwner).deploy(TOKEN_NAME2, TOKEN_SYMBOL2);
+    await resp.commanderToken.deployed();
+    resp.mintResp = await mintTokensFixture(resp.commanderToken.connect(contractOwner), tokensOwner.address, INITIAL_MINT_COUNT2);
+
+
+    return resp
 }
 
-const comanderTokenSetTransferableDefaultFixture = async function (testObj: Mocha.Context) {
-    // Randomly set defaultTransferable
-    testObj.defaultTransferable = Math.random() < 0.5 ? false : true;
-    testObj.collectorContract["setDefaultTransferable(bool)"](testObj.defaultTransferable);
-}
 
 const getRandomMintedTokenId = function (initiallyMinted: string[]): number {
     let n = Math.floor(Math.random() * initiallyMinted.length) + 1;
@@ -60,8 +77,6 @@ const getRandomMintedTokens = function (initiallyMinted: string[]): string[] {
 describe('CommanderToken', function () {
     before(async function () {
 
-
-
         this.CommanderTokenMintTestFactory = await ethers.getContractFactory('MintTest');
     });
 
@@ -76,18 +91,23 @@ describe('CommanderToken', function () {
         this.collector = signers[1].address;
         this.owner = signers[0];
         this.wallet2 = signers[2];
+        this.wallet3 = signers[3];
 
+
+        this.CommanderToken2 = await this.CommanderTokenMintTestFactory.deploy(TOKEN_NAME, TOKEN_SYMBOL);
+        await this.CommanderToken2.deployed();
 
         // Get the collector contract for signing transaction with collector key
         this.collectorContract = this.CommanderToken.connect(signers[1]);
 
-        await mintTokensFixture(this);
+        const mintResp = await mintTokensFixture(this.collectorContract, this.contractOwner, INITIAL_MINT_COUNT);
+
+        this.initialMintCount = mintResp.initialMintCount;
+        this.initialMint = mintResp.initialMint;
 
 
         this.defaultBurnable = false;
         this.defaultTransferable = false;
-
-
 
     });
 
@@ -200,9 +220,7 @@ describe('CommanderToken', function () {
             // Change default burnability of one of the NFTs
             await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId);
 
-
             expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(isDependent);
-
 
         });
 
@@ -286,9 +304,7 @@ describe('CommanderToken', function () {
             const lockedByTokenContractAddress = this.CommanderToken.address;
 
 
-            const [contractAddress1, tokenId1] = await this.CommanderToken.isLocked(lockedTokenId)
-
-            expect(tokenId1).to.equal(0);
+            await expectTokenNotLocked(this.CommanderToken, lockedTokenId);
 
 
             await this.CommanderToken.connect(this.owner).lock(lockedTokenId, lockedByTokenContractAddress, lockedByTokenId);
@@ -326,9 +342,7 @@ describe('CommanderToken', function () {
 
             // lock
 
-            const [contractAddress1, tokenId1] = await this.CommanderToken.isLocked(lockedTokenId)
-
-            expect(tokenId1).to.equal(0);
+            await expectTokenNotLocked(this.CommanderToken, lockedTokenId)
 
 
             expect(this.CommanderToken.connect(this.owner).lock(lockedTokenId, lockedByTokenContractAddress, lockedByTokenId)).to.be.revertedWith("CommanderToken: not sameOwner")
@@ -344,16 +358,17 @@ describe('CommanderToken', function () {
 
         it('Dependant also locks', async function () {
 
-            const [tokenIdToChange, dependentTokenId] = getRandomMintedTokens(this.initialMint)
+            const resp: DeployAndMintResponse = await deployAndMint2TokensFixture(this.wallet2, this.owner)
+            const [tokenIdToChange] = getRandomMintedTokens(this.initialMint)
 
             const defaultDependence = false;
             const isDependent = true;
-            const dependableContractAddress = this.CommanderToken.address;
+
+            const dependableContractAddress = resp.commanderToken.address;
+            const dependentTokenId = '1'
 
 
-            const [contractAddress1, tokenId1] = await this.CommanderToken.isLocked(dependentTokenId)
-
-            expect(tokenId1).to.equal(ethers.BigNumber.from(0));
+            await expectTokenNotLocked(resp.commanderToken, dependentTokenId)
 
             expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
 
@@ -365,84 +380,11 @@ describe('CommanderToken', function () {
 
 
 
-            const [contractAddress2, tokenId2] = await this.CommanderToken.isLocked(dependentTokenId)
-
-            expect(tokenId2).to.not.equal(ethers.BigNumber.from(0));
+            await expectTokenShouldBeLocked(resp.commanderToken, dependentTokenId)
 
         });
     });
 
-    // it('Emits a transfer event for newly minted NFTs', async function () {
-    //     let tokenId = (this.initialMint.length + 1).toString();
-    //     await expect(this.CommanderToken.mintCollectionNFT(this.contractOwner, tokenId))
-    //         .to.emit(this.CommanderToken, "Transfer")
-    //         .withArgs("0x0000000000000000000000000000000000000000", this.contractOwner, tokenId); //NFTs are minted from zero address
-    // });
 
-    // it('Is able to transfer NFTs to another wallet when called by owner', async function () {
-    //     let tokenId = this.initialMint[0].toString();
-    //     await this.CommanderToken["safeTransferFrom(address,address,uint256)"](this.contractOwner, this.collector, tokenId);
-    //     expect(await this.CommanderToken.ownerOf(tokenId)).to.equal(this.collector);
-    // });
-
-    // it('Emits a Transfer event when transferring a NFT', async function () {
-    //     let tokenId = this.initialMint[0].toString();
-    //     await expect(this.CommanderToken["safeTransferFrom(address,address,uint256)"](this.contractOwner, this.collector, tokenId))
-    //         .to.emit(this.CommanderToken, "Transfer")
-    //         .withArgs(this.contractOwner, this.collector, tokenId);
-    // });
-
-    // it('Approves an operator wallet to spend owner NFT', async function () {
-    //     let tokenId = this.initialMint[0].toString();
-    //     await this.CommanderToken.approve(this.collector, tokenId);
-    //     expect(await this.CommanderToken.getApproved(tokenId)).to.equal(this.collector);
-    // });
-
-    // it('Emits an Approval event when an operator is approved to spend a NFT', async function () {
-    //     let tokenId = this.initialMint[0].toString();
-    //     await expect(this.CommanderToken.approve(this.collector, tokenId))
-    //         .to.emit(this.CommanderToken, "Approval")
-    //         .withArgs(this.contractOwner, this.collector, tokenId);
-    // });
-
-    // it('Allows operator to transfer NFT on behalf of owner', async function () {
-    //     let tokenId = this.initialMint[0].toString();
-    //     await this.CommanderToken.approve(this.collector, tokenId);
-    //     // Using the collector contract which has the collector's key
-    //     await this.collectorContract["safeTransferFrom(address,address,uint256)"](this.contractOwner, this.collector, tokenId);
-    //     expect(await this.CommanderToken.ownerOf(tokenId)).to.equal(this.collector);
-    // });
-
-    // it('Approves an operator to spend all of an owner\'s NFTs', async function () {
-    //     await this.CommanderToken.setApprovalForAll(this.collector, true);
-    //     expect(await this.CommanderToken.isApprovedForAll(this.contractOwner, this.collector)).to.equal(true);
-    // });
-
-    // it('Emits an ApprovalForAll event when an operator is approved to spend all NFTs', async function () {
-    //     let isApproved = true
-    //     await expect(this.CommanderToken.setApprovalForAll(this.collector, isApproved))
-    //         .to.emit(this.CommanderToken, "ApprovalForAll")
-    //         .withArgs(this.contractOwner, this.collector, isApproved);
-    // });
-
-    // it('Removes an operator from spending all of owner\'s NFTs', async function () {
-    //     // Approve all NFTs first
-    //     await this.CommanderToken.setApprovalForAll(this.collector, true);
-    //     // Remove approval privileges
-    //     await this.CommanderToken.setApprovalForAll(this.collector, false);
-    //     expect(await this.CommanderToken.isApprovedForAll(this.contractOwner, this.collector)).to.equal(false);
-    // });
-
-    // it('Allows operator to transfer all NFTs on behalf of owner', async function () {
-    //     await this.CommanderToken.setApprovalForAll(this.collector, true);
-    //     for (let i = 0; i < this.initialMint.length; i++) {
-    //         await this.collectorContract["safeTransferFrom(address,address,uint256)"](this.contractOwner, this.collector, this.initialMint[i]);
-    //     }
-    //     expect(await this.CommanderToken.balanceOf(this.collector)).to.equal(this.initialMint.length.toString());
-    // });
-
-    // it('Only allows contractOwner to mint NFTs', async function () {
-    //     await expect(this.collectorContract.mintCollectionNFT(this.collector, "100")).to.be.reverted;
-    // });
 
 });

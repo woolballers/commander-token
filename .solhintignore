@@ -9,3 +9,7 @@ scripts/
 tasks/
 test/
 .vscode/
+.github/
+docs/
+external-scripts/
+build/
