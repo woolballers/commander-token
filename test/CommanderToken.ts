@@ -277,20 +277,74 @@ describe('CommanderToken', function () {
 
     });
 
-    it('Lock works', async function () {
+    describe('Locks', function () {
 
-    });
+        it('Lock works', async function () {
+            const [lockedTokenId, lockedByTokenId] = getRandomMintedTokens(this.initialMint)
 
-    it('Lock doesnt work when 2 different owners', async function () {
 
-    });
+            const lockedByTokenContractAddress = this.CommanderToken.address;
 
-    it('Lock a=>b, a not transfarable by owner only by contract b', async function () {
 
-    });
+            const [contractAddress1, tokenId1] = await this.CommanderToken.isLocked(lockedTokenId)
 
-    it('Dependant also locks', async function () {
+            expect(tokenId1).to.equal(0);
 
+
+            await this.CommanderToken.connect(this.owner).lock(lockedTokenId, lockedByTokenContractAddress, lockedByTokenId);
+
+
+            const [contractAddress2, tokenId2] = await this.CommanderToken.isLocked(lockedTokenId)
+
+            expect(contractAddress2).to.equal(lockedByTokenContractAddress);
+
+
+            expect(tokenId2).to.equal(lockedByTokenId);
+
+
+
+
+        });
+
+        it('Lock doesnt work when 2 different owners', async function () {
+            
+
+            const [lockedTokenId, lockedByTokenId] = getRandomMintedTokens(this.initialMint)
+
+            const lockedByTokenContractAddress = this.CommanderToken.address;
+            const newOwner = this.wallet2.address;
+
+            const ownerAddress = await this.CommanderToken.ownerOf(lockedByTokenId);
+            expect(ownerAddress).to.not.equal(newOwner);
+            expect(ownerAddress).to.equal(this.owner.address);
+
+            await this.CommanderToken.connect(this.owner).transferFrom(ownerAddress, newOwner, lockedByTokenId);
+
+            const newOwnerAddress = await this.CommanderToken.ownerOf(lockedByTokenId);
+
+            expect(newOwnerAddress).to.equal(newOwner);
+
+            // lock
+
+            const [contractAddress1, tokenId1] = await this.CommanderToken.isLocked(lockedTokenId)
+
+            expect(tokenId1).to.equal(0);
+
+
+            expect(this.CommanderToken.connect(this.owner).lock(lockedTokenId, lockedByTokenContractAddress, lockedByTokenId)).to.be.revertedWith("CommanderToken: not sameOwner")
+
+
+           
+
+        });
+
+        it('Lock a=>b, a not transfarable by owner only by contract b', async function () {
+
+        });
+
+        it('Dependant also locks', async function () {
+
+        });
     });
 
     // it('Emits a transfer event for newly minted NFTs', async function () {

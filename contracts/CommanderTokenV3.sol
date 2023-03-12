@@ -6,6 +6,9 @@ pragma solidity >=0.8.17;
 import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
+
+import "hardhat/console.sol";
+
 import "./interfaces/ICommanderToken.sol";
 
 /**
@@ -45,7 +48,7 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         uint256 PTId
     ) {
         require(
-            ERC721.ownerOf(CTId) == ERC721(PTContractAddress).ownerOf(PTId)
+            ERC721.ownerOf(CTId) == ERC721(PTContractAddress).ownerOf(PTId), "CommanderToken: not sameOwner"
         );
         _;
     }
@@ -53,7 +56,7 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
     modifier onlyContract(address contractAddress) {
         require(
             contractAddress == msg.sender,
-            "Commander Tokken: transaction is not sent by the correct contract"
+            "Commander Token: transaction is not sent by the correct contract"
         );
         _;
     }
@@ -211,14 +214,15 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         sameOwner(PTId, CTContract, CTId)
     {
         // check that PTId is not dependent already on CTId to prevent loops
+
         require(
-            _tokens[PTId].dependenciesIndex[CTContract][CTId] > 0,
+            _tokens[PTId].dependenciesIndex[CTContract][CTId] == 0,
             "Commander Token: the specified PTId depends on CTId in the CTContract specified."
         );
 
         // check that PTId is unlocked
         (, uint256 lockedCT) = isLocked(PTId);
-        require(lockedCT != 0, "Commander Token: token is already locked");
+        require(lockedCT == 0, "Commander Token: token is already locked");
 
         // lock token
         _tokens[PTId].locked.tokensCollection = ICommanderToken(CTContract);
