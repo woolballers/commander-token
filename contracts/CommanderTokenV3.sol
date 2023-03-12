@@ -146,7 +146,7 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         uint256 CTId,
         address PTContractAddress,
         uint256 PTId
-    ) public virtual override {
+    ) public virtual override approvedOrOwner(CTId) {
         // check that CTId is indeed dependent on PTId
         require(
             _tokens[CTId].dependenciesIndex[PTContractAddress][PTId] > 0,
