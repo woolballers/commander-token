@@ -6,9 +6,6 @@ pragma solidity >=0.8.17;
 import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-
-import "hardhat/console.sol";
-
 import "./interfaces/ICommanderToken.sol";
 
 /**
@@ -48,7 +45,8 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         uint256 PTId
     ) {
         require(
-            ERC721.ownerOf(CTId) == ERC721(PTContractAddress).ownerOf(PTId), "CommanderToken: not sameOwner"
+            ERC721.ownerOf(CTId) == ERC721(PTContractAddress).ownerOf(PTId),
+            "CommanderToken: not sameOwner"
         );
         _;
     }
@@ -104,7 +102,6 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         (address PTLockedContract, uint256 PTLockedToTokenId) = ICommanderToken(
             PTContractAddress
         ).isLocked(PTId);
-
         // if PTId is not locked yet -- lock it to CTId
         if (PTLockedContract == address(0)) {
             (bool success, bytes memory data) = PTContractAddress.delegatecall(
@@ -115,6 +112,7 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
                     CTId
                 )
             );
+
             // TODO should we kill the function if success if false?
         }
         // if locked, verify its locked to CTId

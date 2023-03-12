@@ -307,7 +307,7 @@ describe('CommanderToken', function () {
         });
 
         it('Lock doesnt work when 2 different owners', async function () {
-            
+
 
             const [lockedTokenId, lockedByTokenId] = getRandomMintedTokens(this.initialMint)
 
@@ -334,7 +334,7 @@ describe('CommanderToken', function () {
             expect(this.CommanderToken.connect(this.owner).lock(lockedTokenId, lockedByTokenContractAddress, lockedByTokenId)).to.be.revertedWith("CommanderToken: not sameOwner")
 
 
-           
+
 
         });
 
@@ -343,6 +343,31 @@ describe('CommanderToken', function () {
         });
 
         it('Dependant also locks', async function () {
+
+            const [tokenIdToChange, dependentTokenId] = getRandomMintedTokens(this.initialMint)
+
+            const defaultDependence = false;
+            const isDependent = true;
+            const dependableContractAddress = this.CommanderToken.address;
+
+
+            const [contractAddress1, tokenId1] = await this.CommanderToken.isLocked(dependentTokenId)
+
+            expect(tokenId1).to.equal(ethers.BigNumber.from(0));
+
+            expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
+
+            // Change default burnability of one of the NFTs
+            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId);
+
+
+            expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(isDependent);
+
+
+
+            const [contractAddress2, tokenId2] = await this.CommanderToken.isLocked(dependentTokenId)
+
+            expect(tokenId2).to.not.equal(ethers.BigNumber.from(0));
 
         });
     });
