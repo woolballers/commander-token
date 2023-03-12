@@ -98,30 +98,15 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
             "Commander Token: CTid already depends on PTid from PTContractAddress"
         );
 
-        // get locking information for PTId
+        // PTId must be locked to CTId before setting dependence
         (address PTLockedContract, uint256 PTLockedToTokenId) = ICommanderToken(
             PTContractAddress
         ).isLocked(PTId);
-        // if PTId is not locked yet -- lock it to CTId
-        if (PTLockedContract == address(0)) {
-            (bool success, bytes memory data) = PTContractAddress.delegatecall(
-                abi.encodeWithSignature(
-                    "lock(uint256,  address,  uint256)",
-                    PTId,
-                    address(this),
-                    CTId
-                )
-            );
-
-            // TODO should we kill the function if success if false?
-        }
-        // if locked, verify its locked to CTId
-        else
-            require(
-                (PTLockedContract == address(this) &&
-                    PTLockedToTokenId == CTId),
-                "Commander Token: PTId is already locked to a different token"
-            );
+        
+        require (PTLockedContract == address(this) && 
+                PTLockedToTokenId == CTId, 
+                "Commander Token: PTId must be locked to CTId before setting dependence"
+        );
 
         // create ExternalToken variable to express the dependency
         ExternalToken memory newDependency; //TODO not sure memory is the location for this variable
@@ -320,15 +305,8 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         _tokens[CTId].lockedTokens.pop();
 
         // notify PTContract that locking was removed
-        (bool success, bytes memory data) = PTContract.delegatecall(
-            abi.encodeWithSignature(
-                "unlock(uint256,  address,  uint256)",
-                PTId,
-                address(this),
-                CTId
-            )
-        );
-        // TODO should we kill the function if success if false?
+        ICommanderToken(PTContract).unlock(PTId);
+
     }
 
     // TODO add also NFT owner
