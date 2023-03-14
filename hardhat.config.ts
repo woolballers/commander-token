@@ -6,6 +6,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import "@typechain/hardhat";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
+import "hardhat-contract-sizer";
 
 module.exports = {
   defaultNetwork: "hardhat",
@@ -31,6 +32,12 @@ module.exports = {
     compilers: [
       {
         version: "0.8.17",
+      	settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1000,
+          },
+        }
       },
     ],
   },

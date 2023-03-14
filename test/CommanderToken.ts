@@ -243,7 +243,7 @@ describe('CommanderToken', function () {
 
             await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToTransfer, false);
 
-            expect(await this.CommanderToken.isTokenTranferable(tokenIdToTransfer)).to.equal(false);
+            expect(await this.CommanderToken.isTokenTransferable(tokenIdToTransfer)).to.equal(false);
 
 
         })
@@ -269,7 +269,7 @@ describe('CommanderToken', function () {
 
             const transferToWallet = this.wallet2.address;
 
-            expect(await this.CommanderToken.isTokenTranferable(tokenIdToChange)).to.equal(false);
+            expect(await this.CommanderToken.isTokenTransferable(tokenIdToChange)).to.equal(false);
 
         })
 
