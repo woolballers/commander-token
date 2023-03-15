@@ -29,13 +29,13 @@ interface ICommanderToken is IERC721Enumerable {
      * Dependency can remove either by the owner of STId (in case CTId is both transferable or burnable), or 
      * by the a transaction from, otherwise.
      */
-    function setDependence(uint256 STId, address CTContractAddress, uint256 CTId) external;
+    function setDependence(uint256 tokenId, address CTContractAddress, uint256 CTId) external;
 
-    function setDependenceUnsafe(uint256 STId, address CTContractAddress, uint256 CTId) external;
+    function setDependenceUnsafe(uint256 tokenId, address CTContractAddress, uint256 CTId) external;
 
-    function removeDependence(uint256 STId, address CTContractAddress, uint256 CTId) external;
+    function removeDependence(uint256 tokenId, address CTContractAddress, uint256 CTId) external;
 
-    function isDependent(uint256 CTId, address PTContractAddress, uint256 PTId) external view returns (bool);
+    function isDependent(uint256 tokenId, address CTContractAddress, uint256 CTId) external view returns (bool);
 
     /**
      * Locks a Solider Token (ST) to a Commander Token (CT). Both tokens must have the same owner.
@@ -45,19 +45,19 @@ interface ICommanderToken is IERC721Enumerable {
      * If the CT is transferred or burned, it also transfers or burns the ST.
      * If the ST is untransferable or unburnable, then a call to the transfer or burn function of the CT unlocks the ST.
     */
-    function lock(uint256 STId, address CTContract, uint256 CTId) external;
+    function lock(uint256 tokenId, address CTContract, uint256 CTId) external;
 
-    function unlock(uint256 STId) external;
+    function unlock(uint256 tokenId) external;
 
-    function isLocked(uint256 STId) external view returns (address, uint256);
+    function isLocked(uint256 tokenId) external view returns (address, uint256);
 
     /**
-     * addLockedToken notifies a Commander Token (CT) that a Solider Token (ST), with the same owner, is locked to it. 
-     * removeLockedToken let a Commander Token remove the locking of a Private Token.
+     * addLockedToken notifies a token that a Solider Token (ST), with the same owner, is locked to it. 
+     * removeLockedToken let a Commander Token remove the locking of a Solider Token.
     */ 
-    function addLockedToken(uint256 CTId, address STContract, uint256 STId) external;
+    function addLockedToken(uint256 tokenId, address STContract, uint256 STId) external;
 
-    function removeLockedToken(uint256 CTId, address STContract, uint256 STId) external;
+    function removeLockedToken(uint256 tokenId, address STContract, uint256 STId) external;
 // 
     /**
      * These functions are for managing the effect of dependence of tokens.

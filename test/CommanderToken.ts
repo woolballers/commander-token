@@ -93,7 +93,7 @@ describe('CommanderToken', function () {
 
 
         this.defaultBurnable = false;
-        this.defaultTransferable = false;
+        this.defaultTransferable = true;
 
     });
 

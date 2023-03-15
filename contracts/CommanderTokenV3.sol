@@ -18,7 +18,7 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
     }
 
     struct Token {
-        bool transferable;
+        bool nontransferable;
         bool burnable;
         ExternalToken[] dependencies; // array of CTs the token depends on
         ExternalToken[] lockedTokens; // array of STs locked to this token
@@ -45,12 +45,12 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
 
     // verifies that two tokens have the same owner
     modifier sameOwner(
-        uint256 CTId,
-        address STContractAddress,
-        uint256 STId
+        uint256 token1Id,
+        address Token2ContractAddress,
+        uint256 Token2Id
     ) {
         require(
-            ERC721.ownerOf(CTId) == ERC721(STContractAddress).ownerOf(STId),
+            ERC721.ownerOf(token1Id) == ERC721(Token2ContractAddress).ownerOf(Token2Id),
             "CommanderToken: not sameOwner"
         );
         _;
@@ -83,45 +83,45 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
      * The caller must be the owner, opertaor or approved to use _tokenId.
      */
     function setDependence(
-        uint256 STId,
+        uint256 tokenId,
         address CTContractAddress,
         uint256 CTId
     )
         public
         virtual
         override
-        approvedOrOwner(STId)
-        sameOwner(STId, CTContractAddress, CTId)
+        approvedOrOwner(tokenId)
+        sameOwner(tokenId, CTContractAddress, CTId)
     {
-        // check that STId is not dependent already on CTId
+        // check that tokenId is not dependent already on CTId
         require(
-            _tokens[STId].dependenciesIndex[CTContractAddress][CTId] == 0,
-            "Commander Token: STid already depends on CTid from CTContractAddress"
+            _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] == 0,
+            "Commander Token: tokenId already depends on CTid from CTContractAddress"
         );
 
-        // CTId must be locked to STId before setting dependence
+        // CTId must be locked to tokenId before setting dependence
         (address CTLockedContract, uint256 CTLockedToTokenId) = ICommanderToken(
             CTContractAddress
         ).isLocked(CTId);
         
         require (CTLockedContract == address(this) && 
-                CTLockedToTokenId == STId, 
-                "Commander Token: CTId must be locked to STId before setting dependence"
+                CTLockedToTokenId == tokenId, 
+                "Commander Token: CTId must be locked to tokenId before setting dependence"
         );
 
-        setDependenceUnsafe(STId, CTContractAddress, CTId);
+        setDependenceUnsafe(tokenId, CTContractAddress, CTId);
     }
 
     function setDependenceUnsafe(
-        uint256 STId,
+        uint256 tokenId,
         address CTContractAddress,
         uint256 CTId
     )
         public
         virtual
         override
-        approvedOrOwner(STId)
-        sameOwner(STId, CTContractAddress, CTId)
+        approvedOrOwner(tokenId)
+        sameOwner(tokenId, CTContractAddress, CTId)
     {
         // create ExternalToken variable to express the dependency
         ExternalToken memory newDependency; //TODO not sure memory is the location for this variable
@@ -129,12 +129,12 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         newDependency.tokenId = CTId;
 
         // save the index of the new dependency
-        _tokens[STId].dependenciesIndex[CTContractAddress][CTId] =
-            _tokens[STId].dependencies.length +
+        _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] =
+            _tokens[tokenId].dependencies.length +
             1;
 
         // add dependency
-        _tokens[STId].dependencies.push(newDependency);
+        _tokens[tokenId].dependencies.push(newDependency);
 
     }
 
@@ -142,14 +142,14 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
      * Removes the dependency of a Commander Token from a Private token.
      */
     function removeDependence(
-        uint256 STId,
+        uint256 tokenId,
         address CTContractAddress,
         uint256 CTId
-    ) public virtual override approvedOrOwner(STId) {
-        // check that STId is indeed dependent on CTId
+    ) public virtual override approvedOrOwner(tokenId) {
+        // check that tokenId is indeed dependent on CTId
         require(
-            _tokens[STId].dependenciesIndex[CTContractAddress][CTId] > 0,
-            "Commander Token: the commander token is not dependent on private token"
+            _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] > 0,
+            "Commander Token: tokenId is not dependent on CTid from contract CTContractAddress"
         );
 
         ICommanderToken CTContract = ICommanderToken(CTContractAddress);
@@ -162,30 +162,30 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         if (!CTContract.isBurnable(CTId)) CTContract.setBurnable(CTId, true);
 
         // remove locking of the dependent token
-        removeLockedToken(STId, CTContractAddress, CTId);
+        removeLockedToken(tokenId, CTContractAddress, CTId);
 
         // get the index of the token we are about to remove from dependencies
-        uint256 dependencyIndex = _tokens[STId].dependenciesIndex[
+        uint256 dependencyIndex = _tokens[tokenId].dependenciesIndex[
             CTContractAddress
         ][CTId];
 
         // clear dependenciesIndex for this token
-        _tokens[STId].dependenciesIndex[CTContractAddress][CTId] = 0;
+        _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] = 0;
 
         // remove dependency: copy the last element of the array to the place of what was removed, then remove the last element from the array
-        uint256 lastDependecyIndex = _tokens[STId].dependencies.length - 1;
-        _tokens[STId].dependencies[dependencyIndex] = _tokens[STId]
+        uint256 lastDependecyIndex = _tokens[tokenId].dependencies.length - 1;
+        _tokens[tokenId].dependencies[dependencyIndex] = _tokens[tokenId]
             .dependencies[lastDependecyIndex];
-        _tokens[STId].dependencies.pop();
+        _tokens[tokenId].dependencies.pop();
     }
 
     function isDependent(
-        uint256 STId,
+        uint256 tokenId,
         address CTContractAddress,
         uint256 CTId
     ) public view virtual override returns (bool) {
         return
-            _tokens[STId].dependenciesIndex[CTContractAddress][CTId] > 0
+            _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] > 0
                 ? true
                 : false;
     }
@@ -197,38 +197,38 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
      * its owner as long as the locking is in place.
      *
      * If the Commander Token is transferred or burned, it also transfers or burns the Private Token.
-     * If the Private Token is untransferable or unburnable, then a call to the transfer or burn function of the Commander Token unlocks
+     * If the Private Token is nontransferable or unburnable, then a call to the transfer or burn function of the Commander Token unlocks
      * the Private  Tokens.
      *
      */
     function lock(
-        uint256 STId,
+        uint256 tokenId,
         address CTContract,
         uint256 CTId
     )
         public
         virtual
         override
-        approvedOrOwner(STId)
-        sameOwner(STId, CTContract, CTId)
+        approvedOrOwner(tokenId)
+        sameOwner(tokenId, CTContract, CTId)
     {
-        // check that STId is not dependent already on CTId to prevent loops
+        // check that tokenId is not dependent already on CTId to prevent loops
 
         require(
-            _tokens[STId].dependenciesIndex[CTContract][CTId] == 0,
-            "Commander Token: the specified STId depends on CTId in the CTContract specified."
+            _tokens[tokenId].dependenciesIndex[CTContract][CTId] == 0,
+            "Commander Token: the specified tokenId depends on CTId in the CTContract specified."
         );
 
-        // check that STId is unlocked
-        (, uint256 lockedCT) = isLocked(STId);
+        // check that tokenId is unlocked
+        (, uint256 lockedCT) = isLocked(tokenId);
         require(lockedCT == 0, "Commander Token: token is already locked");
 
         // lock token
-        _tokens[STId].locked.tokensCollection = ICommanderToken(CTContract);
-        _tokens[STId].locked.tokenId = CTId;
+        _tokens[tokenId].locked.tokensCollection = ICommanderToken(CTContract);
+        _tokens[tokenId].locked.tokenId = CTId;
 
-        // nofity CTId in CTContract that STId wants to lock to it
-        ICommanderToken(CTContract).addLockedToken(CTId, address(this), STId);
+        // nofity CTId in CTContract that tokenId wants to lock to it
+        ICommanderToken(CTContract).addLockedToken(CTId, address(this), tokenId);
     }
 
     /**
@@ -237,27 +237,27 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
      * This function must be called from the contract of the Commander Token.
      */
     function unlock(
-        uint256 STId
+        uint256 tokenId
     )
         public
         virtual
         override
-        onlyContract(address(_tokens[STId].locked.tokensCollection))
+        onlyContract(address(_tokens[tokenId].locked.tokensCollection))
     {
         // remove locking
-        _tokens[STId].locked.tokensCollection = ICommanderToken(address(0));
-        _tokens[STId].locked.tokenId = 0;
+        _tokens[tokenId].locked.tokensCollection = ICommanderToken(address(0));
+        _tokens[tokenId].locked.tokenId = 0;
     }
 
     /**
      * @dev returns (0x0, 0) if token is unlocked or the locking token (contract and id) otherwise
      */
     function isLocked(
-        uint256 STId
+        uint256 tokenId
     ) public view virtual override returns (address, uint256) {
         return (
-            address(_tokens[STId].locked.tokensCollection),
-            _tokens[STId].locked.tokenId
+            address(_tokens[tokenId].locked.tokensCollection),
+            _tokens[tokenId].locked.tokenId
         );
     }
 
@@ -266,19 +266,19 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
      * removeLockedToken removes a token that is locked to the Commander Token .
      */
     function addLockedToken(
-        uint256 CTId,
+        uint256 tokenId,
         address STContract,
         uint256 STId
     )
         public
         virtual
         override
-        sameOwner(CTId, STContract, STId)
+        sameOwner(tokenId, STContract, STId)
         onlyContract(STContract)
     {
-        // check that STId from STContract is not locked already to CTId
+        // check that STId from STContract is not locked already to tokenId
         require(
-            _tokens[CTId].lockingsIndex[STContract][STId] == 0,
+            _tokens[tokenId].lockingsIndex[STContract][STId] == 0,
             "Commander Token: the Solider Token is already locked to the Commander Token"
         );
 
@@ -288,37 +288,37 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         newLocking.tokenId = STId;
 
         // save the index of the new dependency
-        _tokens[CTId].lockingsIndex[STContract][STId] = _tokens[CTId]
+        _tokens[tokenId].lockingsIndex[STContract][STId] = _tokens[tokenId]
             .lockedTokens
             .length;
 
         // add a locked token
-        _tokens[CTId].lockedTokens.push(newLocking);
+        _tokens[tokenId].lockedTokens.push(newLocking);
     }
 
     function removeLockedToken(
-        uint256 CTId,
+        uint256 tokenId,
         address STContract,
         uint256 STId
     ) public virtual override {
-        // check that STId from STContract is indeed locked to CTId
+        // check that STId from STContract is indeed locked to tokenId
         require(
-            _tokens[CTId].lockingsIndex[STContract][STId] > 0,
-            "Commander Token: STId in contract STContract is not locked to CTId"
+            _tokens[tokenId].lockingsIndex[STContract][STId] > 0,
+            "Commander Token: STId in contract STContract is not locked to tokenId"
         );
 
         // get the index of the token we are about to remove from locked tokens
-        uint256 lockIndex = _tokens[CTId].lockingsIndex[STContract][STId];
+        uint256 lockIndex = _tokens[tokenId].lockingsIndex[STContract][STId];
 
         // clear lockingsIndex for this token
-        _tokens[CTId].dependenciesIndex[STContract][STId] = 0;
+        _tokens[tokenId].dependenciesIndex[STContract][STId] = 0;
 
         // remove locking: copy the last element of the array to the place of what was removed, then remove the last element from the array
-        uint256 lastLockingsIndex = _tokens[CTId].lockedTokens.length - 1;
-        _tokens[CTId].lockedTokens[lockIndex] = _tokens[CTId].lockedTokens[
+        uint256 lastLockingsIndex = _tokens[tokenId].lockedTokens.length - 1;
+        _tokens[tokenId].lockedTokens[lockIndex] = _tokens[tokenId].lockedTokens[
             lastLockingsIndex
         ];
-        _tokens[CTId].lockedTokens.pop();
+        _tokens[tokenId].lockedTokens.pop();
 
         // notify STContract that locking was removed
         ICommanderToken(STContract).unlock(STId);
@@ -330,7 +330,7 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
         uint256 tokenId,
         bool transferable
     ) public virtual override approvedOrOwner(tokenId) {
-        _tokens[tokenId].transferable = transferable;
+        _tokens[tokenId].nontransferable = !transferable;
     }
 
     // TODO add also NFT owner
@@ -344,7 +344,7 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
     function isTransferable(
         uint256 tokenId
     ) public view virtual override returns (bool) {
-        return _tokens[tokenId].transferable;
+        return !_tokens[tokenId].nontransferable;
     }
 
     function isBurnable(
@@ -354,14 +354,14 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
     }
 
     function isDependentTransferable(
-        uint256 CTId
+        uint256 tokenId
     ) public view virtual override returns (bool) {
-        for (uint256 i = 0; i < _tokens[CTId].dependencies.length; i++) {
-            ICommanderToken STContract = _tokens[CTId]
+        for (uint256 i = 0; i < _tokens[tokenId].dependencies.length; i++) {
+            ICommanderToken CTContract = _tokens[tokenId]
                 .dependencies[i]
                 .tokensCollection;
-            uint256 STId = _tokens[CTId].dependencies[i].tokenId;
-            if (!STContract.isTokenTransferable(STId)) {
+            uint256 CTId = _tokens[tokenId].dependencies[i].tokenId;
+            if (!CTContract.isTokenTransferable(CTId)) {
                 return false;
             }
         }
@@ -369,14 +369,14 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
     }
 
     function isDependentBurnable(
-        uint256 CTId
+        uint256 tokenId
     ) public view virtual override returns (bool) {
-        for (uint256 i = 0; i < _tokens[CTId].dependencies.length; i++) {
-            ICommanderToken STContract = _tokens[CTId]
+        for (uint256 i = 0; i < _tokens[tokenId].dependencies.length; i++) {
+            ICommanderToken CTContract = _tokens[tokenId]
                 .dependencies[i]
                 .tokensCollection;
-            uint256 STId = _tokens[CTId].dependencies[i].tokenId;
-            if (!STContract.isTokenBurnable(STId)) {
+            uint256 CTId = _tokens[tokenId].dependencies[i].tokenId;
+            if (!CTContract.isTokenBurnable(CTId)) {
                 return false;
             }
         }
@@ -384,15 +384,15 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
     }
 
     function isTokenTransferable(
-        uint256 CTId
+        uint256 tokenId
     ) public view virtual override returns (bool) {
-        return isTransferable(CTId) && isDependentTransferable(CTId);
+        return isTransferable(tokenId) && isDependentTransferable(tokenId);
     }
 
     function isTokenBurnable(
-        uint256 CTId
+        uint256 tokenId
     ) public view virtual override returns (bool) {
-        return isBurnable(CTId) && isDependentBurnable(CTId);
+        return isBurnable(tokenId) && isDependentBurnable(tokenId);
     }
 
     function burn(uint256 tokenId) public virtual override {}
@@ -534,12 +534,12 @@ contract CommanderTokenV3 is ICommanderToken, ERC721Enumerable {
             uint256 STId = _tokens[tokenId].dependencies[i].tokenId;
             require(
                 STContract.isTransferable(STId),
-                "Commander Token: the token depends on at least one untransferable token"
+                "Commander Token: the token depends on at least one nontransferable token"
             );
             STContract.transferFrom(from, to, STId);
         }
 
-        // transfer each token locked to tokenId, if the token is untransferable, then simply unlock it
+        // transfer each token locked to tokenId, if the token is nontransferable, then simply unlock it
         for (uint i; i < _tokens[tokenId].lockedTokens.length; i++) {
             ICommanderToken STContract = _tokens[tokenId]
                 .lockedTokens[i]
