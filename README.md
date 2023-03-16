@@ -4,39 +4,13 @@
 
 # CommanderToken
 
-## What is CommanderToken?
+### What is Commander Token?
+Commander Token are two token standards enhancing ERC721 with more complicated transfer and burn behaviours.
 
-**CommanderToken** is a new standard for NFT which supplement ERC721 by allowing Tokens to be owned by NFT tokens as well, and not only ownership by eth address.
+The first standard, the eponymous Commander Token, is an ERC7271 token with partial transferability and burnability. By this we mean that in certain situations, Commander Tokens cannot be transferred or burned (but in other situations they can). 
 
-## Functions
+The second standard, Locked Tokens, basically binds Tokens together. If a group of tokens, that belong to the same owner, are locked together, it means that they will always be transferred together. As long as the locking exists, the owner can't transfer any of the tokens separately.
 
-<style
-  type="text/css">
-  .contract-index .title {
-    font-size: .9em;
-    font-weight: 600;
-    letter-spacing: .05em;
-    text-transform: uppercase;
-}
-.contract-index {
-    word-wrap: break-word;
-    background-color: #f8f8fa;
-    border-radius: 3px;
-    margin-bottom: 1em;
-    margin-top: 1em;
-    max-width: 90vw;
-    padding: 1.5rem;
-}
-.contract-index ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-.contract-index ul a {
-    color: black;
-    text-decoration: none;
-}
-</style>
-<div class="sect2 contract">
+We describe below more in details what each of these standards mean, and how their mechanism works.
 
-</div>
+Commander Token was created for [Woolball project](https://woolball.xyz), but is independent of the project and can be used for many other use cases, see Motivation below.
