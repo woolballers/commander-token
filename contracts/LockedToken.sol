@@ -6,14 +6,14 @@ pragma solidity >=0.8.17;
 import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-import "./interfaces/ICommanderToken.sol";
+import "./interfaces/ILockedToken.sol";
 
 /**
  * @dev Implementation of Locked Token Standard
  */
 contract LockedToken is ILockedToken, ERC721Enumerable {
     struct ExternalToken {
-        ICommanderToken tokensCollection;
+        ILockedToken tokensCollection;
         uint256 tokenId;
     }
 
@@ -91,23 +91,16 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
         approvedOrOwner(tokenId)
         sameOwner(tokenId, CTContract, CTId)
     {
-        // check that tokenId is not dependent already on CTId to prevent loops
-
-        require(
-            _tokens[tokenId].dependenciesIndex[CTContract][CTId] == 0,
-            "Commander Token: the specified tokenId depends on CTId in the CTContract specified."
-        );
-
         // check that tokenId is unlocked
         (, uint256 lockedCT) = isLocked(tokenId);
         require(lockedCT == 0, "Commander Token: token is already locked");
 
         // lock token
-        _tokens[tokenId].locked.tokensCollection = ICommanderToken(CTContract);
+        _tokens[tokenId].locked.tokensCollection = ILockedToken(CTContract);
         _tokens[tokenId].locked.tokenId = CTId;
 
         // nofity CTId in CTContract that tokenId wants to lock to it
-        ICommanderToken(CTContract).addLockedToken(CTId, address(this), tokenId);
+        ILockedToken(CTContract).addLockedToken(CTId, address(this), tokenId);
     }
 
     /**
@@ -124,7 +117,7 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
         onlyContract(address(_tokens[tokenId].locked.tokensCollection))
     {
         // remove locking
-        _tokens[tokenId].locked.tokensCollection = ICommanderToken(address(0));
+        _tokens[tokenId].locked.tokensCollection = ILockedToken(address(0));
         _tokens[tokenId].locked.tokenId = 0;
     }
 
@@ -163,7 +156,7 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
 
         // create ExternalToken variable to express the locking
         ExternalToken memory newLocking; //TODO not sure memory is the location for this variable
-        newLocking.tokensCollection = ICommanderToken(STContract);
+        newLocking.tokensCollection = ILockedToken(STContract);
         newLocking.tokenId = STId;
 
         // save the index of the new dependency
@@ -190,7 +183,7 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
         uint256 lockIndex = _tokens[tokenId].lockingsIndex[STContract][STId];
 
         // clear lockingsIndex for this token
-        _tokens[tokenId].dependenciesIndex[STContract][STId] = 0;
+        _tokens[tokenId].lockingsIndex[STContract][STId] = 0;
 
         // remove locking: copy the last element of the array to the place of what was removed, then remove the last element from the array
         uint256 lastLockingsIndex = _tokens[tokenId].lockedTokens.length - 1;
@@ -200,7 +193,7 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
         _tokens[tokenId].lockedTokens.pop();
 
         // notify STContract that locking was removed
-        ICommanderToken(STContract).unlock(STId);
+        ILockedToken(STContract).unlock(STId);
 
     }
 
@@ -215,7 +208,7 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
         bytes4 interfaceId
     ) public view virtual override(ERC721Enumerable, IERC165) returns (bool) {
         return
-            interfaceId == type(ICommanderToken).interfaceId ||
+            interfaceId == type(ILockedToken).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 
@@ -293,28 +286,13 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
     ) internal virtual override {
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
 
-        // transfer each token that tokenId depends on
-        for (uint i; i < _tokens[tokenId].dependencies.length; i++) {
-            ICommanderToken STContract = _tokens[tokenId]
-                .dependencies[i]
-                .tokensCollection;
-            uint256 STId = _tokens[tokenId].dependencies[i].tokenId;
-            require(
-                STContract.isTransferable(STId),
-                "Commander Token: the token depends on at least one nontransferable token"
-            );
-            STContract.transferFrom(from, to, STId);
-        }
-
         // transfer each token locked to tokenId, if the token is nontransferable, then simply unlock it
         for (uint i; i < _tokens[tokenId].lockedTokens.length; i++) {
-            ICommanderToken STContract = _tokens[tokenId]
+            ILockedToken STContract = _tokens[tokenId]
                 .lockedTokens[i]
                 .tokensCollection;
             uint256 STId = _tokens[tokenId].lockedTokens[i].tokenId;
-            if (!STContract.isTransferable(STId))
-                removeLockedToken(tokenId, address(STContract), STId);
-            else STContract.transferFrom(from, to, STId);
+            STContract.transferFrom(from, to, STId);
         }
     }
 }
