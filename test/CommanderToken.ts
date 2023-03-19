@@ -204,8 +204,7 @@ describe('CommanderToken', function () {
 
             expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
 
-            // lock token and set dependence
-            this.CommanderToken.connect(this.owner).lock(dependentTokenId, commanderTokenAddress, tokenIdToChange);
+            // set dependence
             await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId);
 
             expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(isDependent);
@@ -249,7 +248,6 @@ describe('CommanderToken', function () {
         })
 
         it('Dependency not transfarable', async function () {
-
             const [tokenIdToChange, dependentTokenId] = getRandomMintedTokens(this.initialMint)
 
             const defaultDependence = false;
@@ -260,68 +258,12 @@ describe('CommanderToken', function () {
             await this.CommanderToken.connect(this.owner).setTransferable(dependentTokenId, false);
 
             expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
-
-            // Change default burnability of one of the Commander Tokens
-            await this.CommanderToken.connect(this.owner).lock(dependentTokenId, commanderTokenAddress, tokenIdToChange);
             await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId);
-
             expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(isDependent);
-
-            const transferToWallet = this.wallet2.address;
 
             expect(await this.CommanderToken.isTokenTransferable(tokenIdToChange)).to.equal(false);
 
         })
 
     });
-
-    describe('Locks', function () {
-
-        it('Lock works', async function () {
-            const [lockedTokenId, lockedByTokenId] = getRandomMintedTokens(this.initialMint)
-
-            const lockedByTokenContractAddress = this.CommanderToken.address;
-
-
-            await expectTokenNotLocked(this.CommanderToken, lockedTokenId);
-
-            await this.CommanderToken.connect(this.owner).lock(lockedTokenId, lockedByTokenContractAddress, lockedByTokenId);
-
-            const [contractAddress2, tokenId2] = await this.CommanderToken.isLocked(lockedTokenId)
-
-            expect(contractAddress2).to.equal(lockedByTokenContractAddress);
-
-            expect(tokenId2).to.equal(lockedByTokenId);
-        });
-
-        it('Lock doesnt work when 2 different owners', async function () {
-            const [lockedTokenId, lockedByTokenId] = getRandomMintedTokens(this.initialMint)
-
-            const lockedByTokenContractAddress = this.CommanderToken.address;
-            const newOwner = this.wallet2.address;
-
-            const ownerAddress = await this.CommanderToken.ownerOf(lockedByTokenId);
-            expect(ownerAddress).to.not.equal(newOwner);
-            expect(ownerAddress).to.equal(this.owner.address);
-
-            await this.CommanderToken.connect(this.owner).transferFrom(ownerAddress, newOwner, lockedByTokenId);
-
-            const newOwnerAddress = await this.CommanderToken.ownerOf(lockedByTokenId);
-
-            expect(newOwnerAddress).to.equal(newOwner);
-
-            // lock
-
-            await expectTokenNotLocked(this.CommanderToken, lockedTokenId)
-
-            expect(this.CommanderToken.connect(this.owner).lock(lockedTokenId, lockedByTokenContractAddress, lockedByTokenId)).to.be.revertedWith("CommanderToken: not sameOwner")
-
-
-        });
-
-        it('Lock a=>b, a not transfarable by owner only by contract b', async function () {
-
-        });
-    });
-
 });
