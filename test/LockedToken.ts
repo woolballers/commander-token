@@ -61,9 +61,9 @@ const getRandomMintedTokens = function (initiallyMinted: string[]): string[] {
 
 
 // Start test block
-describe('CommanderToken', function () {
+describe('LockedToken', function () {
     before(async function () {
-        this.CommanderTokenMintTestFactory = await ethers.getContractFactory('MintCommanderTokenTest');
+        this.CommanderTokenMintTestFactory = await ethers.getContractFactory('MintLockedTokenTest');
     });
 
     beforeEach(async function () {
