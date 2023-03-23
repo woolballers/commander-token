@@ -203,7 +203,6 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    // TODO: not sure about what I did here
     function supportsInterface(
         bytes4 interfaceId
     ) public view virtual override(ERC721Enumerable, IERC165) returns (bool) {
