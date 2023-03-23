@@ -55,9 +55,9 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
      */
     constructor(
-        string memory name_,
-        string memory symbol_
-    ) ERC721(name_, symbol_) {}
+        string calldata name,
+        string calldata symbol
+    ) ERC721(name, symbol) {}
 
     /**
      * Sets the dependenct of a Solider Token on a Commander token.
@@ -83,7 +83,7 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         );
 
         // create ExternalToken variable to express the dependency
-        ExternalToken memory newDependency; //TODO not sure memory is the location for this variable
+        ExternalToken memory newDependency;
         newDependency.tokensCollection = ICommanderToken(CTContractAddress);
         newDependency.tokenId = CTId;
 

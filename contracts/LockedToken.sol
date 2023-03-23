@@ -64,9 +64,9 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
      */
     constructor(
-        string memory name_,
-        string memory symbol_
-    ) ERC721(name_, symbol_) {}
+        string memory name,
+        string memory symbol
+    ) ERC721(name, symbol) {}
 
     
     /**
@@ -155,7 +155,7 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
         );
 
         // create ExternalToken variable to express the locking
-        ExternalToken memory newLocking; //TODO not sure memory is the location for this variable
+        ExternalToken memory newLocking;
         newLocking.tokensCollection = ILockedToken(STContract);
         newLocking.tokenId = STId;
 
