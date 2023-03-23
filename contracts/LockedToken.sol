@@ -222,7 +222,6 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
     ) public virtual override(IERC721, ERC721) {
         //solhint-disable-next-line max-line-length
 
-        // TODO: don't we need to unlock tokenId? otherwise it's still locked, and to the wrong token
         (, uint256 lockedCT) = isLocked(tokenId);
         if (lockedCT > 0)
             require(

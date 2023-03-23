@@ -55,8 +55,8 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
      */
     constructor(
-        string calldata name,
-        string calldata symbol
+        string memory name,
+        string memory symbol
     ) ERC721(name, symbol) {}
 
     /**
@@ -97,7 +97,6 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
 
     }
 
-    // TODO: also CTContractAddress can remove
     /**
      * Removes the dependency of a Commander Token from a Private token.
      */
@@ -105,21 +104,24 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         uint256 tokenId,
         address CTContractAddress,
         uint256 CTId
-    ) public virtual override approvedOrOwner(tokenId) {
+    ) public virtual override {
+        ICommanderToken CTContract = ICommanderToken(CTContractAddress);
+
+        // dependency is removed either by CTContractAddress, or by the owner if
+        // the CTId is transferable and burnable.
+        require(
+            ( _isApprovedOrOwner(msg.sender, tokenId) &&
+            CTContract.isTransferable(CTId) &&
+            CTContract.isBurnable(CTId) ) ||
+            ( msg.sender == CTContractAddress),
+            "Commander Token: sender is not permitted to remove dependency"
+        );
+
         // check that tokenId is indeed dependent on CTId
         require(
             _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] > 0,
             "Commander Token: tokenId is not dependent on CTid from contract CTContractAddress"
         );
-
-        ICommanderToken CTContract = ICommanderToken(CTContractAddress);
-
-        // the CTId needs to be transferable and burnable for the dependency to be remove,
-        // otherwise, the owner of CTId could transfer it in any case, simply by removing all dependencies
-        if (!CTContract.isTransferable(CTId))
-            CTContract.setTransferable(CTId, true);
-
-        if (!CTContract.isBurnable(CTId)) CTContract.setBurnable(CTId, true);
 
         // get the index of the token we are about to remove from dependencies
         uint256 dependencyIndex = _tokens[tokenId].dependenciesIndex[
@@ -147,7 +149,6 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
                 : false;
     }
 
-    // TODO add also NFT owner
     function setTransferable(
         uint256 tokenId,
         bool transferable
@@ -155,7 +156,6 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         _tokens[tokenId].nontransferable = !transferable;
     }
 
-    // TODO add also NFT owner
     function setBurnable(
         uint256 tokenId,
         bool burnable
