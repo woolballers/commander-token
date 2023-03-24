@@ -244,7 +244,21 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
      * @dev burns tokenId.
      * @dev isTokenBurnable must return 'true'.
      **/
-    function burn(uint256 tokenId) public virtual override {}
+    function burn(uint256 tokenId) public virtual override approvedOrOwner(tokenId) {
+        require(isTokenBurnable(tokenId), "Commander Token: the token or one of its Commander Tokens are not burnable");
+
+        // 'delete' in solidity doesn't work on mappings, so we delete the mapping items manually
+        for (uint i=0; i<_tokens[tokenId].dependencies.length; i++) {
+            ExternalToken memory CT =  _tokens[tokenId].dependencies[i];
+            delete _tokens[tokenId].dependenciesIndex[address(CT.tokensCollection)][CT.tokenId];
+        }
+
+        // delete the rest
+        delete _tokens[tokenId];
+
+        // TODO: whitelist is NOT deleted since we don't hold the indecies of this mapping
+        // TODO: consider changing this in a later version
+    }
 
     /************************
      * Whitelist functions  *
