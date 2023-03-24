@@ -13,6 +13,16 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  * @dev Locking is possible if and only if both tokens have the same owner.
  */
 interface ILockedToken is IERC721 {
+    /**
+     * @dev Emitted when tokenId is locked to LockingId from LockingContract.
+     */
+    event NewLocking(uint256 tokenId, address LockingContract, uint256 LockingId);
+
+    /**
+     * @dev Emitted when a locking tokenId to LockingId from LockingContract is removed.
+     */
+    event Unlocked(uint256 tokenId);
+
     
     /**
      * Locks a Locked Token to a Locking Token. Both tokens must have the same owner.

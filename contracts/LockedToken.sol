@@ -70,7 +70,7 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
 
     
     /**
-     * Locks a tken to a Commander Token. Both tokens must have the same owner.
+     * @dev Locks tokenId CTId from contract CTContract. Both tokens must have the same owner.
      *
      * With such a lock in place, the Private Token transfer and burn functions can't be called by
      * its owner as long as the locking is in place.
@@ -82,25 +82,27 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
      */
     function lock(
         uint256 tokenId,
-        address CTContract,
-        uint256 CTId
+        address LockingContract,
+        uint256 LockingId
     )
         public
         virtual
         override
         approvedOrOwner(tokenId)
-        sameOwner(tokenId, CTContract, CTId)
+        sameOwner(tokenId, LockingContract, LockingId)
     {
         // check that tokenId is unlocked
         (, uint256 lockedCT) = isLocked(tokenId);
         require(lockedCT == 0, "Commander Token: token is already locked");
 
         // lock token
-        _tokens[tokenId].locked.tokensCollection = ILockedToken(CTContract);
-        _tokens[tokenId].locked.tokenId = CTId;
+        _tokens[tokenId].locked.tokensCollection = ILockedToken(LockingContract);
+        _tokens[tokenId].locked.tokenId = LockingId;
 
-        // nofity CTId in CTContract that tokenId wants to lock to it
-        ILockedToken(CTContract).addLockedToken(CTId, address(this), tokenId);
+        // nofity LockingId in LockingContract that tokenId wants to lock to it
+        ILockedToken(LockingContract).addLockedToken(LockingId, address(this), tokenId);
+
+        emit NewLocking(tokenId, LockingContract, LockingId);
     }
 
     /**
@@ -119,6 +121,8 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
         // remove locking
         _tokens[tokenId].locked.tokensCollection = ILockedToken(address(0));
         _tokens[tokenId].locked.tokenId = 0;
+
+        emit Unlocked(tokenId);
     }
 
     /**
@@ -134,33 +138,33 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
     }
 
     /**
-     * addLockedToken notifies a Commander Token that a Private Token, with the same owner, is locked to it.
-     * removeLockedToken removes a token that is locked to the Commander Token .
+     * addLockedToken notifies a Token that another token (LTId), with the same owner, is locked to it.
+     * removeLockedToken removes a token that was locked to the tokenId.
      */
     function addLockedToken(
         uint256 tokenId,
-        address STContract,
-        uint256 STId
+        address LockedContract,
+        uint256 LockedId
     )
         public
         virtual
         override
-        sameOwner(tokenId, STContract, STId)
-        onlyContract(STContract)
+        sameOwner(tokenId, LockedContract, LockedId)
+        onlyContract(LockedContract)
     {
-        // check that STId from STContract is not locked already to tokenId
+        // check that LockedId from LockedContract is not locked already to tokenId
         require(
-            _tokens[tokenId].lockingsIndex[STContract][STId] == 0,
+            _tokens[tokenId].lockingsIndex[LockedContract][LockedId] == 0,
             "Commander Token: the Solider Token is already locked to the Commander Token"
         );
 
         // create ExternalToken variable to express the locking
         ExternalToken memory newLocking;
-        newLocking.tokensCollection = ILockedToken(STContract);
-        newLocking.tokenId = STId;
+        newLocking.tokensCollection = ILockedToken(LockedContract);
+        newLocking.tokenId = LockedId;
 
         // save the index of the new dependency
-        _tokens[tokenId].lockingsIndex[STContract][STId] = _tokens[tokenId]
+        _tokens[tokenId].lockingsIndex[LockedContract][LockedId] = _tokens[tokenId]
             .lockedTokens
             .length;
 

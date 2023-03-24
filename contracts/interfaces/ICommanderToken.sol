@@ -15,6 +15,17 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  * @dev if token B depedns on token A, we again call A a Commander Token (CT).
  */
 interface ICommanderToken is IERC721 {
+
+    /**
+     * @dev Emitted when a dependency on CTId from CTContractAddress is added to `tokenId`.
+     */
+    event NewDependence(uint256 tokenId, address CTContractAddress, uint256 CTId);
+
+    /**
+     * @dev Emitted when a dependency on CTId from CTContractAddress is removed to `tokenId`.
+     */
+    event RemovedDependence(uint256 tokenId, address CTContractAddress, uint256 CTId);
+
     /**
      * Sets dependence of tokenId on another token, called Commander Token or CT. 
      * CT may be a token belonging to another ICommanderToken contract.

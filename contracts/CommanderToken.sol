@@ -91,6 +91,8 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         // add dependency
         _tokens[tokenId].dependencies.push(newDependency);
 
+        emit NewDependence(tokenId, CTContractAddress, CTId);
+
     }
 
     /**
@@ -132,6 +134,8 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         _tokens[tokenId].dependencies[dependencyIndex] = _tokens[tokenId]
             .dependencies[lastDependecyIndex];
         _tokens[tokenId].dependencies.pop();
+
+        emit RemovedDependence(tokenId, CTContractAddress, CTId);
     }
 
     /**
