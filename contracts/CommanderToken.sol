@@ -9,7 +9,12 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./interfaces/ICommanderToken.sol";
 
 /**
- * @dev Implementation of CommanderToken Standard
+ * @title Commander Token Interface
+ * @author Eyal Ron, Tomer Leicht, Ahmad Afuni
+ * @dev Commander Tokens is an extenntion to ERC721 with the ability to create non-transferable or non-burnable tokens.
+ * @dev For this cause we add a new mechniasm enabling a token to depend on another token.
+ * @dev If Token A depends on B, then if Token B is nontransferable or unburnable, so does Token A.
+ * @dev if token B depedns on token A, we again call A a Commander Token (CT).
  */
 contract CommanderToken is ICommanderToken, ERC721Enumerable {
     struct ExternalToken {
@@ -20,18 +25,17 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
     struct Token {
         bool nontransferable;
         bool burnable;
-        ExternalToken[] dependencies; // array of CTs the token depends on
+
+        // The CTs the Token depends on
+        ExternalToken[] dependencies;
         
-        // manages the indices of dependencies
+        // Manages the indices of dependencies
         mapping(address => mapping(uint256 => uint256)) dependenciesIndex;
 
-        // a whitelist of addresses the token can be transferred to regardless of its transferable status
+        // A whitelist of addresses the token can be transferred to regardless of the value of "nontransferable"
         mapping(address => bool)                        whitelist;
-        
-
     }
 
-    // verifies that the sender owns a token
     modifier approvedOrOwner(uint256 tokenId) {
         require(
             _isApprovedOrOwner(msg.sender, tokenId),
@@ -40,15 +44,7 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         _;
     }
 
-    modifier onlyContract(address contractAddress) {
-        require(
-            contractAddress == msg.sender,
-            "Commander Token: transaction is not sent by the correct contract"
-        );
-        _;
-    }
-
-    // mapping from token Id to token data
+    // Token Id -> token's data
     mapping(uint256 => Token) private _tokens;
 
     /**
@@ -60,11 +56,11 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
     ) ERC721(name, symbol) {}
 
     /**
-     * Sets the dependenct of a Solider Token on a Commander token.
-     * Recall, you can only transfer or burn a Token if all the Commander Tokens it depends on are
-     * transferable or burnable, correspondingly.
-     * Dependency is allowed only if both tokens have the same owner, use setDependenceUnsafe otherwise.
-     * The caller must be the owner, opertaor or approved to use _tokenId.
+     * @dev Adds to tokenId dependency on CTId from contract CTContractAddress.
+     * @dev Recall, you can only transfer or burn a Token if all the Commander Tokens it depends on are
+     * @dev transferable or burnable, correspondingly.
+     * @dev Dependency is allowed only if both tokens have the same owner, use setDependenceUnsafe otherwise.
+     * @dev The caller must be the owner, opertaor or approved to use _tokenId.
      */
     function setDependence(
         uint256 tokenId,
@@ -98,7 +94,7 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
     }
 
     /**
-     * Removes the dependency of a Commander Token from a Private token.
+     * @dev Removes from tokenId the dependency on CTId from contract CTContractAddress.
      */
     function removeDependence(
         uint256 tokenId,
@@ -138,6 +134,9 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         _tokens[tokenId].dependencies.pop();
     }
 
+    /**
+     * @dev Checks if tokenId depends on CTId from CTContractAddress.
+     **/
     function isDependent(
         uint256 tokenId,
         address CTContractAddress,
@@ -149,6 +148,9 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
                 : false;
     }
 
+    /**
+     * @dev Sets the transferable status of tokenId.
+     **/
     function setTransferable(
         uint256 tokenId,
         bool transferable
@@ -156,6 +158,9 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         _tokens[tokenId].nontransferable = !transferable;
     }
 
+    /**
+     * @dev Sets the burnable status of tokenId.
+     **/
     function setBurnable(
         uint256 tokenId,
         bool burnable
@@ -163,18 +168,27 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         _tokens[tokenId].burnable = burnable;
     }
 
+    /**
+     * @dev Checks the transferable status of tokenId.
+     **/
     function isTransferable(
         uint256 tokenId
     ) public view virtual override returns (bool) {
         return !_tokens[tokenId].nontransferable;
     }
 
+    /**
+     * @dev Checks the burnable status of tokenId.
+     **/
     function isBurnable(
         uint256 tokenId
     ) public view virtual override returns (bool) {
         return _tokens[tokenId].burnable;
     }
 
+    /**
+     * @dev Checks all the tokens that tokenId depends on are transferable.
+     **/
     function isDependentTransferable(
         uint256 tokenId
     ) public view virtual override returns (bool) {
@@ -190,6 +204,9 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         return true;
     }
 
+    /**
+     * @dev Checks all the tokens that tokenId depends on are burnable.
+     **/
     function isDependentBurnable(
         uint256 tokenId
     ) public view virtual override returns (bool) {
@@ -205,35 +222,38 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         return true;
     }
 
+    /**
+     * @dev Checks if tokenId can be transferred.
+     **/
     function isTokenTransferable(
         uint256 tokenId
     ) public view virtual override returns (bool) {
         return isTransferable(tokenId) && isDependentTransferable(tokenId);
     }
 
+    /**
+     * @dev Checks if tokenId can be burned.
+     **/
     function isTokenBurnable(
         uint256 tokenId
     ) public view virtual override returns (bool) {
         return isBurnable(tokenId) && isDependentBurnable(tokenId);
     }
 
+    /**
+     * @dev burns tokenId.
+     * @dev isTokenBurnable must return 'true'.
+     **/
     function burn(uint256 tokenId) public virtual override {}
 
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(ERC721Enumerable, IERC165) returns (bool) {
-        return
-            interfaceId == type(ICommanderToken).interfaceId ||
-            super.supportsInterface(interfaceId);
-    }
-
-
     /************************
-     * Whitelist functions
+     * Whitelist functions  *
      ************************/
+
+     /**
+      * @dev Adds or removes an address from the whiltelist of tokenId.
+      * @dev tokenId can be transferred to whitelisted addresses even when its set to be nontransferable.
+      **/
     function setTransferWhitelist(
         uint256 tokenId, 
         address whitelistAddress,
@@ -242,6 +262,9 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         _tokens[tokenId].whitelist[whitelistAddress] = isWhitelisted;
     }
 
+    /**
+      * @dev Checks if tokenId can be transferred to addressToTransferTo, without taking its dependence into consideration.
+      **/
     function isTransferableToAddress(
         uint256 tokenId, 
         address addressToTransferTo
@@ -249,6 +272,9 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         return _tokens[tokenId].whitelist[addressToTransferTo];
     }
     
+    /**
+      * @dev Checks if all the dependences of tokenId can be transferred to addressToTransferTo,
+      **/
     function isDependentTransferableToAddress(
         uint256 tokenId, 
         address transferToAddress
@@ -266,11 +292,28 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
         return true;
     }
 
+    /**
+      * @dev Checks if tokenId can be transferred to addressToTransferTo.
+      **/
     function isTokenTransferableToAddress(
         uint256 tokenId, 
         address transferToAddress
     ) public view virtual override returns (bool) {
         return isTransferableToAddress(tokenId, transferToAddress) && isDependentTransferableToAddress(tokenId, transferToAddress);
+    }
+
+    /***********************************************
+     * Overrided functions from ERC165 and ERC721  *
+     ***********************************************/
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC721Enumerable, IERC165) returns (bool) {
+        return
+            interfaceId == type(ICommanderToken).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     /**

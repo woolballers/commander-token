@@ -6,7 +6,10 @@ pragma solidity >=0.8.17;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
- * @dev An interface extending ERC721 with the ability to create non-transferable or non-burnable tokens.
+ * @title Commander Token Simple Implementation
+ * @author Eyal Ron, Tomer Leicht, Ahmad Afuni
+ * @notice This is the simplest implementation of Commander Token, you should inherent in order to extend it for complex use cases 
+ * @dev Commander Tokens is an extenntion to ERC721 with the ability to create non-transferable or non-burnable tokens.
  * @dev For this cause we add a new mechniasm enabling a token to depend on another token.
  * @dev If Token A depends on B, then if Token B is nontransferable or unburnable, so does Token A.
  * @dev if token B depedns on token A, we again call A a Commander Token (CT).
