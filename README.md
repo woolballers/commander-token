@@ -85,15 +85,15 @@ function isBurnable(uint256 tokenId) external view returns (bool);
 The following functions check if all the dependencies of a token are transferable/burnable.
 
 ```
-function isDependentTransferable(uint256 tokenId) external view returns (bool);
-function isDependentBurnable(uint256 tokenId) external view returns (bool);
+<b>isDependentTransferable</b>(tokenId) external view returns (bool);
+<b>isDependentBurnable</b>(tokenId) external view returns (bool);
 ```
 
 Finally, the following functions check if the token can be transfered/burned, i.e., it is a combination of the previous two methods.
 
 ```
-function isTokenTransferable(uint256 tokenID) external view returns (bool);
-function isTokenBurnable(uint256 tokenID) external view returns (bool);
+<b>isTokenTransferable</b>(tokenID) external view returns (bool);
+<b>isTokenBurnable</b>(tokenID) external view returns (bool);
 ```
 
 #### Whitelist mechanism
@@ -102,13 +102,13 @@ The whitelist mechanism allows selective transferability, meaning that even if a
 The following functions are provided.
 
 <pre>
-<b>setTransferWhitelist</b>(uint256 tokenId, address whitelistAddress, bool isWhitelisted)
+<b>setTransferWhitelist</b>(tokenId, whitelistAddress, isWhitelisted)
 
-<b>isTransferableToAddress</b>(uint256 tokenId, address transferToAddress) returns (bool);
+<b>isTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
 
-<b>isDependentTransferableToAddress</b>(uint256 tokenId, address transferToAddress) returns (bool);
+<b>isDependentTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
 
-<b>isTokenTransferableToAddress</b>(uint256 tokenId, address transferToAddress) returns (bool);
+<b>isTokenTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
 </pre>
 
 
@@ -125,11 +125,11 @@ If the CT is transferred or burned, it also transfers or burns the ST.
 If the ST is untransferable or unburnable, then a call to the transfer or burn function of the CT unlocks the ST.
 
 <pre>
-<b>lock</b>(uint256 tokenId, address CTContract, uint256 CTId)
+<b>lock</b>(tokenId, CTContract, CTId)
 
-<b>unlock</b>(uint256 tokenId)
+<b>unlock</b>(tokenId)
 
-<b>isLocked</b>(uint256 tokenId) returns (address, uint256);
+<b>isLocked</b>(tokenId) returns (address, uint256);
 
 </pre>
 
