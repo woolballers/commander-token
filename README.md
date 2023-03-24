@@ -1,8 +1,22 @@
+<h1 align="center"> Commander Token and Locked Token </h1> <br>
 <p align="center">
     <img alt="CommanderToken" title="CommanderToken" src="https://raw.githubusercontent.com/woolballers/commander-token-contracts/main/docs/images/commandertoken.png" width="500">
 </p>
 
-# CommanderToken
+<p align="center">
+  ERC721 extensions for complex control of transferability and burnability of tokens
+</p>
+
+## Table of contents
+* [What is Commander Token?](#what-is-commander-token)
+* [Who needs it?](#who-needs-it)
+* [Mechanism description](#mechanism-description)
+* [Interface](#interface)
+* [Implementation](#implementation)
+* [State of development](#state-of-development)
+* [Getting involved](#getting-involved)
+* [License](#license)
+* [Credits and references](#credits-and-references)
 
 ## What is Commander Token?
 Commander Token are two token standards enhancing ERC721 with refined control options for transfering or burning tokens. 
@@ -53,48 +67,49 @@ Sets dependence of one token (called Solider Token or ST) on another token (call
 The dependency means that if CT is not transferable or burnable, then so does tokenId.
 
 Dependency can remove either by the owner of tokenId (in case CTId is both transferable or burnable), or by the a transaction from contract CTContractAddress.
-```
-function setDependence(uint256 tokenId, address CTContractAddress, uint256 CTId) external;
 
-function setDependenceUnsafe(uint256 tokenId, address CTContractAddress, uint256 CTId) external;
+<pre>
+    <b>setDependence</b>(tokenId, CTContractAddress, CTId) external;
 
-function removeDependence(uint256 tokenId, address CTContractAddress, uint256 CTId) external;
+    <b>setDependenceUnsafe</b>(tokenId, CTContractAddress, CTId) external;
 
-function isDependent(uint256 tokenId, address CTContractAddress, uint256 CTId) external view returns (bool);
-```
+    <b>removeDependence</b>(tokenId, CTContractAddress, CTId) external;
+
+    <b>isDependent</b>(tokenId, CTContractAddress, CTId) external view returns (bool);
+</pre>
 
 #### Manage transferability and burnability
 These functions are for managing the effect of dependence of tokens. If a token is untransferable, then all the tokens depending on it are untransferable as well. If a token is unburnable, then all the tokens depending on it are unburnable as well.
 
-```
-    function setTransferable(uint256 tokenId, bool transferable) external;
-    function setBurnable(uint256 tokenId, bool burnable) external;
-```
+<pre>
+    <b>setTransferable</b>(tokenId, transferable) external;
+    <b>setBurnable</b>(uint256 tokenId, burnable) external;
+</pre>
 
 #### Check transferability and burnability
 The following functions set and check the transferable and burnable properties of the token.
 
-```
-function setTransferable(uint256 tokenId, bool transferable) external;
-function setBurnable(uint256 tokenId, bool burnable) external;
+<pre>
+    <b>setTransferable</b>(tokenId, transferable) external;
+    <b>setBurnable</b>(tokenId, bool burnable) external;
 
-function isTransferable(uint256 tokenId) external view returns (bool);
-function isBurnable(uint256 tokenId) external view returns (bool);
-```
+    <b>isTransferable</b>(tokenId) external view returns (bool);
+    <b>isBurnable</b>(tokenId) external view returns (bool);
+</pre>
 
 The following functions check if all the dependencies of a token are transferable/burnable.
 
-```
-<b>isDependentTransferable</b>(tokenId) external view returns (bool);
-<b>isDependentBurnable</b>(tokenId) external view returns (bool);
-```
+<pre>
+    <b>isDependentTransferable</b>(tokenId) external view returns (bool);
+    <b>isDependentBurnable</b>(tokenId) external view returns (bool);
+</pre>
 
 Finally, the following functions check if the token can be transfered/burned, i.e., it is a combination of the previous two methods.
 
-```
-<b>isTokenTransferable</b>(tokenID) external view returns (bool);
-<b>isTokenBurnable</b>(tokenID) external view returns (bool);
-```
+<pre>
+    <b>isTokenTransferable</b>(tokenID) external view returns (bool);
+    <b>isTokenBurnable</b>(tokenID) external view returns (bool);
+</pre>
 
 #### Whitelist mechanism
 The whitelist mechanism allows selective transferability, meaning that even if a token is nontransferable in general, it can still be transferable to a specific list of tokens.
@@ -102,13 +117,13 @@ The whitelist mechanism allows selective transferability, meaning that even if a
 The following functions are provided.
 
 <pre>
-<b>setTransferWhitelist</b>(tokenId, whitelistAddress, isWhitelisted)
+    <b>setTransferWhitelist</b>(tokenId, whitelistAddress, isWhitelisted)
 
-<b>isTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
+    <b>isTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
 
-<b>isDependentTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
+    <b>isDependentTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
 
-<b>isTokenTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
+    <b>isTokenTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
 </pre>
 
 
@@ -125,14 +140,12 @@ If the CT is transferred or burned, it also transfers or burns the ST.
 If the ST is untransferable or unburnable, then a call to the transfer or burn function of the CT unlocks the ST.
 
 <pre>
-<b>lock</b>(tokenId, CTContract, CTId)
+    <b>lock</b>(tokenId, CTContract, CTId)
 
-<b>unlock</b>(tokenId)
+    <b>unlock</b>(tokenId)
 
-<b>isLocked</b>(tokenId) returns (address, uint256);
-
+    <b>isLocked</b>(tokenId) returns (address, uint256);
 </pre>
-
 
 ## Implementation
 This repository includes a reference implementation of Commander Token and Locked Tokens.
@@ -141,3 +154,14 @@ All the functions are virtual and can be overridden in case you need to extend t
 
 ## State of development
 Commander Token and Locked Tokens are work in progress. The functionality is fully implemented, and there are tests for all the functions, but the code was not audited, and is dangerous to use on live blockchains at the moment.
+
+## Getting involved
+Commander Token and Locked Token are part of [Woolball](https://woolball.xyz) project, come to [Woolball Discord](discord.gg/SbekPPeCxj) to be involved in Commander Token.
+
+
+## License
+The code in this repository is published under MIT license. The content in this repository is published under CC-BY-SA 3.0 license.
+
+
+## Credits and references
+Commander Token and Locked Tokens were created by the Woollball team, led by [Tomer Leicht](https://github.com/tomlightning) and [Eyal Ron](https://github.com/eyalron33).
