@@ -67,6 +67,7 @@ interface ICommanderToken is IERC721 {
      * to it, regardless of the value of 'isTokenTransferable'.
      */
     function setTransferWhitelist(uint256 tokenId, address whitelistAddress, bool isWhitelisted) external;
+    function isAddressWhitelisted(uint256 tokenId, address whitelistAddress) external view returns (bool);
     function isTransferableToAddress(uint256 tokenId, address transferToAddress) external view returns (bool);
     function isDependentTransferableToAddress(uint256 tokenId, address transferToAddress) external view returns (bool);
     function isTokenTransferableToAddress(uint256 tokenId, address transferToAddress) external view returns (bool);

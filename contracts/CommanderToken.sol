@@ -281,13 +281,25 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
     }
 
     /**
+     * @dev Checks if an address is whitelisted.
+     **/
+    function isAddressWhitelisted(
+        uint256 tokenId, 
+        address whitelistAddress
+    ) public view virtual override returns (bool) {
+        return _tokens[tokenId].whitelist[whitelistAddress];
+    }
+
+    /**
       * @dev Checks if tokenId can be transferred to addressToTransferTo, without taking its dependence into consideration.
       **/
     function isTransferableToAddress(
         uint256 tokenId, 
         address addressToTransferTo
     ) public view virtual override returns (bool) {
-        return _tokens[tokenId].whitelist[addressToTransferTo];
+        // either token is transferable (to all addresses, and specifically to 'addressToTransferTo') 
+        // or otherwise the address is whitelisted
+        return (isTransferable(tokenId) || _tokens[tokenId].whitelist[addressToTransferTo]);
     }
     
     /**
@@ -307,6 +319,7 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -356,17 +369,14 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
     ) internal virtual override {
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
 
-        // transfer each token that tokenId depends on
-        for (uint i; i < _tokens[tokenId].dependencies.length; i++) {
-            ICommanderToken STContract = _tokens[tokenId]
-                .dependencies[i]
-                .tokensCollection;
-            uint256 STId = _tokens[tokenId].dependencies[i].tokenId;
-            require(
-                STContract.isTransferable(STId),
+        require(
+                isTransferableToAddress(tokenId, to),
+                "Commander Token: the token status is set to nontransferable"
+            );
+
+        require(
+                isDependentTransferableToAddress(tokenId, to),
                 "Commander Token: the token depends on at least one nontransferable token"
             );
-            STContract.transferFrom(from, to, STId);
-        }
     }
 }
