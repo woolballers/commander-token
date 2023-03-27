@@ -122,8 +122,10 @@ The following functions are provided.
 <pre>
     <b>setTransferWhitelist</b>(tokenId, whitelistAddress, isWhitelisted)
 
-    <b>isTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
+    <b>isAddressWhitelisted</b>(tokenId, whitelistAddress) returns (bool);
 
+    <b>isTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
+   
     <b>isDependentTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
 
     <b>isTokenTransferableToAddress</b>(tokenId, transferToAddress) returns (bool);
