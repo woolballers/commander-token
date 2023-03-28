@@ -3,7 +3,6 @@
 
 pragma solidity >=0.8.17;
 
-import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 import "./interfaces/ILockedToken.sol";
@@ -11,7 +10,7 @@ import "./interfaces/ILockedToken.sol";
 /**
  * @dev Implementation of Locked Token Standard
  */
-contract LockedToken is ILockedToken, ERC721Enumerable {
+contract LockedToken is ILockedToken, ERC721 {
     struct ExternalToken {
         ILockedToken tokensCollection;
         uint256 tokenId;
@@ -209,7 +208,7 @@ contract LockedToken is ILockedToken, ERC721Enumerable {
      */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(ERC721Enumerable, IERC165) returns (bool) {
+    ) public view virtual override(ERC721, IERC165) returns (bool) {
         return
             interfaceId == type(ILockedToken).interfaceId ||
             super.supportsInterface(interfaceId);

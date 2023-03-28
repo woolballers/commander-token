@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+// Tests for the reference implementation of Commander Token.
+// Note: This file is very raw. It was written by a few different people in a chaotic sense. While the
+// tests work and pass, the file itself needs a complete reorganization to be easier to read.
+
 import { ethers } from "hardhat";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { loadFixture, time } from "@nomicfoundation/hardhat-network-helpers";

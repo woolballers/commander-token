@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: MIT
-// Contract for an NFT that command another NFT or be commanded by another NFT
+
+// A reference implementation for Commander Token.
+// Commander Token is an ERC721 token with partial transferability and burnability. 
+// The Commander Token standard allows any behavior from full transferability (regular ERC721), non-transferability 
+// (Soulbound Tokens), or anything in between, including transferability controlled by a community 
+// (community-bounded tokens), or transferability that changes with time. The same goes for burnability.
 
 pragma solidity >=0.8.17;
 
-import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 import "./interfaces/ICommanderToken.sol";
@@ -16,7 +20,7 @@ import "./interfaces/ICommanderToken.sol";
  * @dev If Token A depends on B, then if Token B is nontransferable or unburnable, so does Token A.
  * @dev if token B depedns on token A, we again call A a Commander Token (CT).
  */
-contract CommanderToken is ICommanderToken, ERC721Enumerable {
+contract CommanderToken is ICommanderToken, ERC721 {
     struct ExternalToken {
         ICommanderToken tokensCollection;
         uint256 tokenId;
@@ -341,7 +345,7 @@ contract CommanderToken is ICommanderToken, ERC721Enumerable {
      */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(ERC721Enumerable, IERC165) returns (bool) {
+    ) public view virtual override(ERC721, IERC165) returns (bool) {
         return
             interfaceId == type(ICommanderToken).interfaceId ||
             super.supportsInterface(interfaceId);
