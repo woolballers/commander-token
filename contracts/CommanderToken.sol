@@ -1,24 +1,19 @@
 // SPDX-License-Identifier: MIT
 
-// A reference implementation for Commander Token.
-// Commander Token is an ERC721 token with partial transferability and burnability. 
-// The Commander Token standard allows any behavior from full transferability (regular ERC721), non-transferability 
-// (Soulbound Tokens), or anything in between, including transferability controlled by a community 
-// (community-bounded tokens), or transferability that changes with time. The same goes for burnability.
-
 pragma solidity >=0.8.17;
 
+import "./interfaces/ICommanderToken.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-import "./interfaces/ICommanderToken.sol";
+import "hardhat/console.sol";
 
 /**
  * @title Commander Token Interface
  * @author Eyal Ron, Tomer Leicht, Ahmad Afuni
- * @dev Commander Tokens is an extenntion to ERC721 with the ability to create non-transferable or non-burnable tokens.
- * @dev For this cause we add a new mechniasm enabling a token to depend on another token.
+ * @dev Commander Tokens is an extension to ERC721 with the ability to create non-transferable or non-burnable tokens.
+ * @dev For this cause, we add a new mechanism enabling a token to depend on another token.
  * @dev If Token A depends on B, then if Token B is nontransferable or unburnable, so does Token A.
- * @dev if token B depedns on token A, we again call A a Commander Token (CT).
+ * @dev If token B depedns on token A, we again call A a Commander Token (CT).
  */
 contract CommanderToken is ICommanderToken, ERC721 {
     struct ExternalToken {
@@ -28,15 +23,17 @@ contract CommanderToken is ICommanderToken, ERC721 {
 
     struct Token {
         bool nontransferable;
-        bool burnable;
+        bool nonburnable;
 
-        // The CTs the Token depends on
+        // The Commander Tokens this Token struct depends on
         ExternalToken[] dependencies;
         
-        // Manages the indices of dependencies
+        // A mapping to manage the indices of "dependencies"
         mapping(address => mapping(uint256 => uint256)) dependenciesIndex;
 
         // A whitelist of addresses the token can be transferred to regardless of the value of "nontransferable"
+        // Note: an address can be whitelisted but the token still won't be transferable to this address 
+        // if it depends on a nontransferable token
         mapping(address => bool)                        whitelist;
     }
 
@@ -48,7 +45,7 @@ contract CommanderToken is ICommanderToken, ERC721 {
         _;
     }
 
-    // Token Id -> token's data
+    // Token ID -> token's data
     mapping(uint256 => Token) private _tokens;
 
     /**
@@ -61,10 +58,8 @@ contract CommanderToken is ICommanderToken, ERC721 {
 
     /**
      * @dev Adds to tokenId dependency on CTId from contract CTContractAddress.
-     * @dev Recall, you can only transfer or burn a Token if all the Commander Tokens it depends on are
-     * @dev transferable or burnable, correspondingly.
-     * @dev Dependency is allowed only if both tokens have the same owner, use setDependenceUnsafe otherwise.
-     * @dev The caller must be the owner, opertaor or approved to use _tokenId.
+     * @dev A token can be transfered or burned only if all the tokens it depends on are transferable or burnable, correspondingly.
+     * @dev The caller must be the owner, opertaor or approved to use tokenId.
      */
     function setDependence(
         uint256 tokenId,
@@ -76,23 +71,24 @@ contract CommanderToken is ICommanderToken, ERC721 {
         override
         approvedOrOwner(tokenId)
     {
-        // check that tokenId is not dependent already on CTId
+        // checks that tokenId is not dependent already on CTId
         require(
             _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] == 0,
             "Commander Token: tokenId already depends on CTid from CTContractAddress"
         );
 
-        // create ExternalToken variable to express the dependency
+        // creates ExternalToken variable to express the new dependency
         ExternalToken memory newDependency;
         newDependency.tokensCollection = ICommanderToken(CTContractAddress);
         newDependency.tokenId = CTId;
 
-        // save the index of the new dependency
+        // saves the index of the new dependency
+        // we need to add '1' to the index, since the first index is '0', but '0' is also the default value of uint256, so if we add '1' in
+        // order to differentiate the first index from an empty mapping entry.
         _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] =
-            _tokens[tokenId].dependencies.length +
-            1;
+            _tokens[tokenId].dependencies.length+1;
 
-        // add dependency
+        // adds dependency
         _tokens[tokenId].dependencies.push(newDependency);
 
         emit NewDependence(tokenId, CTContractAddress, CTId);
@@ -107,33 +103,32 @@ contract CommanderToken is ICommanderToken, ERC721 {
         address CTContractAddress,
         uint256 CTId
     ) public virtual override {
+        // casts CTContractAddress to type ICommanderToken 
         ICommanderToken CTContract = ICommanderToken(CTContractAddress);
 
-        // dependency is removed either by CTContractAddress, or by the owner if
-        // the CTId is transferable and burnable.
+        // CTContractAddress can always remove the dependency, the owner can remove it if CTId is transferable & burnable
         require(
             ( _isApprovedOrOwner(msg.sender, tokenId) &&
             CTContract.isTransferable(CTId) &&
             CTContract.isBurnable(CTId) ) ||
-            ( msg.sender == CTContractAddress),
+            ( msg.sender == CTContractAddress ),
             "Commander Token: sender is not permitted to remove dependency"
         );
 
-        // check that tokenId is indeed dependent on CTId
+        // checks that tokenId is indeed dependent on CTId
         require(
             _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] > 0,
             "Commander Token: tokenId is not dependent on CTid from contract CTContractAddress"
         );
 
-        // get the index of the token we are about to remove from dependencies
-        uint256 dependencyIndex = _tokens[tokenId].dependenciesIndex[
-            CTContractAddress
-        ][CTId];
+        // gets the index of the token we are about to remove from dependencies
+        // we remove '1' because we added '1' when saving the index in setDependence, see the comment there for explanation
+        uint256 dependencyIndex = _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId]-1;
 
-        // clear dependenciesIndex for this token
-        _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] = 0;
+        // clears dependenciesIndex for this token
+        delete _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId];
 
-        // remove dependency: copy the last element of the array to the place of what was removed, then remove the last element from the array
+        // removes dependency: copy the last element of the array to the place of what was removed, then remove the last element from the array
         uint256 lastDependecyIndex = _tokens[tokenId].dependencies.length - 1;
         _tokens[tokenId].dependencies[dependencyIndex] = _tokens[tokenId]
             .dependencies[lastDependecyIndex];
@@ -173,7 +168,7 @@ contract CommanderToken is ICommanderToken, ERC721 {
         uint256 tokenId,
         bool burnable
     ) public virtual override approvedOrOwner(tokenId) {
-        _tokens[tokenId].burnable = burnable;
+        _tokens[tokenId].nonburnable = !burnable;
     }
 
     /**
@@ -191,7 +186,7 @@ contract CommanderToken is ICommanderToken, ERC721 {
     function isBurnable(
         uint256 tokenId
     ) public view virtual override returns (bool) {
-        return _tokens[tokenId].burnable;
+        return !_tokens[tokenId].nonburnable;
     }
 
     /**
