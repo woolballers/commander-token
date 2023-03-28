@@ -126,7 +126,7 @@ describe('CommanderToken', function () {
 
     describe('Transferable & Burnable', function () {
 
-        it('Is able to make Commander Tokens transferable and check for transferability', async function () {
+        it('Set token to be transferable, and check for transferability', async function () {
             const tokenIdToChange = getRandomMintedTokenId(this.initialMint);
 
             // Change default transferability of one of the Commander Tokens
@@ -151,7 +151,7 @@ describe('CommanderToken', function () {
 
         });
 
-        it('Is able to make Commander Tokens burnable and check for burnability', async function () {
+        it('Set token to be burnable, and check for burnability', async function () {
 
             const tokenIdToChange = getRandomMintedTokenId(this.initialMint);
 
@@ -234,11 +234,6 @@ describe('CommanderToken', function () {
 
         it('Token not transfarable', async function () {
             const tokenIdToTransfer = getRandomMintedTokenId(this.initialMint);
-            const transferToWallet = this.wallet2.address;
-
-            const ownerAddress = await this.CommanderToken.ownerOf(tokenIdToTransfer);
-            expect(ownerAddress).to.not.equal(transferToWallet);
-            expect(ownerAddress).to.equal(this.owner.address);
 
             await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToTransfer, false);
 
@@ -247,23 +242,129 @@ describe('CommanderToken', function () {
 
         })
 
-        it('Dependency not transfarable', async function () {
-            const [tokenIdToChange, dependentTokenId] = getRandomMintedTokens(this.initialMint)
+        it('Token transfer fails when transferability is set to false', async function () {
+            const tokenIdToTransfer = getRandomMintedTokenId(this.initialMint);
+            
+            const transferToWallet = this.wallet2.address;
+            const ownerAddress = await this.CommanderToken.ownerOf(tokenIdToTransfer);
+            expect(ownerAddress).to.not.equal(transferToWallet);
+            expect(ownerAddress).to.equal(this.owner.address);
+
+            await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToTransfer, false);
+
+            await expect(this
+                .CommanderToken.connect(this.owner)
+                .transferFrom(ownerAddress, transferToWallet, tokenIdToTransfer))
+                .to.be.revertedWith("Commander Token: the token status is set to nontransferable");
+
+        })
+
+        it('Token transfer fails when a dependency not transfarable', async function () {
+            const [tokenIdToTransfer, dependentTokenId] = getRandomMintedTokens(this.initialMint)
 
             const defaultDependence = false;
             const isDependent = true;
             const dependableContractAddress = this.CommanderToken.address;
             const commanderTokenAddress = this.CommanderToken.address;
 
-            await this.CommanderToken.connect(this.owner).setTransferable(dependentTokenId, false);
+            const transferToWallet = this.wallet2.address;
+            const ownerAddress = await this.CommanderToken.ownerOf(tokenIdToTransfer);
 
-            expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
-            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToChange, dependableContractAddress, dependentTokenId);
-            expect(await this.CommanderToken.isDependent(tokenIdToChange, dependableContractAddress, dependentTokenId)).to.equal(isDependent);
 
-            expect(await this.CommanderToken.isTokenTransferable(tokenIdToChange)).to.equal(false);
+
+            expect(await this.CommanderToken.isDependent(tokenIdToTransfer, dependableContractAddress, dependentTokenId)).to.equal(defaultDependence);
+            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToTransfer, dependableContractAddress, dependentTokenId);
+            expect(await this.CommanderToken.isDependent(tokenIdToTransfer, dependableContractAddress, dependentTokenId)).to.equal(isDependent);
+
+            await this.CommanderToken.connect(this.owner).setTransferable(dependentTokenId, false);            
+
+            expect(await this.CommanderToken.isTransferable(tokenIdToTransfer)).to.equal(true);
+            expect(await this.CommanderToken.isDependentTransferable(tokenIdToTransfer)).to.equal(false);
+            expect(await this.CommanderToken.isTokenTransferable(tokenIdToTransfer)).to.equal(false);
+
+            await expect(this
+                .CommanderToken.connect(this.owner)
+                .transferFrom(ownerAddress, transferToWallet, tokenIdToTransfer))
+                .to.be.revertedWith("Commander Token: the token depends on at least one nontransferable token");
 
         })
+    });
+
+    describe('Whitelist', function () {
+        it('Token with transferability status false is transfereable to a whitelisted address', async function () {
+            const [tokenIdToTransfer] = getRandomMintedTokens(this.initialMint);
+            const transferToWallet = this.wallet2.address;
+            const ownerAddress = this.owner.address;
+
+            // set transferability false
+            await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToTransfer, false);
+
+            // add transferToWallet to the whitelist of tokenIdToTransfer
+            await this.CommanderToken.connect(this.owner).setTransferWhitelist(tokenIdToTransfer, transferToWallet,  true);            
+
+            // transfer token to transferToWallet
+            this.CommanderToken.connect(this.owner).transferFrom(ownerAddress, transferToWallet, tokenIdToTransfer);
+
+        });
+
+        it('Token with transferability status false is nontransfereable to a whitelisted address because of a dependency', async function () {
+            const [tokenIdToTransfer, dependentTokenId] = getRandomMintedTokens(this.initialMint)
+            const transferToWallet = this.wallet2.address;
+            const ownerAddress = this.owner.address;
+            const dependableContractAddress = this.CommanderToken.address;
+
+            // set transferability false
+            await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToTransfer, false);
+
+            // add transferToWallet to the whitelist of tokenIdToTransfer
+            await this.CommanderToken.connect(this.owner).setTransferWhitelist(tokenIdToTransfer, transferToWallet,  true);
+
+            // add dependency on token
+            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToTransfer, dependableContractAddress, dependentTokenId);
+            expect(await this.CommanderToken.isDependent(tokenIdToTransfer, dependableContractAddress, dependentTokenId)).to.equal(true);
+
+            // set dependent token to be nontransferable
+            await this.CommanderToken.connect(this.owner).setTransferable(dependentTokenId, false);
+
+            // check that tokenIdToTransfer is non-dependent transfereable and non-transferable since it depdends on a nontransferable token
+            expect(await this.CommanderToken.isDependentTransferable(tokenIdToTransfer)).to.equal(false);
+            expect(await this.CommanderToken.isTokenTransferable(tokenIdToTransfer)).to.equal(false);
+            expect(await this.CommanderToken.isDependentTransferableToAddress(tokenIdToTransfer, transferToWallet)).to.equal(false);
+
+            // transfer to transferToWallet fails
+            await expect(this
+                .CommanderToken.connect(this.owner)
+                .transferFrom(ownerAddress, transferToWallet, tokenIdToTransfer))
+                .to.be.revertedWith("Commander Token: the token depends on at least one nontransferable token");
+
+        });
+
+        it('Token with transferability true is but a non-transferable dependency is transfereable to a whitelisted address of the depenedncy', async function () {
+            const [tokenIdToTransfer, dependentTokenId] = getRandomMintedTokens(this.initialMint)
+            const transferToWallet = this.wallet2.address;
+            const ownerAddress = this.owner.address;
+            const dependableContractAddress = this.CommanderToken.address;
+
+            // set transferability false
+            await this.CommanderToken.connect(this.owner).setTransferable(tokenIdToTransfer, false);
+
+            // add transferToWallet to the whitelist of tokenIdToTransfer
+            await this.CommanderToken.connect(this.owner).setTransferWhitelist(tokenIdToTransfer, transferToWallet,  true);
+
+            // add dependency on token
+            await this.CommanderToken.connect(this.owner).setDependence(tokenIdToTransfer, dependableContractAddress, dependentTokenId);
+            expect(await this.CommanderToken.isDependent(tokenIdToTransfer, dependableContractAddress, dependentTokenId)).to.equal(true);
+
+            // set dependent token to be nontransferable
+            await this.CommanderToken.connect(this.owner).setTransferable(dependentTokenId, false);
+
+            // add transferToWallet to the whitelist of dependent token
+            await this.CommanderToken.connect(this.owner).setTransferWhitelist(dependentTokenId, transferToWallet,  true);            
+
+            // transfer to transferToWallet fails
+            await this.CommanderToken.connect(this.owner).transferFrom(ownerAddress, transferToWallet, tokenIdToTransfer);
+        });
+
 
     });
 });
