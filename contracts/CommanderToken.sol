@@ -8,7 +8,7 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "hardhat/console.sol";
 
 /**
- * @title Commander Token Interface
+ * @title Commander Token Reference Implementation
  * @author Eyal Ron, Tomer Leicht, Ahmad Afuni
  * @dev Commander Tokens is an extension to ERC721 with the ability to create non-transferable or non-burnable tokens.
  * @dev For this cause, we add a new mechanism enabling a token to depend on another token.
@@ -83,7 +83,8 @@ contract CommanderToken is ICommanderToken, ERC721 {
         newDependency.tokenId = CTId;
 
         // saves the index of the new dependency
-        // we need to add '1' to the index, since the first index is '0', but '0' is also the default value of uint256, so if we add '1' in
+        // we need to add '1' to the index since the first index is '0', but '0' is also 
+        // the default value of uint256, so if we add '1' in
         // order to differentiate the first index from an empty mapping entry.
         _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] =
             _tokens[tokenId].dependencies.length+1;
@@ -106,7 +107,8 @@ contract CommanderToken is ICommanderToken, ERC721 {
         // casts CTContractAddress to type ICommanderToken 
         ICommanderToken CTContract = ICommanderToken(CTContractAddress);
 
-        // CTContractAddress can always remove the dependency, the owner can remove it if CTId is transferable & burnable
+        // CTContractAddress can always remove the dependency, but the owner 
+        // of tokenId can remove it only if CTId is transferable & burnable
         require(
             ( _isApprovedOrOwner(msg.sender, tokenId) &&
             CTContract.isTransferable(CTId) &&
@@ -122,13 +124,15 @@ contract CommanderToken is ICommanderToken, ERC721 {
         );
 
         // gets the index of the token we are about to remove from dependencies
-        // we remove '1' because we added '1' when saving the index in setDependence, see the comment there for explanation
+        // we remove '1' because we added '1' when saving the index in setDependence, 
+        // see the comment in setDependence for an explanation
         uint256 dependencyIndex = _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId]-1;
 
         // clears dependenciesIndex for this token
         delete _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId];
 
-        // removes dependency: copy the last element of the array to the place of what was removed, then remove the last element from the array
+        // removes dependency: copy the last element of the array to the place of 
+        // what was removed, then remove the last element from the array
         uint256 lastDependecyIndex = _tokens[tokenId].dependencies.length - 1;
         _tokens[tokenId].dependencies[dependencyIndex] = _tokens[tokenId]
             .dependencies[lastDependecyIndex];
@@ -152,7 +156,7 @@ contract CommanderToken is ICommanderToken, ERC721 {
     }
 
     /**
-     * @dev Sets the transferable status of tokenId.
+     * @dev Sets the transferable property of tokenId.
      **/
     function setTransferable(
         uint256 tokenId,
@@ -172,7 +176,8 @@ contract CommanderToken is ICommanderToken, ERC721 {
     }
 
     /**
-     * @dev Checks the transferable status of tokenId.
+     * @dev Checks the transferable property of tokenId 
+     * @dev (only of the token itself, not of its dependencies).
      **/
     function isTransferable(
         uint256 tokenId
@@ -181,7 +186,8 @@ contract CommanderToken is ICommanderToken, ERC721 {
     }
 
     /**
-     * @dev Checks the burnable status of tokenId.
+     * @dev Checks the burnable property of tokenId 
+     * @dev (only of the token itself, not of its dependencies).
      **/
     function isBurnable(
         uint256 tokenId
@@ -190,7 +196,8 @@ contract CommanderToken is ICommanderToken, ERC721 {
     }
 
     /**
-     * @dev Checks all the tokens that tokenId depends on are transferable.
+     * @dev Checks if all the tokens that tokenId depends on are transferable or not 
+     * @dev (only of the dependencies, not of the token).
      **/
     function isDependentTransferable(
         uint256 tokenId
@@ -204,11 +211,13 @@ contract CommanderToken is ICommanderToken, ERC721 {
                 return false;
             }
         }
+
         return true;
     }
 
     /**
-     * @dev Checks all the tokens that tokenId depends on are burnable.
+     * @dev Checks all the tokens that tokenId depends on are burnable 
+     * @dev (only of the dependencies, not of the token).
      **/
     function isDependentBurnable(
         uint256 tokenId
@@ -222,11 +231,13 @@ contract CommanderToken is ICommanderToken, ERC721 {
                 return false;
             }
         }
+
         return true;
     }
 
     /**
-     * @dev Checks if tokenId can be transferred.
+     * @dev Checks if tokenId can be transferred 
+     * @dev (meaning, both the token itself and all of its dependncies are transferable).
      **/
     function isTokenTransferable(
         uint256 tokenId
@@ -236,6 +247,7 @@ contract CommanderToken is ICommanderToken, ERC721 {
 
     /**
      * @dev Checks if tokenId can be burned.
+     * @dev (meaning, both the token itself and all of its dependncies are transferable).
      **/
     function isTokenBurnable(
         uint256 tokenId
@@ -259,8 +271,8 @@ contract CommanderToken is ICommanderToken, ERC721 {
         // delete the rest
         delete _tokens[tokenId];
 
-        // TODO: whitelist is NOT deleted since we don't hold the indecies of this mapping
-        // TODO: consider changing this in a later version
+        // TODO: whitelist is NOT deleted since we don't hold the indices of this mapping
+        // TODO: consider fixing this in a later version
     }
 
     /************************
@@ -268,7 +280,7 @@ contract CommanderToken is ICommanderToken, ERC721 {
      ************************/
 
      /**
-      * @dev Adds or removes an address from the whiltelist of tokenId.
+      * @dev Adds or removes an address from the whitelist of tokenId.
       * @dev tokenId can be transferred to whitelisted addresses even when its set to be nontransferable.
       **/
     function setTransferWhitelist(

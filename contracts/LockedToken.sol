@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: MIT
-// Contract for an NFT that command another NFT or be commanded by another NFT
 
 pragma solidity >=0.8.17;
 
+import "./interfaces/ILockedToken.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-import "./interfaces/ILockedToken.sol";
-
 /**
- * @dev Implementation of Locked Token Standard
+ * @title Locked Token Reference Implementation
+ * @author Eyal Ron, Tomer Leicht, Ahmad Afuni
+ * @dev Locked Tokens enable the automatic transfer of tokens.
+ * @dev If token A is locked to B, then:
+ * @dev 1. A cannot be transferred or burned unless B is transferred or burned, and,
+ * @dev 2. every transfer of B, also transfers A.
+ * @dev Locking is possible if and only if both tokens have the same owner.
  */
 contract LockedToken is ILockedToken, ERC721 {
     struct ExternalToken {
@@ -17,12 +21,12 @@ contract LockedToken is ILockedToken, ERC721 {
     }
 
     struct Token {
-        ExternalToken[] lockedTokens; // array of STs locked to this token
+        ExternalToken[] lockedTokens; // array of tokens locked to this token
         
-        // manages the indices of lockedTokens
+        // A mapping to manage the indices of "lockedTokens"
         mapping(address => mapping(uint256 => uint256)) lockingsIndex;
 
-        // 0 if the token is unlocked, hold the information of the locking token otherwise
+        // 0 if this token is unlocked, or otherwise holds the information of the locking token
         ExternalToken locked;
     }
 
@@ -43,7 +47,7 @@ contract LockedToken is ILockedToken, ERC721 {
     ) {
         require(
             ERC721.ownerOf(token1Id) == ERC721(Token2ContractAddress).ownerOf(Token2Id),
-            "CommanderToken: not sameOwner"
+            "Locked Token: the tokens do not have the same owner"
         );
         _;
     }
@@ -51,12 +55,27 @@ contract LockedToken is ILockedToken, ERC721 {
     modifier onlyContract(address contractAddress) {
         require(
             contractAddress == msg.sender,
-            "Commander Token: transaction is not sent by the correct contract"
+            "Locked Token: transaction is not sent from the correct contract"
         );
         _;
     }
 
-    // mapping from token Id to token data
+    modifier isApproveOwnerOrLockingContract(uint256 tokenId) {
+        (, uint256 lockedCT) = isLocked(tokenId);
+        if (lockedCT > 0)
+            require(
+                msg.sender == address(_tokens[tokenId].locked.tokensCollection),
+                "Locked Token: tokenId is locked and caller is not the contract holding the locking token"
+            );
+        else
+            require(
+                _isApprovedOrOwner(_msgSender(), tokenId),
+                "ERC721: caller is not token owner or approved"
+            );
+        _;
+    }
+
+    // Token ID -> token's data
     mapping(uint256 => Token) private _tokens;
 
     /**
@@ -70,13 +89,13 @@ contract LockedToken is ILockedToken, ERC721 {
     
     /**
      * @dev Locks tokenId CTId from contract CTContract. Both tokens must have the same owner.
-     *
-     * With such a lock in place, the Private Token transfer and burn functions can't be called by
-     * its owner as long as the locking is in place.
-     *
-     * If the Commander Token is transferred or burned, it also transfers or burns the Private Token.
-     * If the Private Token is nontransferable or unburnable, then a call to the transfer or burn function of the Commander Token unlocks
-     * the Private  Tokens.
+     * @dev 
+     * @dev With such a lock in place, tokenId transfer and burn functions can't be called by
+     * @dev its owner as long as the locking is in place.
+     * @dev 
+     * @dev If LckingId is transferred or burned, it also transfers or burns tokenId.
+     * @dev If tokenId is nontransferable or unburnable, then a call to the transfer or
+     * @dev burn function of the LockingId unlocks the tokenId.
      *
      */
     function lock(
@@ -92,22 +111,21 @@ contract LockedToken is ILockedToken, ERC721 {
     {
         // check that tokenId is unlocked
         (, uint256 lockedCT) = isLocked(tokenId);
-        require(lockedCT == 0, "Commander Token: token is already locked");
+        require(lockedCT == 0, "Locked Token: token is already locked");
 
         // lock token
         _tokens[tokenId].locked.tokensCollection = ILockedToken(LockingContract);
         _tokens[tokenId].locked.tokenId = LockingId;
 
-        // nofity LockingId in LockingContract that tokenId wants to lock to it
+        // nofity LockingId in LockingContract that tokenId is locked to it
         ILockedToken(LockingContract).addLockedToken(LockingId, address(this), tokenId);
 
         emit NewLocking(tokenId, LockingContract, LockingId);
     }
 
     /**
-     * unlocks a Private Token from a Commander Token.
-     *
-     * This function must be called from the contract of the Commander Token.
+     * @dev unlocks a a token.
+     * @dev This function must be called from the contract that locked tokenId.
      */
     function unlock(
         uint256 tokenId
@@ -137,8 +155,7 @@ contract LockedToken is ILockedToken, ERC721 {
     }
 
     /**
-     * addLockedToken notifies a Token that another token (LTId), with the same owner, is locked to it.
-     * removeLockedToken removes a token that was locked to the tokenId.
+     * @dev addLockedToken notifies a Token that another token (LockedId), with the same owner, is locked to it.
      */
     function addLockedToken(
         uint256 tokenId,
@@ -154,7 +171,7 @@ contract LockedToken is ILockedToken, ERC721 {
         // check that LockedId from LockedContract is not locked already to tokenId
         require(
             _tokens[tokenId].lockingsIndex[LockedContract][LockedId] == 0,
-            "Commander Token: the Solider Token is already locked to the Commander Token"
+            "Locked Token: tokenId is already locked to LockedId from contract LockedContract"
         );
 
         // create ExternalToken variable to express the locking
@@ -163,30 +180,38 @@ contract LockedToken is ILockedToken, ERC721 {
         newLocking.tokenId = LockedId;
 
         // save the index of the new dependency
+        // we need to add '1' to the index since the first index is '0', but '0' is also 
+        // the default value of uint256, so if we add '1' in
+        // order to differentiate the first index from an empty mapping entry.
         _tokens[tokenId].lockingsIndex[LockedContract][LockedId] = _tokens[tokenId]
             .lockedTokens
-            .length;
+            .length+1;
 
         // add a locked token
         _tokens[tokenId].lockedTokens.push(newLocking);
     }
 
+    /**
+     * @dev removeLockedToken removes a token that was locked to the tokenId.
+     */
     function removeLockedToken(
         uint256 tokenId,
-        address STContract,
-        uint256 STId
+        address LockedContract,
+        uint256 LockedId
     ) public virtual override {
-        // check that STId from STContract is indeed locked to tokenId
+        // check that LockedId from LockedContract is indeed locked to tokenId
         require(
-            _tokens[tokenId].lockingsIndex[STContract][STId] > 0,
-            "Commander Token: STId in contract STContract is not locked to tokenId"
+            _tokens[tokenId].lockingsIndex[LockedContract][LockedId] > 0,
+            "Locked Token: LockedId in contract LockedContract is not locked to tokenId"
         );
 
         // get the index of the token we are about to remove from locked tokens
-        uint256 lockIndex = _tokens[tokenId].lockingsIndex[STContract][STId];
+        // we remove '1' because we added '1' when saving the index in addLockedToken, 
+        // see the comment in addLockedToken for an explanation
+        uint256 lockIndex = _tokens[tokenId].lockingsIndex[LockedContract][LockedId] - 1;
 
         // clear lockingsIndex for this token
-        _tokens[tokenId].lockingsIndex[STContract][STId] = 0;
+        _tokens[tokenId].lockingsIndex[LockedContract][LockedId] = 0;
 
         // remove locking: copy the last element of the array to the place of what was removed, then remove the last element from the array
         uint256 lastLockingsIndex = _tokens[tokenId].lockedTokens.length - 1;
@@ -195,53 +220,56 @@ contract LockedToken is ILockedToken, ERC721 {
         ];
         _tokens[tokenId].lockedTokens.pop();
 
-        // notify STContract that locking was removed
-        ILockedToken(STContract).unlock(STId);
-
-    }
-
-
-    function burn(uint256 tokenId) public virtual override {}
-
-    /**
-     * @dev See {IERC165-supportsInterface}.
-     */
-    function supportsInterface(
-        bytes4 interfaceId
-    ) public view virtual override(ERC721, IERC165) returns (bool) {
-        return
-            interfaceId == type(ILockedToken).interfaceId ||
-            super.supportsInterface(interfaceId);
+        // notify LockedContract that locking was removed
+        ILockedToken(LockedContract).unlock(LockedId);
     }
 
     /**
-     * @dev we reimplement this function in order to add a test for the case that the token is locked.
+     * @dev Burns the tokenId and all the tokens locked to it.
+     * @dev If a locked token is unburnable, it unlocks it.
+     **/
+    function burn(uint256 tokenId) public virtual override isApproveOwnerOrLockingContract(tokenId) {
+        // burn all locked tokens to it
+        // if they're not burnable, unlocked them
+        for (uint i; i < _tokens[tokenId].lockedTokens.length; i++) {
+            ILockedToken STContract = _tokens[tokenId]
+                .lockedTokens[i]
+                .tokensCollection;
+            uint256 STId = _tokens[tokenId].lockedTokens[i].tokenId;
+            STContract.burn(STId);
+        }
+
+        // burn token
+        // 'delete' in solidity doesn't work on mappings, so we delete the mapping items manually
+        for (uint i=0; i<_tokens[tokenId].lockedTokens.length; i++) {
+            ExternalToken memory CT =  _tokens[tokenId].lockedTokens[i];
+            delete _tokens[tokenId].lockingsIndex[address(CT.tokensCollection)][CT.tokenId];
+        }
+
+        // delete the rest
+        delete _tokens[tokenId];
+    }
+
+    /***********************************************
+     * Overrided functions from ERC165 and ERC721  *
+     ***********************************************/
+
+    /**
+     * @dev we reimplement this function to add the isApproveOwnerOrLockingContract modifier
      * @dev See {IERC721-transferFrom}.
      */
     function transferFrom(
         address from,
         address to,
         uint256 tokenId
-    ) public virtual override(IERC721, ERC721) {
+    ) public virtual override(IERC721, ERC721) isApproveOwnerOrLockingContract(tokenId) {
         //solhint-disable-next-line max-line-length
 
-        (, uint256 lockedCT) = isLocked(tokenId);
-        if (lockedCT > 0)
-            require(
-                msg.sender == address(_tokens[tokenId].locked.tokensCollection),
-                "Commander Token: token is locked and caller is not the contract holding the locking token"
-            );
-        else
-            require(
-                _isApprovedOrOwner(_msgSender(), tokenId),
-                "ERC721: caller is not token owner or approved"
-            );
-
-        _transfer(from, to, tokenId);
+        ERC721._transfer(from, to, tokenId);
     }
 
     /**
-     * @dev we reimplement this function in order to add a test for the case that the token is locked.
+     * @dev we reimplement this function to add the isApproveOwnerOrLockingContract modifier
      * @dev See {IERC721-safeTransferFrom}.
      */
     function safeTransferFrom(
@@ -249,18 +277,7 @@ contract LockedToken is ILockedToken, ERC721 {
         address to,
         uint256 tokenId,
         bytes memory data
-    ) public virtual override(IERC721, ERC721) {
-        (, uint256 lockedCT) = isLocked(tokenId);
-        if (lockedCT > 0)
-            require(
-                msg.sender == address(_tokens[tokenId].locked.tokensCollection),
-                "Commander Token: token is locked and caller is not the contract holding the locking token"
-            );
-        else
-            require(
-                _isApprovedOrOwner(_msgSender(), tokenId),
-                "ERC721: caller is not token owner or approved"
-            );
+    ) public virtual override(IERC721, ERC721) isApproveOwnerOrLockingContract(tokenId) {
 
         _safeTransfer(from, to, tokenId, data);
     }
@@ -287,7 +304,8 @@ contract LockedToken is ILockedToken, ERC721 {
     ) internal virtual override {
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
 
-        // transfer each token locked to tokenId, if the token is nontransferable, then simply unlock it
+        // transfer each token locked to tokenId 
+        // if the token is nontransferable, then simply unlock it
         for (uint i; i < _tokens[tokenId].lockedTokens.length; i++) {
             ILockedToken STContract = _tokens[tokenId]
                 .lockedTokens[i]
@@ -295,5 +313,16 @@ contract LockedToken is ILockedToken, ERC721 {
             uint256 STId = _tokens[tokenId].lockedTokens[i].tokenId;
             STContract.transferFrom(from, to, STId);
         }
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC721, IERC165) returns (bool) {
+        return
+            interfaceId == type(ILockedToken).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 }
