@@ -229,8 +229,8 @@ contract LockedToken is ILockedToken, ERC721 {
      * @dev If a locked token is unburnable, it unlocks it.
      **/
     function burn(uint256 tokenId) public virtual override isApproveOwnerOrLockingContract(tokenId) {
-        // burn all locked tokens to it
-        // if they're not burnable, unlocked them
+        // burn each token locked to tokenId 
+        // if the token is unburnable, then simply unlock it
         for (uint i; i < _tokens[tokenId].lockedTokens.length; i++) {
             ILockedToken STContract = _tokens[tokenId]
                 .lockedTokens[i]
@@ -239,7 +239,7 @@ contract LockedToken is ILockedToken, ERC721 {
             STContract.burn(STId);
         }
 
-        // burn token
+        // burn the token
         // 'delete' in solidity doesn't work on mappings, so we delete the mapping items manually
         for (uint i=0; i<_tokens[tokenId].lockedTokens.length; i++) {
             ExternalToken memory CT =  _tokens[tokenId].lockedTokens[i];
