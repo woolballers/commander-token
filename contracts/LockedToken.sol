@@ -96,7 +96,6 @@ contract LockedToken is ILockedToken, ERC721 {
      * @dev If LckingId is transferred or burned, it also transfers or burns tokenId.
      * @dev If tokenId is nontransferable or unburnable, then a call to the transfer or
      * @dev burn function of the LockingId unlocks the tokenId.
-     *
      */
     function lock(
         uint256 tokenId,
