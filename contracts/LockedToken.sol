@@ -109,8 +109,15 @@ contract LockedToken is ILockedToken, ERC721 {
         sameOwner(tokenId, LockingContract, LockingId)
     {
         // check that tokenId is unlocked
-        (, uint256 lockedCT) = isLocked(tokenId);
+        (address LockedContract, uint256 lockedCT) = isLocked(tokenId);
         require(lockedCT == 0, "Locked Token: token is already locked");
+
+        // Check that LockingId is not locked to tokenId, otherwise the locking enters a deadlock.
+        // Warning: A deadlock migt still happen if LockingId might is locked to another token 
+        // which is locked to tokenId, but we leave this unchecked, so be careful using this.
+        (LockedContract, lockedCT) = ILockedToken(LockingContract).isLocked(LockingId);
+        require(LockedContract != address(this) || lockedCT != tokenId, 
+            "Locked Token: Deadlock deteceted! LockingId is locked to tokenId");
 
         // lock token
         _tokens[tokenId].locked.tokensCollection = ILockedToken(LockingContract);
