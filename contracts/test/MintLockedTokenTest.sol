@@ -9,8 +9,8 @@ contract MintLockedTokenTest is LockedToken {
         string memory symbol_
     ) LockedToken(name_, symbol_) {}
 
-    function mint(address to, uint256 tokenId) external {
+    function mint(address to, uint256 tokenID) external {
         // to do: change to _safeMint
-        _mint(to, tokenId);
+        _mint(to, tokenID);
     }
 }

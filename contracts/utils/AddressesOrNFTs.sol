@@ -10,7 +10,7 @@ library AddressesOrNFTs {
     using Address for address;
     struct AddressOrNFT {
         address addressOrNftContract;
-        uint256 tokenId;
+        uint256 tokenID;
     }
 
     function isNFT(
@@ -18,7 +18,7 @@ library AddressesOrNFTs {
     ) public view returns (bool) {
         return
             addressOrNFT.addressOrNftContract.isContract() &&
-            addressOrNFT.tokenId != 0;
+            addressOrNFT.tokenID != 0;
     }
 
     function getAddress(
@@ -41,7 +41,7 @@ library AddressesOrNFTs {
                             uint160(addressOrNFT.addressOrNftContract)
                         ),
                         ":",
-                        Strings.toHexString(addressOrNFT.tokenId)
+                        Strings.toHexString(addressOrNFT.tokenID)
                     )
                 );
         } else {

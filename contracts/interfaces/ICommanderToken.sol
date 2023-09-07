@@ -17,31 +17,31 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 interface ICommanderToken is IERC721 {
 
     /**
-     * @dev Emitted when a dependency on CTId from CTContractAddress is added to `tokenId`.
+     * @dev Emitted when a dependency on CTID from CTContractAddress is added to `tokenID`.
      */
-    event NewDependence(uint256 tokenId, address CTContractAddress, uint256 CTId);
+    event NewDependence(uint256 tokenID, address CTContractAddress, uint256 CTID);
 
     /**
-     * @dev Emitted when a dependency on CTId from CTContractAddress is removed to `tokenId`.
+     * @dev Emitted when a dependency on CTID from CTContractAddress is removed to `tokenID`.
      */
-    event RemovedDependence(uint256 tokenId, address CTContractAddress, uint256 CTId);
+    event RemovedDependence(uint256 tokenID, address CTContractAddress, uint256 CTID);
 
     /**
-     * @dev Adds to tokenId dependency on CTId from contract CTContractAddress.
+     * @dev Adds to tokenID dependency on CTID from contract CTContractAddress.
      * @dev A token can be transfered or burned only if all the tokens it depends on are transferable or burnable, correspondingly.
-     * @dev The caller must be the owner, opertaor or approved to use tokenId.
+     * @dev The caller must be the owner, opertaor or approved to use tokenID.
      */
-    function setDependence(uint256 tokenId, address CTContractAddress, uint256 CTId) external;
+    function setDependence(uint256 tokenID, address CTContractAddress, uint256 CTID) external;
 
     /**
-     * @dev Removes from tokenId the dependency on CTId from contract CTContractAddress.
+     * @dev Removes from tokenID the dependency on CTID from contract CTContractAddress.
      */
-    function removeDependence(uint256 tokenId, address CTContractAddress, uint256 CTId) external;
+    function removeDependence(uint256 tokenID, address CTContractAddress, uint256 CTID) external;
 
     /**
-     * @dev Checks if tokenId depends on CTId from CTContractAddress.
+     * @dev Checks if tokenID depends on CTID from CTContractAddress.
      **/
-    function isDependent(uint256 tokenId, address CTContractAddress, uint256 CTId) external view returns (bool);
+    function isDependent(uint256 tokenID, address CTContractAddress, uint256 CTID) external view returns (bool);
 
     /**
      * These functions are for managing the effect of dependence of tokens.
@@ -50,47 +50,47 @@ interface ICommanderToken is IERC721 {
      */
 
      /**
-     * @dev Sets the transferable property of tokenId.
+     * @dev Sets the transferable property of tokenID.
      **/
-    function setTransferable(uint256 tokenId, bool transferable) external;
+    function setTransferable(uint256 tokenID, bool transferable) external;
 
     /**
-     * @dev Sets the burnable status of tokenId.
+     * @dev Sets the burnable status of tokenID.
      **/    
-    function setBurnable(uint256 tokenId, bool burnable) external;
+    function setBurnable(uint256 tokenID, bool burnable) external;
 
     /**
-     * @dev Checks the transferable property of tokenId 
+     * @dev Checks the transferable property of tokenID 
      * @dev (only of the token itself, not of its dependencies).
      **/
-    function isTransferable(uint256 tokenId) external view returns (bool);
+    function isTransferable(uint256 tokenID) external view returns (bool);
     
     /**
-     * @dev Checks the burnable property of tokenId 
+     * @dev Checks the burnable property of tokenID 
      * @dev (only of the token itself, not of its dependencies).
      **/
-    function isBurnable(uint256 tokenId) external view returns (bool);
+    function isBurnable(uint256 tokenID) external view returns (bool);
 
     /**
-     * @dev Checks if all the tokens that tokenId depends on are transferable or not 
+     * @dev Checks if all the tokens that tokenID depends on are transferable or not 
      * @dev (only of the dependencies, not of the token).
      **/
-    function isDependentTransferable(uint256 tokenId) external view returns (bool);
+    function isDependentTransferable(uint256 tokenID) external view returns (bool);
     
     /**
-     * @dev Checks all the tokens that tokenId depends on are burnable 
+     * @dev Checks all the tokens that tokenID depends on are burnable 
      * @dev (only of the dependencies, not of the token).
      **/
-    function isDependentBurnable(uint256 tokenId) external view returns (bool);
+    function isDependentBurnable(uint256 tokenID) external view returns (bool);
 
     /**
-     * @dev Checks if tokenId can be transferred 
+     * @dev Checks if tokenID can be transferred 
      * @dev (meaning, both the token itself and all of its dependncies are transferable).
      **/
     function isTokenTransferable(uint256 tokenID) external view returns (bool);
     
     /**
-     * @dev Checks if tokenId can be burned.
+     * @dev Checks if tokenID can be burned.
      * @dev (meaning, both the token itself and all of its dependncies are transferable).
      **/
     function isTokenBurnable(uint256 tokenID) external view returns (bool);
@@ -101,30 +101,30 @@ interface ICommanderToken is IERC721 {
      */
 
     /**
-      * @dev Adds or removes an address from the whitelist of tokenId.
-      * @dev tokenId can be transferred to whitelisted addresses even when its set to be nontransferable.
+      * @dev Adds or removes an address from the whitelist of tokenID.
+      * @dev tokenID can be transferred to whitelisted addresses even when its set to be nontransferable.
       **/ 
-    function setTransferWhitelist(uint256 tokenId, address whitelistAddress, bool isWhitelisted) external;
+    function setTransferWhitelist(uint256 tokenID, address whitelistAddress, bool isWhitelisted) external;
     
     /**
      * @dev Checks if an address is whitelisted.
      **/
-    function isAddressWhitelisted(uint256 tokenId, address whitelistAddress) external view returns (bool);
+    function isAddressWhitelisted(uint256 tokenID, address whitelistAddress) external view returns (bool);
     
     /**
-      * @dev Checks if tokenId can be transferred to addressToTransferTo, without taking its dependence into consideration.
+      * @dev Checks if tokenID can be transferred to addressToTransferTo, without taking its dependence into consideration.
       **/
-    function isTransferableToAddress(uint256 tokenId, address transferToAddress) external view returns (bool);
+    function isTransferableToAddress(uint256 tokenID, address transferToAddress) external view returns (bool);
     
     /**
-      * @dev Checks if all the dependences of tokenId can be transferred to addressToTransferTo,
+      * @dev Checks if all the dependences of tokenID can be transferred to addressToTransferTo,
       **/
-    function isDependentTransferableToAddress(uint256 tokenId, address transferToAddress) external view returns (bool);
+    function isDependentTransferableToAddress(uint256 tokenID, address transferToAddress) external view returns (bool);
     
     /**
-      * @dev Checks if tokenId can be transferred to addressToTransferTo.
+      * @dev Checks if tokenID can be transferred to addressToTransferTo.
       **/
-    function isTokenTransferableToAddress(uint256 tokenId, address transferToAddress) external view returns (bool);
+    function isTokenTransferableToAddress(uint256 tokenID, address transferToAddress) external view returns (bool);
 
     /**
      * Mint and burn are not part of ERC721, since the standard doesn't specify any 
@@ -133,8 +133,8 @@ interface ICommanderToken is IERC721 {
      */
 
      /**
-     * @dev burns tokenId.
+     * @dev burns tokenID.
      * @dev isTokenBurnable must return 'true'.
      **/
-    function burn(uint256 tokenId) external;
+    function burn(uint256 tokenID) external;
 }
