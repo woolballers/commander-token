@@ -16,48 +16,48 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
  */
 interface ILockedToken is IERC721 {
     /**
-     * @dev Emitted when tokenId is locked to LockingId from LockingContract.
+     * @dev Emitted when tokenID is locked to LockingID from LockingContract.
      */
-    event NewLocking(uint256 tokenId, address LockingContract, uint256 LockingId);
+    event NewLocking(uint256 tokenID, address LockingContract, uint256 LockingID);
 
     /**
-     * @dev Emitted when a locking tokenId to LockingId from LockingContract is removed.
+     * @dev Emitted when a locking tokenID to LockingID from LockingContract is removed.
      */
-    event Unlocked(uint256 tokenId);
+    event Unlocked(uint256 tokenID);
 
     
     /**
-     * @dev Locks tokenId CTId from contract CTContract. Both tokens must have the same owner.
+     * @dev Locks tokenID CTID from contract CTContract. Both tokens must have the same owner.
      * @dev 
-     * @dev With such a lock in place, tokenId transfer and burn functions can't be called by
+     * @dev With such a lock in place, tokenID transfer and burn functions can't be called by
      * @dev its owner as long as the locking is in place.
      * @dev 
-     * @dev If LckingId is transferred or burned, it also transfers or burns tokenId.
-     * @dev If tokenId is nontransferable or unburnable, then a call to the transfer or
-     * @dev burn function of the LockingId unlocks the tokenId.
+     * @dev If LockingID is transferred or burned, it also transfers or burns tokenID.
+     * @dev If tokenID is nontransferable or unburnable, then a call to the transfer or
+     * @dev burn function of the LockingID unlocks the tokenID.
      */
-    function lock(uint256 tokenId, address LockingContract, uint256 LockingId) external;
+    function lock(uint256 tokenID, address LockingContract, uint256 LockingID) external;
 
     /**
      * @dev unlocks a a token.
-     * @dev This function must be called from the contract that locked tokenId.
+     * @dev This function must be called from the contract that locked tokenID.
      */
-    function unlock(uint256 tokenId) external;
+    function unlock(uint256 tokenID) external;
 
     /**
      * @dev returns (0x0, 0) if token is unlocked or the locking token (contract and id) otherwise
      */
-    function isLocked(uint256 tokenId) external view returns (address, uint256);
+    function isLocked(uint256 tokenID) external view returns (address, uint256);
 
     /**
-     * @dev addLockedToken notifies a Token that another token (LockedId), with the same owner, is locked to it.
+     * @dev addLockedToken notifies a Token that another token (LockedID), with the same owner, is locked to it.
      */ 
-    function addLockedToken(uint256 tokenId, address LockedContract, uint256 LockedId) external;
+    function addLockedToken(uint256 tokenID, address LockedContract, uint256 LockedID) external;
 
     /**
-     * @dev removeLockedToken removes a token that was locked to the tokenId.
+     * @dev removeLockedToken removes a token that was locked to the tokenID.
      */
-    function removeLockedToken(uint256 tokenId, address LockedContract, uint256 LockedId) external;
+    function removeLockedToken(uint256 tokenID, address LockedContract, uint256 LockedID) external;
 
     /**
      * Mint and burn are not part of ERC721, since the standard doesn't specify any 
@@ -66,8 +66,8 @@ interface ILockedToken is IERC721 {
      */
 
     /**
-     * @dev Burns the tokenId and all the tokens locked to it.
+     * @dev Burns the tokenID and all the tokens locked to it.
      * @dev If a locked token is unburnable, it unlocks it.
      **/
-    function burn(uint256 tokenId) external;
+    function burn(uint256 tokenID) external;
 }
