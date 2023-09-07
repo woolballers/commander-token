@@ -352,7 +352,7 @@ contract CommanderToken is ICommanderToken, ERC721 {
         bytes4 interfaceID
     ) public view virtual override(ERC721, IERC165) returns (bool) {
         return
-            interfaceID == type(ICommanderToken).interfaceID ||
+            interfaceID == type(ICommanderToken).interfaceId ||
             super.supportsInterface(interfaceID);
     }
 

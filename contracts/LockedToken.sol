@@ -328,7 +328,7 @@ contract LockedToken is ILockedToken, ERC721 {
         bytes4 interfaceID
     ) public view virtual override(ERC721, IERC165) returns (bool) {
         return
-            interfaceID == type(ILockedToken).interfaceID ||
+            interfaceID == type(ILockedToken).interfaceId ||
             super.supportsInterface(interfaceID);
     }
 }
